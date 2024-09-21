@@ -19,7 +19,7 @@ const addMessage = (message: string) => {
 
 <template>
   <div class="chat-page flex items-center h-screen">
-    <div class="chat-container w-1/2 h-full bg-gray-200 shadow-lg flex flex-col ml-auto">
+    <div class="chat-container w-1/2 h-full white flex flex-col ml-auto">
       <div class="chat-scroll flex-1 overflow-y-auto p-4 bg-gray-300">
         <ChatScrollComponent :items="items" />
       </div>
@@ -31,7 +31,4 @@ const addMessage = (message: string) => {
 </template>
 
 <style scoped>
-.chat-page {
-  /* Any additional styling can go here */
-}
 </style>

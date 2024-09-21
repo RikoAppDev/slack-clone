@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { QChatMessage } from 'quasar';
 import { defineProps } from 'vue';
 
 const item = defineProps({
@@ -7,22 +6,22 @@ const item = defineProps({
   name: String,
   timestamp: String,
 });
-
 </script>
 
 <template>
-  <div class="q-pa-md row justify-center">
-    <div style="width: 100%; max-width: 400px">
-      <q-chat-message
-        :text="[item.text]"
-        text-color="white"
-        bg-color="primary"
-      >
-        <template v-slot:name>{{ item.name }}</template>
-        <template v-slot:stamp>{{ item.timestamp }}</template>
-        <template v-slot:avatar>
-        </template>
-      </q-chat-message>
+  <div class="q-pa-md flex justify-center">
+    <div class="w-full max-w-md">
+      <div class="flex flex-col">
+        <div class="name bg-gray-300 text-black p-2 rounded-t-md">
+          {{ item.name }}
+        </div>
+        <div class="message bg-gray-200 text-black p-2 rounded-b-md mb-1">
+          {{ item.text }}
+        </div>
+        <div class="timestamp text-gray-500 text-xs">
+          {{ item.timestamp }}
+        </div>
+      </div>
     </div>
   </div>
 </template>

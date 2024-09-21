@@ -5,6 +5,7 @@ import SignupPage from 'src/pages/SignupPage.vue';
 import ForgotPasswordPage from 'src/pages/ForgotPasswordPage.vue';
 import ResetPasswordConfirmPage from 'src/pages/ResetPasswordConfirmPage.vue';
 import ChannelMessagePage from 'src/pages/ChannelMessagePage.vue';
+import ProfilePage from 'src/pages/ProfilePage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -34,6 +35,9 @@ const routes: RouteRecordRaw[] = [
 
   // chats
   { path: '/channel', component: ChannelMessagePage },
+
+  // profile
+  { path: '/profile', component: ProfilePage },
 
   {
     path: '/:catchAll(.*)*',
