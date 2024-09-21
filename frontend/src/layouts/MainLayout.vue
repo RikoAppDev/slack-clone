@@ -1,44 +1,46 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!-- Header -->
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="h-20">
         <q-btn
           flat
-          dense
           round
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <q-toolbar-title>Just Better Slack</q-toolbar-title>
       </q-toolbar>
     </q-header>
 
+    <!-- Drawer for Sidebar -->
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      bordered
+      :mini="true"
+      :mini-width="80"
+      class="shadow-lg bg-primary"
     >
+      <q-item class="h-20 flex justify-center items-center">
+        <DirectMessagesButtonComponent />
+      </q-item>
+      <div class="text-accent h-0.5 bg-accent mb-2 mx-2 rounded" />
       <q-list>
-        <q-item-label
-          header
+        <q-item
+          v-for="(channel, index) in channels"
+          :key="index"
+          class="flex items-center justify-center"
         >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+          <ChannelButtonComponent
+            :name="channel.name"
+            :imgUrl="channel.imgUrl"
+          />
+        </q-item>
       </q-list>
     </q-drawer>
 
+    <!-- Main Page Content -->
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -47,60 +49,31 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { EssentialLinkProps } from '../components/EssentialLink.vue';
-
-defineOptions({
-  name: 'MainLayout'
-});
-
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
+import DirectMessagesButtonComponent from 'components/DirectMessagesButtonComponent.vue';
 
 const leftDrawerOpen = ref(false);
 
-function toggleLeftDrawer () {
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
+
+const channels = [
+  {
+    name: 'General',
+    imgUrl: 'https://picsum.photos/100?random=1',
+  },
+  {
+    name: 'Development',
+    imgUrl: 'https://picsum.photos/100?random=2',
+  },
+  {
+    name: 'Design',
+    imgUrl: 'https://picsum.photos/100?random=3',
+  },
+  {
+    name: 'Marketing',
+    imgUrl: 'https://picsum.photos/100?random=4',
+  },
+];
 </script>

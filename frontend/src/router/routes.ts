@@ -4,14 +4,12 @@ import LoginPage from 'src/pages/LoginPage.vue';
 import SignupPage from 'src/pages/SignupPage.vue';
 import ForgotPasswordPage from 'src/pages/ForgotPasswordPage.vue';
 import ResetPasswordConfirmPage from 'src/pages/ResetPasswordConfirmPage.vue';
-import ChannelMessagePage from 'src/pages/ChannelMessagePage.vue';
-import ProfilePage from 'src/pages/ProfilePage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [{ path: '', component: () => import('pages/ChannelMessagePage.vue') }],
   },
 
   { path: '/home', redirect: '/' },
@@ -32,12 +30,6 @@ const routes: RouteRecordRaw[] = [
       { path: 'confirm', component: ResetPasswordConfirmPage },
     ],
   },
-
-  // chats
-  { path: '/channel', component: ChannelMessagePage },
-
-  // profile
-  { path: '/profile', component: ProfilePage },
 
   {
     path: '/:catchAll(.*)*',
