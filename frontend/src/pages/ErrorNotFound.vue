@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-primary text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">
         404
@@ -11,12 +11,9 @@
 
       <q-btn
         class="q-mt-xl"
-        color="white"
-        text-color="blue"
-        unelevated
+        color="accent"
         to="/"
         label="Go Home"
-        no-caps
       />
     </div>
   </div>

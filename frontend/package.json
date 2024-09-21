@@ -1,9 +1,9 @@
 {
   "name": "slack-clone",
   "version": "0.0.1",
-  "description": "this is  slack 2.0",
+  "description": "this is slack 2.0",
   "productName": "Slack Clone",
-  "author": "RikoAppDev <riko.appdev@gmail.com>",
+  "author": "RikoAppDev <https://github.com/RikoAppDev>, riso1410 <https://github.com/riso1410>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ..",
@@ -15,11 +15,11 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "quasar": "^2.16.0",
-    "vue": "^3.4.18",
+    "vue": "^3.5.7",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "@quasar/app-vite": "^1.9.0",
+    "@quasar/app-vite": "^1.10.0",
     "@types/node": "^20.14.8",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
@@ -30,9 +30,9 @@
     "postcss": "^8.4.47",
     "prettier": "^2.5.1",
     "tailwindcss": "^3.4.12",
-    "typescript": "~5.5.4",
-    "vite-plugin-checker": "^0.7.2",
-    "vue-tsc": "2.0.29"
+    "typescript": "^5.6.2",
+    "vite-plugin-checker": "^0.8.0",
+    "vue-tsc": "^2.1.6"
   },
   "engines": {
     "node": "^20 || ^18 || ^16",

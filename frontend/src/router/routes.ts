@@ -4,7 +4,6 @@ import LoginPage from 'src/pages/LoginPage.vue';
 import SignupPage from 'src/pages/SignupPage.vue';
 import ForgotPasswordPage from 'src/pages/ForgotPasswordPage.vue';
 import ResetPasswordConfirmPage from 'src/pages/ResetPasswordConfirmPage.vue';
-import ChannelMessagePage from 'src/pages/ChannelMessagePage.vue';
 
 const routes: RouteRecordRaw[] = [
   {

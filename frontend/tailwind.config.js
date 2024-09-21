@@ -4,7 +4,11 @@ module.exports = {
     './src/**/*.{vue,js,ts,jsx,tsx}', // Add your files for Tailwind to scan
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#320a35',
+      }
+    },
   },
   plugins: [],
 };
