@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [{ path: '', component: () => import('pages/ChannelMessagePage.vue') }],
   },
 
   { path: '/home', redirect: '/' },
@@ -31,9 +31,6 @@ const routes: RouteRecordRaw[] = [
       { path: 'confirm', component: ResetPasswordConfirmPage },
     ],
   },
-
-  // chats
-  { path: '/channel', component: ChannelMessagePage },
 
   {
     path: '/:catchAll(.*)*',
