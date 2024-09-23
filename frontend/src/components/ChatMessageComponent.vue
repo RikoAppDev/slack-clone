@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 
-const item = defineProps({
-  text: String,
-  name: String,
-  timestamp: String,
-});
+const item = defineProps<{
+  text: string,
+  name: string,
+  timestamp: string,
+}>();
 </script>
 
 <template>

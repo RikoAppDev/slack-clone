@@ -18,16 +18,16 @@ const addMessage = (message: string) => {
 </script>
 
 <template>
-  <div class="chat-page flex items-center h-screen">
-    <div class="chat-container w-1/2 h-full white flex flex-col ml-auto">
-      <div class="chat-scroll flex-1 overflow-y-auto p-4 bg-gray-300">
+  <q-page class="flex flex-col">
+  <div class="chat-page flex flex-grow flex-col">
+      <div class="chat-scroll flex-1 overflow-y-auto p-4 bg-gray-300 h-full">
         <ChatScrollComponent :items="items" />
       </div>
       <div class="chat-input p-2 border-t border-gray-300 bg-gray-100 sticky bottom-0 z-10">
         <ChatTextFieldComponent @sendMessage="addMessage" />
       </div>
-    </div>
   </div>
+  </q-page>
 </template>
 
 <style scoped>

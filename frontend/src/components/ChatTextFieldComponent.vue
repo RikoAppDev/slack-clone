@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue';
 
-const emit = defineEmits(['sendMessage']);
+const emit = defineEmits<{
+  sendMessage: [message: string]
+}>();
 const messageText = ref('');
 
 const sendMessage = () => {
   if (messageText.value.trim()) {
-    emit('sendMessage', messageText.value);
+    emit('sendMessage', messageText.value)
     messageText.value = '';
   }
 };
