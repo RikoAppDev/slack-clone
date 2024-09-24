@@ -2,13 +2,13 @@
 import { ref, defineEmits } from 'vue';
 
 const emit = defineEmits<{
-  sendMessage: [message: string]
+  sendMessage: [message: string];
 }>();
 const messageText = ref('');
 
 const sendMessage = () => {
   if (messageText.value.trim()) {
-    emit('sendMessage', messageText.value)
+    emit('sendMessage', messageText.value);
     messageText.value = '';
   }
 };
@@ -21,6 +21,8 @@ const sendMessage = () => {
         v-model="messageText"
         outlined
         rounded
+        color="secondary"
+        label-color="primary"
         label="Type a message"
         @keyup.enter="sendMessage"
         class="max-h-24 overflow-y-auto"
@@ -30,12 +32,11 @@ const sendMessage = () => {
     <q-btn
       round
       icon="send"
-      color="primary"
+      color="secondary"
       @click="sendMessage"
       class="w-auto"
     />
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

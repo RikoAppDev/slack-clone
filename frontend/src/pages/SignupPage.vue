@@ -6,10 +6,10 @@
       <q-form @submit="onSubmit">
         <q-input
           outlined
-          v-model="companyName"
-          label="Company Name"
+          v-model="profileName"
+          label="Profile Name"
           type="text"
-          name="companyName"
+          name="profileName"
           class="mb-4"
         />
         <q-input
@@ -85,7 +85,7 @@
 export default {
   data() {
     return {
-      companyName: '',
+      profileName: '',
       email: '',
       password: '',
       passwordRepeated: '',

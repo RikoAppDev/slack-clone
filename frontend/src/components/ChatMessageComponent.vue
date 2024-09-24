@@ -2,23 +2,23 @@
 import { defineProps } from 'vue';
 
 const item = defineProps<{
-  text: string,
-  name: string,
-  timestamp: string,
+  text: string;
+  name: string;
+  timestamp: string;
 }>();
 </script>
 
 <template>
-  <div class="q-pa-md flex justify-center">
+  <div class="flex justify-center">
     <div class="w-full max-w-md">
       <div class="flex flex-col">
-        <div class="name bg-gray-300 text-black p-2 rounded-t-md">
+        <div class="name text-accent pl-2 pt-2 rounded-t-md">
           {{ item.name }}
         </div>
-        <div class="message bg-gray-200 text-black p-2 rounded-b-md mb-1">
+        <div class="message text-neutral-700 p-2 rounded-b-md">
           {{ item.text }}
         </div>
-        <div class="timestamp text-gray-500 text-xs">
+        <div class="timestamp text-gray-500 text-xs pl-2 pb-2">
           {{ item.timestamp }}
         </div>
       </div>
@@ -26,5 +26,4 @@ const item = defineProps<{
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

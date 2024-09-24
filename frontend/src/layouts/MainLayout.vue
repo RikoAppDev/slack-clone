@@ -25,7 +25,7 @@
       <q-item class="h-20 flex justify-center items-center">
         <DirectMessagesButtonComponent />
       </q-item>
-      <div class="text-accent h-0.5 bg-accent mb-2 mx-2 rounded" />
+      <div class="h-0.5 mb-2 bg-white mx-2 rounded" />
       <q-list>
         <q-item
           v-for="(channel, index) in channels"
