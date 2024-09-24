@@ -17,6 +17,3 @@ defineProps<{
     </q-infinite-scroll>
   </div>
 </template>
-
-<style scoped>
-</style>

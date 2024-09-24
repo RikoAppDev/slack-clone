@@ -4,12 +4,20 @@ import LoginPage from 'src/pages/LoginPage.vue';
 import SignupPage from 'src/pages/SignupPage.vue';
 import ForgotPasswordPage from 'src/pages/ForgotPasswordPage.vue';
 import ResetPasswordConfirmPage from 'src/pages/ResetPasswordConfirmPage.vue';
+import ProfilePage from 'src/pages/ProfilePage.vue';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/ChannelMessagePage.vue') }],
+    children: [
+      {
+        path: '', component: () => import('pages/ChannelMessagePage.vue')
+      },
+      {
+        path: '/profile', component: () => import('pages/ProfilePage.vue')
+      }
+    ],
   },
 
   { path: '/home', redirect: '/' },
@@ -31,7 +39,8 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-  
+  { path: '/temp', component: ProfilePage },
+
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),

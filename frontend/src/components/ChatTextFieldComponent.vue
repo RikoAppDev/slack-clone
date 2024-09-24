@@ -38,5 +38,3 @@ const sendMessage = () => {
     />
   </div>
 </template>
-
-<style scoped></style>
