@@ -1,5 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 
+const profileName = ref<string>('');
+const email = ref<string>('');
+const phone = ref<string>('');
+const password = ref<string>('');
+const changeInformation = ref<boolean>(true);
+
+const enableChange = () => {
+  changeInformation.value = !changeInformation.value;
+}
 
 </script>
 
@@ -12,43 +22,62 @@
             <img src="https://cdn.quasar.dev/img/avatar.png"/>
           </q-avatar>
         </div>
+
+        <!-- Profile Name -->
         <q-input
           outlined
+          :disable="changeInformation"
           v-model="profileName"
           label="Profile Name"
           type="text"
           name="profileName"
-          class="mb-4"
+          class="mb-4 full-width"
         />
+
+        <!-- Email Address -->
         <q-input
           outlined
+          :disable="changeInformation"
           v-model="email"
           label="Email Address"
           type="email"
           name="email"
-          class="mb-4"
+          class="mb-4 full-width"
         />
+
+        <!-- Phone Number -->
         <q-input
           outlined
+          :disable="changeInformation"
           v-model="phone"
           label="Phone Number"
-          type="phone"
+          type="tel"
           name="phone"
-          class="mb-4"
+          class="mb-4 full-width"
         />
+
+        <!-- Password -->
         <q-input
           outlined
+          :disable="changeInformation"
           v-model="password"
           label="Password"
-          class="mb-4"
-        >
-        </q-input>
+          type="password"
+          class="mb-4 full-width"
+        />
+
+        <!-- Button to toggle between 'Edit' and 'Save' -->
         <q-btn
-          outlined
-          label="Save"
-          class="mb-4 full-width flex justify-center"
-        ></q-btn>
+          unelevated
+          no-caps
+          :outline="changeInformation"
+          :label="changeInformation ? 'Edit Profile' : 'Save Information'"
+          color="primary"
+          class="p-4 full-width text-base flex font-medium rounded self-end"
+          @click="enableChange"
+        />
       </div>
     </div>
   </q-page>
 </template>
+

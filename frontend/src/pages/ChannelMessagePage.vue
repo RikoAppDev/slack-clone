@@ -24,7 +24,7 @@ const addMessage = (message: string) => {
 <template>
   <q-page class="flex flex-col">
     <div class="chat-page flex flex-grow flex-col">
-      <div class="chat-scroll flex-1 overflow-y-auto p-4 h-full">
+      <div class="chat-scroll flex-1 p-4">
         <ChatScrollComponent :items="messages"/>
       </div>
       <div class="chat-input p-2 sticky bottom-0 z-10 bg-white">
