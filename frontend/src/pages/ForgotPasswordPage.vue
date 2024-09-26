@@ -1,13 +1,13 @@
 <template>
   <!--  Main Content  -->
-  <div class="flex h-dvh justify-center items-center">
-    <div class="flex flex-col p-8 sm:w-[560px] font-light">
-      <h1 class="text-2xl sm:text-4xl font-medium mb-4">
+  <div class="q-pa-md flex flex-center window-height">
+    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto" style="max-width: 560px">
+      <h1 class="text-h4 q-mb-md">
         {{
           isResetPassword ? 'Reset your password' : 'Forgotten your password?'
         }}
       </h1>
-      <p class="mb-6 sm:mb-10 sm:text-base">
+      <p class="q-mb-md text-body">
         There is nothing to worry about, we'll send you a message to help you
         {{
           isResetPassword ? 'reset your password.' : 'retrieve your account.'
@@ -20,7 +20,7 @@
           label="Email Address"
           type="email"
           name="email"
-          class="mb-4"
+          class="q-mb-md"
         />
         <q-btn
           unelevated
@@ -28,30 +28,26 @@
           color="primary"
           label="Send Reset Link"
           type="submit"
-          class="w-full py-4 text-base font-medium rounded"
+          class="full-width q-py-sm text-body1 font-medium rounded"
+          style="height: 3.5rem"
         />
       </q-form>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    isResetPassword: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+import { ref } from 'vue';
+
+defineProps({
+  isResetPassword: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      email: '',
-    };
-  },
-  methods: {
-    onSubmit() {
-      // Handle the form submission for password reset
-    },
-  },
+});
+const email = ref('');
+
+const onSubmit = () => {
+  // Handle the form submission for password reset
 };
 </script>

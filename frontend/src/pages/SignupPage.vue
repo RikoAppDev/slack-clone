@@ -1,8 +1,8 @@
 <template>
   <!--  Main Content  -->
-  <div class="flex h-dvh justify-center items-center">
-    <div class="flex flex-col p-8 sm:w-[560px] font-light">
-      <h1 class="text-2xl sm:text-4xl font-medium mb-6 sm:mb-10">Sign Up</h1>
+  <div class="q-pa-md flex flex-center window-height">
+    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto" style="max-width: 560px">
+      <h1 class="text-h4 q-mb-md">Sign Up</h1>
       <q-form @submit="onSubmit">
         <q-input
           outlined
@@ -10,7 +10,7 @@
           label="Profile Name"
           type="text"
           name="profileName"
-          class="mb-4"
+          class="q-mb-md"
         />
         <q-input
           outlined
@@ -18,14 +18,14 @@
           label="Email Address"
           type="email"
           name="email"
-          class="mb-4"
+          class="q-mb-md"
         />
         <q-input
           outlined
           v-model="password"
           label="Password"
           :type="showPassword ? 'text' : 'password'"
-          class="mb-2"
+          class="q-mb-sm"
         >
           <template v-slot:append>
             <q-icon
@@ -35,7 +35,7 @@
             />
           </template>
         </q-input>
-        <p class="text-xs mb-4">
+        <p class="text-caption q-mb-md">
           It must be a combination of minimum 8 letters, numbers, and symbols.
         </p>
         <q-input
@@ -43,7 +43,7 @@
           v-model="passwordRepeated"
           label="Password Repeated"
           :type="showPassword ? 'text' : 'password'"
-          class="mb-4"
+          class="q-mb-md"
         >
           <template v-slot:append>
             <q-icon
@@ -56,11 +56,12 @@
         <q-checkbox
           v-model="termsAccepted"
           label="Accept terms and conditions"
+          class="q-mb-sm"
         />
-        <div class="flex items-center justify-between mb-4">
+        <div class="row items-center justify-between q-mb-md">
           <q-checkbox v-model="rememberMe" label="Remember me" />
-          <router-link to="/forgot-password" class="text-primary"
-            >Forgot Password?
+          <router-link to="/forgot-password" class="text-primary">
+            Forgot Password?
           </router-link>
         </div>
         <q-btn
@@ -69,11 +70,12 @@
           color="primary"
           label="Sign Up"
           type="submit"
-          class="w-full py-4 text-base font-medium rounded"
+          class="full-width q-py-sm text-body1 font-medium rounded"
+          style="height: 3.5rem"
         />
       </q-form>
-      <span class="h-[2px] w-full bg-neutral-200 mt-8 rounded"></span>
-      <p class="text-gray-600 mt-2">
+      <q-separator class="q-mt-md rounded-borders" />
+      <p class="q-mt-sm">
         Already have an account?
         <router-link to="/login" class="text-primary">Log In</router-link>
       </p>
@@ -81,24 +83,22 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      profileName: '',
-      email: '',
-      password: '',
-      passwordRepeated: '',
-      showPassword: false,
-      rememberMe: false,
-      termsAccepted: false,
-    };
-  },
-  methods: {
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-    async onSubmit() {},
-  },
+<script setup>
+import { ref } from 'vue';
+
+const profileName = ref('');
+const email = ref('');
+const password = ref('');
+const passwordRepeated = ref('');
+const showPassword = ref(false);
+const rememberMe = ref(false);
+const termsAccepted = ref(false);
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
+
+const onSubmit = async () => {
+  // Handle form submit logic
 };
 </script>

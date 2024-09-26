@@ -1,17 +1,15 @@
 <template>
   <!--  Main Content  -->
-  <div class="flex h-dvh justify-center items-center">
-    <div class="flex flex-col p-8 sm:w-[560px] font-light">
-      <h1 class="text-2xl sm:text-4xl font-medium mb-6 sm:mb-10">
-        Reset Password
-      </h1>
+  <div class="q-pa-md flex flex-center window-height">
+    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto" style="max-width: 560px">
+      <h1 class="text-h4 q-mb-md">Reset Password</h1>
       <q-form @submit="onSubmit">
         <q-input
           outlined
           v-model="password"
           label="New Password"
           :type="showPassword ? 'text' : 'password'"
-          class="mb-2"
+          class="q-mb-sm"
         >
           <template v-slot:append>
             <q-icon
@@ -21,7 +19,7 @@
             />
           </template>
         </q-input>
-        <p class="text-xs mb-4">
+        <p class="text-caption q-mb-md">
           It must be a combination of minimum 8 letters, numbers, and symbols.
         </p>
         <q-input
@@ -29,7 +27,7 @@
           v-model="passwordRepeated"
           label="New Password Repeated"
           :type="showPassword ? 'text' : 'password'"
-          class="mb-4"
+          class="q-mb-md"
         >
           <template v-slot:append>
             <q-icon
@@ -45,7 +43,8 @@
           color="primary"
           label="Reset Password"
           type="submit"
-          class="w-full py-4 text-base font-medium rounded"
+          class="full-width q-py-sm text-body1 font-medium rounded"
+          style="height: 3.5rem"
         />
       </q-form>
     </div>
@@ -63,5 +62,7 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-async function onSubmit() {}
+async function onSubmit() {
+  // Handle form submission
+}
 </script>

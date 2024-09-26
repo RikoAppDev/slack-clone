@@ -10,6 +10,8 @@
       </div>
 
       <q-btn
+        unelevated
+        no-caps
         class="q-mt-xl"
         color="primary"
         to="/"

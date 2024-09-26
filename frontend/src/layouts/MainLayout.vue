@@ -4,13 +4,14 @@
     <q-header elevated>
       <q-toolbar class="h-20">
         <q-btn
+
           flat
           round
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-        <q-toolbar-title>Just Better Slack</q-toolbar-title>
+        <q-toolbar-title>Phoenix</q-toolbar-title>
       </q-toolbar>
     </q-header>
 

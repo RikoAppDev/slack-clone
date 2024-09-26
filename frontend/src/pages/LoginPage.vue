@@ -1,8 +1,8 @@
 <template>
   <!--  Main Content  -->
-  <div class="flex h-dvh justify-center items-center">
-    <div class="flex flex-col p-8 sm:w-[560px] font-light">
-      <h1 class="text-2xl sm:text-4xl font-medium mb-6 sm:mb-10">Log In</h1>
+  <div class="q-pa-md flex flex-center window-height">
+    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto">
+      <h1 class="text-h4 q-mb-md">Log In</h1>
       <q-form @submit="onSubmit">
         <q-input
           outlined
@@ -10,14 +10,14 @@
           label="Email Address"
           type="email"
           name="email"
-          class="mb-4"
+          class="q-mb-md"
         />
         <q-input
           outlined
           v-model="password"
           label="Password"
           :type="showPassword ? 'text' : 'password'"
-          class="mb-2"
+          class="q-mb-sm"
         >
           <template v-slot:append>
             <q-icon
@@ -27,13 +27,13 @@
             />
           </template>
         </q-input>
-        <p class="text-xs mb-4">
+        <p class="text-caption q-mb-md">
           It must be a combination of minimum 8 letters, numbers, and symbols.
         </p>
-        <div class="flex items-center justify-between mb-4">
+        <div class="row items-center justify-between q-mb-md">
           <q-checkbox v-model="rememberMe" label="Remember me" />
-          <router-link to="/forgot-password" class="text-primary"
-            >Forgot Password?
+          <router-link to="/forgot-password" class="text-primary under">
+            Forgot Password?
           </router-link>
         </div>
         <q-btn
@@ -42,11 +42,12 @@
           color="primary"
           label="Log In"
           type="submit"
-          class="w-full py-4 text-base font-medium rounded"
+          class="full-width q-py-sm text-body1 font-medium"
+          style="height: 3.5rem"
         />
       </q-form>
-      <span class="h-[2px] w-full bg-neutral-200 mt-8 rounded"></span>
-      <p class="text-gray-600 mt-2">
+      <q-separator class="q-mt-md rounded-borders" />
+      <p class="q-mt-sm">
         No account yet?
         <router-link to="/signup" class="text-primary">Sign Up</router-link>
       </p>
@@ -54,21 +55,19 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: '',
-      password: '',
-      rememberMe: false,
-      showPassword: false,
-    };
-  },
-  methods: {
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-    async onSubmit() {},
-  },
+<script setup>
+import { ref } from 'vue';
+
+const email = ref('');
+const password = ref('');
+const rememberMe = ref(false);
+const showPassword = ref(false);
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
+
+const onSubmit = async () => {
+  // Handle form submit logic
 };
 </script>
