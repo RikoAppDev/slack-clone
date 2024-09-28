@@ -10,18 +10,15 @@ const changeInformation = ref<boolean>(true);
 const enableChange = () => {
   changeInformation.value = !changeInformation.value;
 }
-
 </script>
 
 <template>
-  <q-page>
-    <div class="profile-page flex flex-col items-center">
-      <div class="q-pa-md q-gutter-sm">
-        <div class="flex justify-center">
-          <q-avatar square size="100px">
-            <img src="https://cdn.quasar.dev/img/avatar.png"/>
-          </q-avatar>
-        </div>
+  <q-page class="flex flex-center">
+    <div class="profile-page q-pa-md">
+      <div class="flex flex-column items-center q-ma-md">
+        <q-avatar class="full-width full-height" style="margin-bottom: 10px" square>
+          <img src="https://cdn.quasar.dev/img/avatar.png"/>
+        </q-avatar>
 
         <!-- Profile Name -->
         <q-input
@@ -31,7 +28,7 @@ const enableChange = () => {
           label="Profile Name"
           type="text"
           name="profileName"
-          class="mb-4 full-width"
+          class="mb-4 full-width q-ma-md"
         />
 
         <!-- Email Address -->
@@ -42,7 +39,7 @@ const enableChange = () => {
           label="Email Address"
           type="email"
           name="email"
-          class="mb-4 full-width"
+          class="mb-4 full-width q-ma-md"
         />
 
         <!-- Phone Number -->
@@ -53,7 +50,7 @@ const enableChange = () => {
           label="Phone Number"
           type="tel"
           name="phone"
-          class="mb-4 full-width"
+          class="mb-4 full-width q-ma-md"
         />
 
         <!-- Password -->
@@ -63,7 +60,7 @@ const enableChange = () => {
           v-model="password"
           label="Password"
           type="password"
-          class="mb-4 full-width"
+          class="mb-4 full-width q-ma-md"
         />
 
         <!-- Button to toggle between 'Edit' and 'Save' -->
@@ -73,7 +70,7 @@ const enableChange = () => {
           :outline="changeInformation"
           :label="changeInformation ? 'Edit Profile' : 'Save Information'"
           color="primary"
-          class="p-4 full-width text-base flex font-medium rounded self-end"
+          class="p-4 full-width text-base flex font-medium rounded q-ma-md"
           @click="enableChange"
         />
       </div>
@@ -81,3 +78,11 @@ const enableChange = () => {
   </q-page>
 </template>
 
+<style scoped>
+.profile-page {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+</style>

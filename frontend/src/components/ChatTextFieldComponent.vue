@@ -4,6 +4,7 @@ import { ref } from 'vue';
 const emit = defineEmits<{
   sendMessage: [message: string];
 }>();
+
 const messageText = ref('');
 
 const sendMessage = () => {
@@ -26,8 +27,7 @@ const sendMessage = () => {
       label="Type a message"
       label-color="primary"
       @keyup.enter="sendMessage"
-      class="col-grow q-max-height-auto"
-      :style="{ maxHeight: '100px', whiteSpace: 'nowrap' }"
+      class="col-grow"
     />
 
     <!-- Send Button -->
@@ -36,7 +36,7 @@ const sendMessage = () => {
       icon="send"
       color="secondary"
       @click="sendMessage"
-      class="q-ma-none"
+      class="send-button"
     />
   </div>
 </template>
