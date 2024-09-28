@@ -33,6 +33,7 @@ const sendMessage = () => {
     <!-- Send Button -->
     <q-btn
       round
+      unelevated
       icon="send"
       color="secondary"
       @click="sendMessage"
