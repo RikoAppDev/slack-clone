@@ -15,26 +15,28 @@ const sendMessage = () => {
 </script>
 
 <template>
-  <div class="flex items-center p-2">
-    <div class="flex-grow mr-2">
-      <q-input
-        v-model="messageText"
-        outlined
-        rounded
-        color="secondary"
-        label-color="primary"
-        label="Type a message"
-        @keyup.enter="sendMessage"
-        class="max-h-24 overflow-y-auto"
-        :style="{ maxHeight: '100px', whiteSpace: 'nowrap' }"
-      />
-    </div>
+  <div class="row full-width items-center q-gutter-sm bg-white">
+    <!-- Message Input Field -->
+    <q-input
+      v-model="messageText"
+      outlined
+      rounded
+      bg-color="white"
+      color="secondary"
+      label="Type a message"
+      label-color="primary"
+      @keyup.enter="sendMessage"
+      class="col-grow q-max-height-auto"
+      :style="{ maxHeight: '100px', whiteSpace: 'nowrap' }"
+    />
+
+    <!-- Send Button -->
     <q-btn
       round
       icon="send"
       color="secondary"
       @click="sendMessage"
-      class="w-auto"
+      class="q-ma-none"
     />
   </div>
 </template>

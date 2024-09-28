@@ -22,14 +22,17 @@ const addMessage = (message: string) => {
 </script>
 
 <template>
-  <q-page class="flex flex-col">
-    <div class="chat-page flex flex-grow flex-col">
-      <div class="chat-scroll flex-1 p-4">
-        <ChatScrollComponent :items="messages"/>
-      </div>
-      <div class="chat-input p-2 sticky bottom-0 z-10 bg-white">
-        <ChatTextFieldComponent @sendMessage="addMessage"/>
+  <q-page class="q-pa-none column full-height">
+    <!-- Chat Content Area -->
+    <div class="chat-page full-width column q-gutter-sm q-mb-lg" style="flex-grow: 1; overflow-y: auto;">
+      <div class="chat-scroll full-width q-pa-md">
+        <ChatScrollComponent :items="messages" />
       </div>
     </div>
+
+    <!-- Chat Input at the Bottom -->
+    <q-page-sticky position="bottom" class="full-width q-pa-none">
+      <ChatTextFieldComponent @sendMessage="addMessage" />
+    </q-page-sticky>
   </q-page>
 </template>
