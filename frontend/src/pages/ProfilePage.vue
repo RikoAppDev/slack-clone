@@ -5,20 +5,40 @@ const profileName = ref<string>('');
 const email = ref<string>('');
 const phone = ref<string>('');
 const password = ref<string>('');
+
 const changeInformation = ref<boolean>(true);
+
+const visibilityOptions = [
+  { label: 'Online', value: 'Online' },
+  { label: 'Sleep', value: 'sleep' },
+  { label: 'Invisible', value: 'invisible' },
+  { label: 'Do Not Disturb', value: 'do-not-disturb' }
+];
+const selectedVisibility = ref<string>('Online');
 
 const enableChange = () => {
   changeInformation.value = !changeInformation.value;
-}
+};
 </script>
 
 <template>
   <q-page class="flex flex-center">
     <div class="profile-page q-pa-md">
       <div class="flex flex-column items-center q-ma-md">
+
+        <!-- Avatar -->
         <q-avatar class="full-width full-height" style="margin-bottom: 10px" square>
-          <img src="https://cdn.quasar.dev/img/avatar.png"/>
+          <img src="https://cdn.quasar.dev/img/avatar.png" />
         </q-avatar>
+
+        <!-- Visibility Status Dropdown -->
+        <q-select
+          outlined
+          v-model="selectedVisibility"
+          :options="visibilityOptions"
+          label="Visibility Status"
+          class="mb-4 full-width q-ma-md"
+        />
 
         <!-- Profile Name -->
         <q-input

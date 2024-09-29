@@ -8,7 +8,12 @@ defineProps<{
 
 <template>
   <div ref="chatContainer" class="full-width full-height q-pa-sm q-scroll">
-    <q-infinite-scroll reverse>
+    <q-infinite-scroll @load="onLoad" reverse>
+      <template v-slot:loading>
+        <div class="row justify-center q-my-md">
+          <q-spinner color="primary" name="dots" size="40px" />
+        </div>
+      </template>
       <div v-for="(item, index) in items" :key="index" class="row no-wrap items-start">
         <ChatMessageComponent
           :text="item.text"
