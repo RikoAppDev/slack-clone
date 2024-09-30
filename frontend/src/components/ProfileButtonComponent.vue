@@ -1,19 +1,44 @@
 <template>
-  <q-btn unelevated round size="18px" class="profile-wrapper">
-    <q-img :src="imgUrl" :alt="name + ' Profile Image'" class="profile-image" />
-  </q-btn>
-  <q-tooltip
-    anchor="center start"
-    self="center end"
-    transition-show="jump-left"
-    transition-hide="jump-right"
-    class="bg-grey-8 text-white text-body2 q-pa-sm"
+  <!-- Visibility settings -->
+  <q-btn-dropdown
+    unelevated
+
+    color="primary"
+    :label="name"
   >
-    {{ name }}
-  </q-tooltip>
+    <div class="row no-wrap q-pa-md">
+      <div class="column">
+        <div class="text-h6 q-mb-md"></div>
+        <q-option-group
+          :options="options"
+          type="radio"
+          v-model="group"
+        />
+      </div>
+
+      <q-separator vertical inset class="q-mx-lg"/>
+
+      <div class="column items-center">
+
+        <div class="text-subtitle1 q-mt-md q-mb-xs">
+          {{ name }}
+        </div>
+
+        <q-btn
+          color="primary"
+          label="Logout"
+          push
+          size="sm"
+          v-close-popup
+        />
+      </div>
+    </div>
+  </q-btn-dropdown>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+
 defineProps({
   name: {
     type: String,
@@ -24,6 +49,15 @@ defineProps({
     required: true,
   },
 });
+
+const group = ref(null)
+
+const options = [
+  { label: 'Online', value: 'online', color: 'green' },
+  { label: 'Invisible', value: 'invisible', color: 'grey' },
+  { label: 'Offline', value: 'offline', color: 'red' }
+]
+
 </script>
 
 <style scoped>

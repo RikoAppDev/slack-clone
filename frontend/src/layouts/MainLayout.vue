@@ -12,12 +12,10 @@
           @click="toggleLeftDrawer"
         />
         <q-toolbar-title>Phoenix</q-toolbar-title>
-        <q-btn flat round aria-label="Profile" to="/profile">
-          <ProfileButtonComponent
-            :img-url="profile.imgUrl"
-            :name="profile.name"
-          />
-        </q-btn>
+        <ProfileButtonComponent
+          :img-url="profile.imgUrl"
+          :name="profile.name"
+        />
       </q-toolbar>
     </q-header>
 
@@ -30,7 +28,7 @@
       class="q-pa-none bg-primary row justify-center items-start content-start hide-scrollbar"
     >
       <q-item class="flex flex-center">
-        <DirectMessagesButtonComponent />
+        <DirectMessagesButtonComponent/>
       </q-item>
       <div
         class="q-mb-sm bg-white rounded-borders"
@@ -49,14 +47,14 @@
           />
         </q-item>
         <q-item>
-          <CreateNewChannelButtonComponent />
+          <CreateNewChannelButtonComponent/>
         </q-item>
       </q-list>
     </q-drawer>
 
     <!-- Main Page Content -->
     <q-page-container>
-      <router-view />
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>

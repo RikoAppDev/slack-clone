@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div ref="chatContainer" class="full-width full-height q-pa-sm q-scroll">
-    <q-infinite-scroll @load="onLoad" reverse>
+    <q-infinite-scroll reverse>
       <template v-slot:loading>
         <div class="row justify-center q-my-md">
           <q-spinner color="primary" name="dots" size="40px" />
