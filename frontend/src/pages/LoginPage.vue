@@ -57,17 +57,21 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
 const rememberMe = ref(false);
 const showPassword = ref(false);
 
+const router = useRouter();
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
 const onSubmit = async () => {
-  // Handle form submit logic
+  // TODO: Handle form submit logic
+  await router.push('/');
 };
 </script>

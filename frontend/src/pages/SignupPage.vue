@@ -85,6 +85,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const profileName = ref('');
 const email = ref('');
@@ -94,11 +95,14 @@ const showPassword = ref(false);
 const rememberMe = ref(false);
 const termsAccepted = ref(false);
 
+const router = useRouter();
+
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
 const onSubmit = async () => {
-  // Handle form submit logic
+  // TODO: Handle form submit logic
+  await router.push('/');
 };
 </script>

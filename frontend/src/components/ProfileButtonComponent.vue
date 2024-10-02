@@ -2,34 +2,32 @@
   <!-- Visibility settings -->
   <q-btn-dropdown
     unelevated
-
     color="primary"
     :label="name"
+    content-class="q-mt-lg"
+    dropdown-icon="settings"
   >
     <div class="row no-wrap q-pa-md">
       <div class="column">
-        <div class="text-h6 q-mb-md"></div>
-        <q-option-group
-          :options="options"
-          type="radio"
-          v-model="group"
-        />
+        <q-option-group :options="options" v-model="group" />
       </div>
 
-      <q-separator vertical inset class="q-mx-lg"/>
+      <q-separator vertical inset class="q-mx-lg" />
 
-      <div class="column items-center">
-
-        <div class="text-subtitle1 q-mt-md q-mb-xs">
-          {{ name }}
+      <div class="column justify-center items-center">
+        <div class="column text-subtitle1 ">
+          <p>{{ name }}</p>
+          <p class="text-black">{{ tag }}</p>
         </div>
 
         <q-btn
           color="primary"
           label="Logout"
-          push
+          unelevated
           size="sm"
           v-close-popup
+          to="/login"
+          icon="logout"
         />
       </div>
     </div>
@@ -44,29 +42,21 @@ defineProps({
     type: String,
     required: true,
   },
+  tag: {
+    type: String,
+    required: true,
+  },
   imgUrl: {
     type: String,
     required: true,
   },
 });
 
-const group = ref(null)
+const group = ref('online');
 
 const options = [
   { label: 'Online', value: 'online', color: 'green' },
   { label: 'Invisible', value: 'invisible', color: 'grey' },
-  { label: 'Offline', value: 'offline', color: 'red' }
-]
-
+  { label: 'Offline', value: 'offline', color: 'red' },
+];
 </script>
-
-<style scoped>
-.profile-image {
-  border-radius: 50%;
-  transition: border-radius 150ms ease-in-out;
-}
-
-.profile-wrapper:hover .profile-image {
-  border-radius: 10px;
-}
-</style>
