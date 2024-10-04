@@ -1,7 +1,7 @@
 <template>
   <!--  Main Content  -->
   <div class="q-pa-md flex flex-center window-height">
-    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto">
+    <div class="q-pa-md q-col-grow q-col-auto">
       <h1 class="text-h4 q-mb-md">Log In</h1>
       <q-form @submit="onSubmit">
         <q-input
@@ -58,20 +58,59 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import {
+  validateEmail,
+  validateLoginFormInput,
+  validatePassword,
+} from '../utils/authValidation';
+import { useUserStore } from '../stores/user';
+
+const $q = useQuasar();
+const router = useRouter();
+const userStore = useUserStore();
 
 const email = ref('');
 const password = ref('');
 const rememberMe = ref(false);
 const showPassword = ref(false);
 
-const router = useRouter();
-
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
 const onSubmit = async () => {
+  const formError = validateLoginFormInput(email.value, password.value);
+  const emailError = validateEmail(email.value);
+  const passwordError = validatePassword(false, password.value);
+
+  if (formError || emailError || passwordError) {
+    $q.notify({
+      type: 'negative',
+      message: formError || emailError || passwordError,
+      position: 'top',
+    });
+    return;
+  }
   // TODO: Handle form submit logic
-  await router.push('/');
+  try {
+    await userStore.login({
+      email: email.value,
+      password: password.value,
+    });
+
+    $q.notify({
+      type: 'positive',
+      message: 'Login successful',
+      position: 'top',
+    });
+    await router.push('/');
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'An error occurred',
+      position: 'top',
+    });
+  }
 };
 </script>

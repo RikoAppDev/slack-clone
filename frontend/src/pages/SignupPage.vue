@@ -1,13 +1,31 @@
 <template>
   <!--  Main Content  -->
   <div class="q-pa-md flex flex-center window-height">
-    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto" style="max-width: 560px">
+    <div class="q-pa-md q-col-grow q-col-auto" style="max-width: 560px">
       <h1 class="text-h4 q-mb-md">Sign Up</h1>
       <q-form @submit="onSubmit">
+        <div class="row q-mb-md" style="gap: 8px">
+          <q-input
+            outlined
+            v-model="firstname"
+            label="First Name"
+            type="text"
+            name="profileName"
+            class="col"
+          />
+          <q-input
+            outlined
+            v-model="lastname"
+            label="Last Name"
+            type="text"
+            name="profileName"
+            class="col"
+          />
+        </div>
         <q-input
           outlined
-          v-model="profileName"
-          label="Profile Name"
+          v-model="username"
+          label="Username"
           type="text"
           name="profileName"
           class="q-mb-md"
@@ -86,8 +104,22 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+import {
+  validateEmail,
+  validatePassword,
+  validateSignupFormInput,
+  validateTermsAndConditions,
+} from '../utils/authValidation';
+import { useUserStore } from '../stores/user';
 
-const profileName = ref('');
+const $q = useQuasar();
+const router = useRouter();
+const userStore = useUserStore();
+
+const firstname = ref('');
+const lastname = ref('');
+const username = ref('');
 const email = ref('');
 const password = ref('');
 const passwordRepeated = ref('');
@@ -95,14 +127,60 @@ const showPassword = ref(false);
 const rememberMe = ref(false);
 const termsAccepted = ref(false);
 
-const router = useRouter();
-
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
 const onSubmit = async () => {
+  const formError = validateSignupFormInput(
+    firstname.value,
+    lastname.value,
+    username.value,
+    email.value,
+    password.value
+  );
+  const emailError = validateEmail(email.value);
+  const passwordError = validatePassword(
+    true,
+    password.value,
+    passwordRepeated.value
+  );
+  const termsAndConditionsError = validateTermsAndConditions(
+    termsAccepted.value
+  );
+
+  if (formError || emailError || passwordError || termsAndConditionsError) {
+    $q.notify({
+      type: 'negative',
+      message:
+        formError || emailError || passwordError || termsAndConditionsError,
+      position: 'top',
+    });
+    return;
+  }
+
   // TODO: Handle form submit logic
-  await router.push('/');
+  try {
+    await userStore.signup({
+      firstname: firstname.value,
+      lastname: lastname.value,
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    });
+
+    $q.notify({
+      type: 'positive',
+      message: 'Signup successful',
+      position: 'top',
+    });
+    await router.push('/');
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'An error occurred',
+      position: 'top',
+    });
+  }
 };
 </script>

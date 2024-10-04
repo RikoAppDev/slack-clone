@@ -1,7 +1,7 @@
 <template>
   <!--  Main Content  -->
   <div class="q-pa-md flex flex-center window-height">
-    <div class="q-pa-md q-ma-sm q-col-grow q-col-auto" style="max-width: 560px">
+    <div class="q-pa-md q-col-grow q-col-auto" style="max-width: 560px">
       <h1 class="text-h4 q-mb-md">Reset Password</h1>
       <q-form @submit="onSubmit">
         <q-input
