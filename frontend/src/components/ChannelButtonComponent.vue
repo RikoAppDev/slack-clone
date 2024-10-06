@@ -1,6 +1,17 @@
 <template>
-  <q-btn unelevated round size="18px" class="image-wrapper" :to="link">
-    <q-img :src="imgUrl" :alt="name + ' Channel Image'" class="image-content" />
+  <q-btn
+    unelevated
+    round
+    size="18px"
+    class="image-wrapper relative-position bg-white"
+    :to="link"
+  >
+    <span v-if="private" class="lock">🔒</span>
+    <q-img
+      :src="imgUrl"
+      :alt="name + ' Channel Image'"
+      class="image-content full-width full-height"
+    />
   </q-btn>
 
   <q-tooltip
@@ -10,7 +21,7 @@
     transition-hide="jump-left"
     class="bg-grey-8 text-white text-body2 q-pa-sm"
   >
-    {{ name }}
+    {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
   </q-tooltip>
 </template>
 
@@ -28,6 +39,10 @@ defineProps({
     type: String,
     required: true,
   },
+  private: {
+    type: Boolean,
+    required: true,
+  },
 });
 </script>
 
@@ -39,5 +54,22 @@ defineProps({
 
 .image-wrapper:hover .image-content {
   border-radius: 10px;
+}
+
+.q-img__loading .q-spinner {
+  font-size: 20px;
+  color: white;
+}
+
+.lock {
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  top: 0;
+  font-size: 1rem;
+  width: 1.8rem;
+  background: #ff5a5f;
+  border-radius: 50%;
+  translate: 20% -20%;
 }
 </style>

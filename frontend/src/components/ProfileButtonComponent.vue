@@ -15,9 +15,9 @@
       <q-separator vertical inset class="q-mx-lg" />
 
       <div class="column justify-center items-center">
-        <div class="column text-subtitle1">
-          <p>{{ name }}</p>
-          <p class="text-black">{{ tag }}</p>
+        <div class="column text-subtitle1 items-center">
+          <p class="q-ma-none">{{ name }}</p>
+          <p class="text-dark text-bold">{{ tag }}</p>
         </div>
 
         <q-btn

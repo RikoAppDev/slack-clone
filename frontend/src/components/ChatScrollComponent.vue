@@ -2,19 +2,23 @@
 import ChatMessageComponent from 'components/ChatMessageComponent.vue';
 
 defineProps<{
-  items: Record<string, any>[],
+  items: Record<string, any>[];
 }>();
 </script>
 
 <template>
-  <div ref="chatContainer" class="full-width full-height q-pa-sm q-scroll">
+  <div ref="chatContainer" class="full-width full-height q-px-sm q-scroll">
     <q-infinite-scroll reverse>
       <template v-slot:loading>
         <div class="row justify-center q-my-md">
           <q-spinner color="primary" name="dots" size="40px" />
         </div>
       </template>
-      <div v-for="(item, index) in items" :key="index" class="row no-wrap items-start">
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        class="row no-wrap items-start"
+      >
         <ChatMessageComponent
           :text="item.text"
           :name="item.name"

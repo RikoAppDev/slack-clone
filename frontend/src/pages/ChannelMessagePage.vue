@@ -24,14 +24,17 @@ const addMessage = (message: string) => {
 <template>
   <q-page class="q-pa-none column full-height">
     <!-- Chat Content Area -->
-    <div class="chat-page full-width column q-gutter-sm" style="flex-grow: 1; overflow-y: auto;">
-      <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto;">
+    <div
+      class="chat-page full-width column"
+      style="flex-grow: 1; overflow-y: auto"
+    >
+      <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto">
         <ChatScrollComponent :items="messages" />
       </div>
     </div>
 
     <!-- Chat Input at the Bottom -->
-    <div class="chat-input sticky full-width bg-white">
+    <div class="chat-input sticky q-pa-sm full-width bg-white">
       <ChatTextFieldComponent @sendMessage="addMessage" />
     </div>
   </q-page>
@@ -42,7 +45,5 @@ const addMessage = (message: string) => {
   position: sticky;
   bottom: 0;
   z-index: 1;
-  padding-bottom: 15px;
-  padding-right: 10px;
 }
 </style>

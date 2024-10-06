@@ -45,6 +45,7 @@
             :name="channel.name"
             :imgUrl="channel.imgUrl"
             :link="channel.link"
+            :private="channel.private"
           />
         </q-item>
         <q-item>
@@ -89,6 +90,7 @@ interface Channel {
   name: string;
   imgUrl: string;
   link: string;
+  private: boolean;
 }
 
 const channels: Channel[] = [
@@ -96,61 +98,73 @@ const channels: Channel[] = [
     name: 'General',
     imgUrl: 'https://picsum.photos/100?random=1',
     link: '/',
+    private: true,
   },
   {
     name: 'Development',
     imgUrl: 'https://picsum.photos/100?random=2',
     link: '/',
+    private: false,
   },
   {
     name: 'Design',
     imgUrl: 'https://picsum.photos/100?random=3',
     link: '/',
+    private: false,
   },
   {
     name: 'Marketing',
     imgUrl: 'https://picsum.photos/100?random=4',
     link: '/',
+    private: false,
   },
   {
     name: 'General',
     imgUrl: 'https://picsum.photos/100?random=5',
     link: '/',
+    private: true,
   },
   {
     name: 'Development',
     imgUrl: 'https://picsum.photos/100?random=6',
     link: '/',
+    private: true,
   },
   {
     name: 'Design',
     imgUrl: 'https://picsum.photos/100?random=7',
     link: '/',
+    private: true,
   },
   {
     name: 'Marketing',
     imgUrl: 'https://picsum.photos/100?random=8',
     link: '/',
+    private: false,
   },
   {
     name: 'General',
     imgUrl: 'https://picsum.photos/100?random=9',
     link: '/',
+    private: true,
   },
   {
     name: 'Development',
     imgUrl: 'https://picsum.photos/100?random=10',
     link: '/',
+    private: true,
   },
   {
     name: 'Design',
     imgUrl: 'https://picsum.photos/100?random=11',
     link: '/',
+    private: false,
   },
   {
     name: 'Marketing',
     imgUrl: 'https://picsum.photos/100?random=12',
     link: '/',
+    private: true,
   },
 ];
 </script>

@@ -7,8 +7,15 @@ const emit = defineEmits<{
 
 const messageText = ref('');
 
+const onKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+};
+
 const sendMessage = () => {
-  if (messageText.value.trim()) {
+  if (messageText.value.trim() !== '') {
     emit('sendMessage', messageText.value);
     messageText.value = '';
   }
@@ -16,18 +23,15 @@ const sendMessage = () => {
 </script>
 
 <template>
-  <div class="row full-width items-center q-gutter-sm bg-white">
+  <div class="full-width items-center bg-white panel">
     <!-- Message Input Field -->
-    <q-input
+    <q-editor
       v-model="messageText"
-      outlined
-      rounded
-      bg-color="white"
-      color="secondary"
-      label="Type a message"
-      label-color="primary"
-      @keyup.enter="sendMessage"
-      class="col-grow"
+      :toolbar="[['bold', 'italic', 'strike', 'underline']]"
+      @keydown="onKeyDown"
+      placeholder="Type a message"
+      aria-placeholder="Type a message"
+      min-height="5rem"
     />
 
     <!-- Send Button -->
@@ -41,3 +45,16 @@ const sendMessage = () => {
     />
   </div>
 </template>
+
+<style scoped>
+.q-editor {
+  border-color: #00a699;
+  flex: 1;
+}
+
+.panel {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+</style>
