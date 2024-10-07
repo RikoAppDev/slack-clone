@@ -34,9 +34,11 @@ const highlightMentions = (text: string) => {
 <style>
 .q-message-text {
   padding: 0;
+  line-height: 1.3rem;
 }
 
 .q-message-name {
+  font-size: 1rem;
   color: #ff5a5f;
 }
 

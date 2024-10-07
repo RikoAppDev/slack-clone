@@ -41,7 +41,7 @@ const sendMessage = () => {
       icon="send"
       color="secondary"
       @click="sendMessage"
-      class="send-button"
+      class="send-button gt-xs"
     />
   </div>
 </template>

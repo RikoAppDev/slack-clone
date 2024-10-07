@@ -1,28 +1,15 @@
 <template>
   <q-btn
     unelevated
-    round
     size="18px"
-    class="image-wrapper relative-position bg-white"
     :to="link"
+    no-caps
+    class="wrapper full-width row content-start"
   >
-    <span v-if="private" class="lock">🔒</span>
-    <q-img
-      :src="imgUrl"
-      :alt="name + ' Channel Image'"
-      class="image-content full-width full-height"
-    />
+    <p class="text-body2">
+      {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
+    </p>
   </q-btn>
-
-  <q-tooltip
-    anchor="center end"
-    self="center start"
-    transition-show="jump-right"
-    transition-hide="jump-left"
-    class="bg-grey-8 text-white text-body2 q-pa-sm"
-  >
-    {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
-  </q-tooltip>
 </template>
 
 <script setup lang="ts">
@@ -47,18 +34,17 @@ defineProps({
 </script>
 
 <style scoped>
-.image-content {
-  border-radius: 50%;
+.wrapper {
+  border-radius: 50px;
   transition: border-radius 150ms ease-in-out;
 }
 
-.image-wrapper:hover .image-content {
+.wrapper:hover {
   border-radius: 10px;
 }
 
-.q-img__loading .q-spinner {
-  font-size: 20px;
-  color: white;
+p {
+  margin: 0;
 }
 
 .lock {

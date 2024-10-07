@@ -11,7 +11,7 @@
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
-        <q-toolbar-title>Phoenix</q-toolbar-title>
+        <q-toolbar-title>Riso&Riko co.</q-toolbar-title>
         <ProfileButtonComponent
           :img-url="profile.imgUrl"
           :name="profile.name"
@@ -24,22 +24,18 @@
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
-      :mini="true"
-      :mini-width="72"
-      class="q-pa-none bg-primary row justify-center items-start content-start hide-scrollbar"
+      class="drawer"
+      :width="240"
     >
       <q-item class="flex flex-center">
         <DirectMessagesButtonComponent />
       </q-item>
-      <div
-        class="q-mb-sm bg-white rounded-borders"
-        style="height: 2px; width: 54px"
-      />
-      <q-list class="q-col-gutter-none">
+      <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
+      <q-list class="q-col-gutter-none full-width">
         <q-item
           v-for="(channel, index) in channels"
           :key="index"
-          class="q-my-none"
+          class="q-my-none q-px-xs q-pb-none"
         >
           <ChannelButtonComponent
             :name="channel.name"
@@ -48,10 +44,10 @@
             :private="channel.private"
           />
         </q-item>
-        <q-item>
-          <CreateNewChannelButtonComponent />
-        </q-item>
       </q-list>
+      <q-item>
+        <CreateNewChannelButtonComponent />
+      </q-item>
     </q-drawer>
 
     <!-- Main Page Content -->
@@ -172,5 +168,17 @@ const channels: Channel[] = [
 <style>
 .q-toolbar {
   height: 4.45rem;
+}
+
+.drawer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border-right: 2px #ff5a5f solid;
+}
+
+.divider {
+  width: 80%;
+  height: 2px;
 }
 </style>

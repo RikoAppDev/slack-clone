@@ -9,7 +9,12 @@
   >
     <div class="row no-wrap q-pa-md">
       <div class="column">
-        <q-option-group :options="options" v-model="group" />
+        <q-option-group
+          keep-color
+          size="sm"
+          :options="options"
+          v-model="group"
+        />
       </div>
 
       <q-separator vertical inset class="q-mx-lg" />
@@ -64,6 +69,7 @@ const group = ref(userStore.status);
 
 const options = [
   { label: 'Online', value: Status.ONLINE, color: 'green' },
+  { label: 'DND', value: Status.DND, color: 'orange' },
   { label: 'Invisible', value: Status.INVISIBLE, color: 'grey' },
   { label: 'Offline', value: Status.OFFLINE, color: 'red' },
 ];
