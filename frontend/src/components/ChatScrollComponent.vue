@@ -1,21 +1,20 @@
 <script setup lang="ts">
+import { useMessageStore } from '../stores/messageStore';
 import ChatMessageComponent from 'components/ChatMessageComponent.vue';
 
-defineProps<{
-  items: Record<string, any>[];
-}>();
+const messageStore = useMessageStore();
 </script>
 
 <template>
   <div ref="chatContainer" class="full-width full-height q-px-sm q-scroll">
     <q-infinite-scroll reverse>
-      <template v-slot:loading>
+      <template>
         <div class="row justify-center q-my-md">
           <q-spinner color="primary" name="dots" size="40px" />
         </div>
       </template>
       <div
-        v-for="(item, index) in items"
+        v-for="(item, index) in messageStore.messages"
         :key="index"
         class="row no-wrap items-start"
       >

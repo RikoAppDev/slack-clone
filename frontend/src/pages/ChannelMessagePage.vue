@@ -1,20 +1,13 @@
 <script setup lang="ts">
 import ChatScrollComponent from 'components/ChatScrollComponent.vue';
 import ChatTextFieldComponent from 'components/ChatTextFieldComponent.vue';
-import { ref, nextTick } from 'vue';
+import { useMessageStore } from '../stores/messageStore';
+import { nextTick } from 'vue';
 
-interface ChatItem {
-  text: string;
-  name: string;
-  timestamp: string;
-}
-
-const messages = ref<ChatItem[]>([]);
+const messageStore = useMessageStore();
 
 const addMessage = (message: string) => {
-  const timestamp = new Date().toLocaleTimeString();
-  messages.value.push({ text: message, name: 'User', timestamp });
-
+  messageStore.addMessage(message);
   nextTick(() => {
     window.scrollTo(0, document.body.scrollHeight);
   });
@@ -29,7 +22,7 @@ const addMessage = (message: string) => {
       style="flex-grow: 1; overflow-y: auto"
     >
       <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto">
-        <ChatScrollComponent :items="messages" />
+        <ChatScrollComponent :items="messageStore.messages" />
       </div>
     </div>
 

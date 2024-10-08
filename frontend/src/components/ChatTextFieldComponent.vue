@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useMessageStore } from '../stores/messageStore';
 
-const emit = defineEmits<{
-  sendMessage: [message: string];
-}>();
-
+const messageStore = useMessageStore();
 const messageText = ref('');
 
 const onKeyDown = (event: KeyboardEvent) => {
@@ -16,7 +14,7 @@ const onKeyDown = (event: KeyboardEvent) => {
 
 const sendMessage = () => {
   if (messageText.value.trim() !== '') {
-    emit('sendMessage', messageText.value);
+    messageStore.addMessage(messageText.value);
     messageText.value = '';
   }
 };
@@ -24,7 +22,6 @@ const sendMessage = () => {
 
 <template>
   <div class="full-width items-center bg-white panel">
-    <!-- Message Input Field -->
     <q-editor
       v-model="messageText"
       :toolbar="[['bold', 'italic', 'strike', 'underline']]"
@@ -34,7 +31,6 @@ const sendMessage = () => {
       min-height="5rem"
     />
 
-    <!-- Send Button -->
     <q-btn
       round
       unelevated

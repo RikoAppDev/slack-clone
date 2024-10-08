@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
 
-// Define props for the component
 const props = defineProps<{
   text: string;
   name: string;
   timestamp: string;
 }>();
 
-// Helper method to highlight mentions in the message
 const highlightMentions = (text: string) => {
-  // Use regex to match @username pattern
   const mentionRegex = /(@\w+)/g;
-  // Replace the matches with a span that highlights the username
   return text.replace(mentionRegex, '<span class="tag">$1</span>');
 };
 </script>
