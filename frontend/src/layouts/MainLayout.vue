@@ -1,3 +1,31 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useChannelStore } from '../stores/channelStore';
+import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
+import DirectMessagesButtonComponent from 'components/DirectMessagesButtonComponent.vue';
+import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
+import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
+
+const leftDrawerOpen = ref<boolean>(false);
+const toggleLeftDrawer = (): void => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+
+const channelStore = useChannelStore();
+
+interface Profile {
+  name: string;
+  tag: string;
+  imgUrl: string;
+}
+
+const profile: Profile = {
+  name: 'Janko Hrasko',
+  tag: '@janik_na_hrasku',
+  imgUrl: 'https://picsum.photos/100?random=0',
+};
+</script>
+
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- Header -->
@@ -33,7 +61,7 @@
       <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
       <q-list class="q-col-gutter-none full-width">
         <q-item
-          v-for="(channel, index) in channels"
+          v-for="(channel, index) in channelStore.channels"
           :key="index"
           class="q-my-none q-px-xs q-pb-none"
         >
@@ -42,6 +70,7 @@
             :imgUrl="channel.imgUrl"
             :link="channel.link"
             :private="channel.private"
+            @click="channelStore.selectChannel(channel)"
           />
         </q-item>
       </q-list>
@@ -56,114 +85,6 @@
     </q-page-container>
   </q-layout>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
-import DirectMessagesButtonComponent from 'components/DirectMessagesButtonComponent.vue';
-import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
-import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
-
-const leftDrawerOpen = ref<boolean>(false);
-
-const toggleLeftDrawer = (): void => {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-};
-
-interface Profile {
-  name: string;
-  tag: string;
-  imgUrl: string;
-}
-
-const profile: Profile = {
-  name: 'Janko Hrasko',
-  tag: '@janik_na_hrasku',
-  imgUrl: 'https://picsum.photos/100?random=0',
-};
-
-interface Channel {
-  name: string;
-  imgUrl: string;
-  link: string;
-  private: boolean;
-}
-
-const channels: Channel[] = [
-  {
-    name: 'General',
-    imgUrl: 'https://picsum.photos/100?random=1',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Development',
-    imgUrl: 'https://picsum.photos/100?random=2',
-    link: '/',
-    private: false,
-  },
-  {
-    name: 'Design',
-    imgUrl: 'https://picsum.photos/100?random=3',
-    link: '/',
-    private: false,
-  },
-  {
-    name: 'Marketing',
-    imgUrl: 'https://picsum.photos/100?random=4',
-    link: '/',
-    private: false,
-  },
-  {
-    name: 'General',
-    imgUrl: 'https://picsum.photos/100?random=5',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Development',
-    imgUrl: 'https://picsum.photos/100?random=6',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Design',
-    imgUrl: 'https://picsum.photos/100?random=7',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Marketing',
-    imgUrl: 'https://picsum.photos/100?random=8',
-    link: '/',
-    private: false,
-  },
-  {
-    name: 'General',
-    imgUrl: 'https://picsum.photos/100?random=9',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Development',
-    imgUrl: 'https://picsum.photos/100?random=10',
-    link: '/',
-    private: true,
-  },
-  {
-    name: 'Design',
-    imgUrl: 'https://picsum.photos/100?random=11',
-    link: '/',
-    private: false,
-  },
-  {
-    name: 'Marketing',
-    imgUrl: 'https://picsum.photos/100?random=12',
-    link: '/',
-    private: true,
-  },
-];
-</script>
 
 <style>
 .q-toolbar {

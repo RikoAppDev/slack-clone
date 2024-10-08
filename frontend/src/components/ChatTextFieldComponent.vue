@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 
 const messageStore = useMessageStore();
@@ -16,6 +16,10 @@ const sendMessage = () => {
   if (messageText.value.trim() !== '') {
     messageStore.addMessage(messageText.value);
     messageText.value = '';
+
+    nextTick(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
   }
 };
 </script>

@@ -2,16 +2,9 @@
 import ChatScrollComponent from 'components/ChatScrollComponent.vue';
 import ChatTextFieldComponent from 'components/ChatTextFieldComponent.vue';
 import { useMessageStore } from '../stores/messageStore';
-import { nextTick } from 'vue';
 
 const messageStore = useMessageStore();
 
-const addMessage = (message: string) => {
-  messageStore.addMessage(message);
-  nextTick(() => {
-    window.scrollTo(0, document.body.scrollHeight);
-  });
-};
 </script>
 
 <template>
@@ -28,7 +21,7 @@ const addMessage = (message: string) => {
 
     <!-- Chat Input at the Bottom -->
     <div class="chat-input sticky q-pa-sm full-width bg-white">
-      <ChatTextFieldComponent @sendMessage="addMessage" />
+      <ChatTextFieldComponent />
     </div>
   </q-page>
 </template>
