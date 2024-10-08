@@ -1,9 +1,16 @@
 <script setup lang="ts">
+import { watch } from 'vue';
 import ChatScrollComponent from 'components/ChatScrollComponent.vue';
 import ChatTextFieldComponent from 'components/ChatTextFieldComponent.vue';
 import { useMessageStore } from '../stores/messageStore';
+import { useChannelStore } from '../stores/channelStore';
 
 const messageStore = useMessageStore();
+const channelStore = useChannelStore();
+
+watch(() => channelStore.selectedChannel, (newChannel) => {
+  messageStore.fetchMessagesForChannel(newChannel.name);
+});
 
 </script>
 

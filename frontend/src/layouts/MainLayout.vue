@@ -67,7 +67,6 @@ const profile: Profile = {
         >
           <ChannelButtonComponent
             :name="channel.name"
-            :imgUrl="channel.imgUrl"
             :link="channel.link"
             :private="channel.private"
             @click="channelStore.selectChannel(channel)"

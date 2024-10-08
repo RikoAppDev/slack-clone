@@ -3,10 +3,10 @@ import { ref } from 'vue';
 
 export const useChannelStore = defineStore('channelStore', () => {
   const channels = ref([
-    { name: 'General', imgUrl: 'https://picsum.photos/100?random=1', link: '/', private: true },
-    { name: 'Development', imgUrl: 'https://picsum.photos/100?random=2', link: '/', private: false },
-    { name: 'Design', imgUrl: 'https://picsum.photos/100?random=3', link: '/', private: false },
-    { name: 'Marketing', imgUrl: 'https://picsum.photos/100?random=4', link: '/', private: false },
+    { name: 'General', link: '/', private: true },
+    { name: 'Development', link: '/', private: false },
+    { name: 'Design', link: '/', private: false },
+    { name: 'Marketing', link: '/', private: false },
   ]);
 
   const selectedChannel = ref(channels.value[0]);
