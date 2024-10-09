@@ -1,11 +1,10 @@
 <template>
   <q-btn
     unelevated
-    round
     size="18px"
     icon="add"
     no-caps
-    class="text-body1 bg-white add-button"
+    class="text-body1 bg-white add-button full-width"
   />
   <q-tooltip
     anchor="center end"
@@ -22,7 +21,7 @@
 
 <style scoped>
 .add-button {
-  border-radius: 50%;
+  border-radius: 50px;
   transition: border-radius 150ms ease-in-out;
 }
 

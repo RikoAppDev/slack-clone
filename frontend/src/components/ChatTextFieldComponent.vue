@@ -12,9 +12,18 @@ const onKeyDown = (event: KeyboardEvent) => {
   }
 };
 
+const decodeHTMLEntities = (text: string) => {
+  const element = document.createElement('textarea');
+  element.innerHTML = text;
+  return element.value;
+};
+
 const sendMessage = () => {
-  if (messageText.value.trim() !== '') {
-    messageStore.addMessage(messageText.value);
+  const decodedMessage = decodeHTMLEntities(messageText.value);
+  const trimmedMessage = decodedMessage.trim();
+
+  if (trimmedMessage !== '') {
+    messageStore.addMessage(trimmedMessage);
     messageText.value = '';
 
     nextTick(() => {

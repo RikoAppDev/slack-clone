@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { useChannelStore } from '../stores/channelStore';
 import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
-import DirectMessagesButtonComponent from 'components/DirectMessagesButtonComponent.vue';
 import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
 import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
 
@@ -15,13 +14,13 @@ const channelStore = useChannelStore();
 
 interface Profile {
   name: string;
-  tag: string;
+  nickname: string;
   imgUrl: string;
 }
 
 const profile: Profile = {
   name: 'Janko Hrasko',
-  tag: '@janik_na_hrasku',
+  nickname: '@janik_na_hrasku',
   imgUrl: 'https://picsum.photos/100?random=0',
 };
 </script>
@@ -43,7 +42,7 @@ const profile: Profile = {
         <ProfileButtonComponent
           :img-url="profile.imgUrl"
           :name="profile.name"
-          :tag="profile.tag"
+          :nickname="profile.nickname"
         />
       </q-toolbar>
     </q-header>
@@ -55,8 +54,8 @@ const profile: Profile = {
       class="drawer"
       :width="240"
     >
-      <q-item class="flex flex-center">
-        <DirectMessagesButtonComponent />
+      <q-item class="flex flex-center q-pa-none">
+        <p class="channel">Channels</p>
       </q-item>
       <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
       <q-list class="q-col-gutter-none full-width">
@@ -73,7 +72,7 @@ const profile: Profile = {
           />
         </q-item>
       </q-list>
-      <q-item>
+      <q-item class="q-my-none q-pa-none q-px-xs full-width">
         <CreateNewChannelButtonComponent />
       </q-item>
     </q-drawer>
@@ -93,12 +92,20 @@ const profile: Profile = {
 .drawer {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: center;
   border-right: 2px #ff5a5f solid;
+}
+
+.channel {
+  width: 100%;
+  margin: unset;
+  padding: 22px 24px;
+  font-size: 18px;
 }
 
 .divider {
   width: 80%;
   height: 2px;
+  transform: translateY(-50%);
 }
 </style>
