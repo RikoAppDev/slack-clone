@@ -66,8 +66,8 @@ const profile: Profile = {
         >
           <ChannelButtonComponent
             :name="channel.name"
-            :link="channel.link"
             :private="channel.private"
+            :isSelected="channel == channelStore.selectedChannel"
             @click="channelStore.selectChannel(channel)"
           />
         </q-item>
@@ -90,10 +90,12 @@ const profile: Profile = {
 }
 
 .drawer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-rows: min-content min-content min-content min-content;
+  justify-items: center;
+  align-items: start;
   border-right: 2px #ff5a5f solid;
+  padding-bottom: 10px;
 }
 
 .channel {
@@ -106,6 +108,7 @@ const profile: Profile = {
 .divider {
   width: 80%;
   height: 2px;
+
   transform: translateY(-50%);
 }
 </style>

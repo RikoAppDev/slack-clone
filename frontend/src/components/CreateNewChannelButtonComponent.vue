@@ -4,6 +4,7 @@
     size="18px"
     icon="add"
     no-caps
+    @click="handleOpeningModal"
     class="text-body1 bg-white add-button full-width"
   />
   <q-tooltip
@@ -15,9 +16,105 @@
   >
     Add a Channel
   </q-tooltip>
+
+  <q-dialog v-model="isModalOpen" @hide="setDefault">
+    <q-card class="modal">
+      <q-card-section>
+        <div class="text-h6">Create a New Channel</div>
+      </q-card-section>
+
+      <q-card-section class="q-col-gutter-sm">
+        <q-input
+          autofocus
+          v-model="newChannelName"
+          label="Channel Name"
+          outlined
+          :onkeypress="onEnterPress"
+        />
+        <q-toggle v-model="newChannelPrivate" label="Private Channel" />
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn
+          flat
+          label="Cancel"
+          color="primary"
+          @click="handleOpeningModal"
+        />
+        <q-btn
+          label="Create"
+          unelevated
+          color="primary"
+          @click="handleCreateChannel"
+        />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useChannelStore } from '../stores/channelStore';
+import { Channel } from '../types/channel';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+const channelStore = useChannelStore();
+
+const isModalOpen = ref(false);
+const newChannelName = ref('');
+const newChannelPrivate = ref(false);
+
+const handleOpeningModal = () => {
+  isModalOpen.value = !isModalOpen.value;
+};
+
+const setDefault = () => {
+  newChannelName.value = '';
+  newChannelPrivate.value = false;
+};
+
+const onEnterPress = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    handleCreateChannel();
+  }
+};
+
+const capitalizeFirstLetter = (name: string) => {
+  if (!name) return name;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+const handleCreateChannel = () => {
+  const channelName = capitalizeFirstLetter(newChannelName.value.trim());
+
+  const newChannel: Channel = {
+    name: channelName,
+    private: newChannelPrivate.value,
+  };
+
+  if (channelName !== '') {
+    channelStore.addNewChannel(newChannel);
+
+    setDefault();
+    handleOpeningModal();
+    // channelStore.selectChannel();
+
+    $q.notify({
+      type: 'positive',
+      message: 'Channel created successfully',
+      position: 'top',
+    });
+  } else {
+    $q.notify({
+      type: 'negative',
+      message: 'Channel name cannot be blank!',
+      position: 'top',
+    });
+  }
+};
+</script>
 
 <style scoped>
 .add-button {
@@ -27,5 +124,9 @@
 
 .add-button:hover {
   border-radius: 10px;
+}
+
+.modal {
+  width: 400px;
 }
 </style>

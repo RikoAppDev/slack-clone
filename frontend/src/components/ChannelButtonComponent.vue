@@ -4,9 +4,13 @@
     size="18px"
     :to="link"
     no-caps
-    class="wrapper full-width row content-start"
+    :class="
+      isSelected
+        ? 'wrapper full-width row content-start selected'
+        : 'wrapper full-width row content-start'
+    "
   >
-    <p class="text-body2">
+    <p class="text-body2 ellipsis">
       {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
     </p>
   </q-btn>
@@ -30,6 +34,10 @@ defineProps({
     type: Boolean,
     required: true,
   },
+  isSelected: {
+    type: Boolean,
+    required: true,
+  },
 });
 </script>
 
@@ -41,6 +49,12 @@ defineProps({
 
 .wrapper:hover {
   border-radius: 10px;
+}
+
+.selected:before {
+  border-left: 2px solid #00a699;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 p {
