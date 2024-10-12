@@ -1,8 +1,22 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
+import { useChannelStore } from '../stores/channelStore';
 import ChatMessageComponent from 'components/ChatMessageComponent.vue';
 
 const messageStore = useMessageStore();
+const channelStore = useChannelStore();
+
+const currentChannel = ref(channelStore.getSelectedChannel());
+const messages = ref(messageStore.fetchMessagesForChannel(currentChannel.value.name));
+
+watch(
+  () => channelStore.getSelectedChannel(),
+  (newChannel) => {
+    currentChannel.value = newChannel;
+    messages.value = messageStore.fetchMessagesForChannel(newChannel.name);
+  }
+);
 </script>
 
 <template>
@@ -14,7 +28,7 @@ const messageStore = useMessageStore();
         </div>
       </template>
       <div
-        v-for="(item, index) in messageStore.messages"
+        v-for="(item, index) in messages"
         :key="index"
         class="row no-wrap items-start"
       >

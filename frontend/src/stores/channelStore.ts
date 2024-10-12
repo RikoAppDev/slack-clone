@@ -23,5 +23,9 @@ export const useChannelStore = defineStore('channelStore', () => {
     channels.value.push(newChannel);
   };
 
-  return { channels, selectedChannel, selectChannel, addNewChannel };
+  const getSelectedChannel = () => {
+    return selectedChannel.value;
+  };
+
+  return { channels, selectedChannel, selectChannel, addNewChannel, getSelectedChannel };
 });

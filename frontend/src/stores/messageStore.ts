@@ -17,6 +17,7 @@ export const useMessageStore = defineStore('messageStore', () => {
       { text: `Welcome to ${channelName}!`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm') },
       { text: `This is the ${channelName} channel.`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm') },
     ];
+    return messages.value;
   };
 
   const addMessage = (message: string) => {
