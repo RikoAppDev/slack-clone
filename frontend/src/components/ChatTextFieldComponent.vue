@@ -2,6 +2,7 @@
 import { nextTick, ref } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
+import { Channel } from 'app/frontend/src/types/channel';
 
 const channelStore = useChannelStore();
 const currentChannel = channelStore.getSelectedChannel();
@@ -9,7 +10,7 @@ const currentChannel = channelStore.getSelectedChannel();
 const messageStore = useMessageStore();
 const messageText = ref('');
 
-const commandRegex = /^\/(join\s+\w+(\s+private)?|invite\s+\w+\s+a|revoke\s+\w+|kick\s+\w+|quit|cancel)$/;
+const commandRegex = /^\/(join\s+\w+(\s+private)?|invite\s+\w+\s+a|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
 const onKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -34,8 +35,19 @@ const handleCommand = (command: string) => {
   if (parts[0] === 'join') {
     const channelName = parts[1];
     const isPrivate = parts[2] === 'private';
-    console.log(`Join command detected: channelName=${channelName}, private=${isPrivate}`);
 
+    const existingChannel = channelStore.channels.find(channel => channel.name === channelName);
+
+    if (!existingChannel) {
+      const newChannel: Channel = {
+        name: channelName,
+        private: isPrivate,
+      };
+
+      channelStore.addNewChannel(newChannel);
+    } else {
+      channelStore.selectChannel(existingChannel);
+    }
   } else if (parts[0] === 'invite') {
     const nickName = parts[1];
     console.log(`Invite command detected: nickName=${nickName}`);
@@ -49,11 +61,23 @@ const handleCommand = (command: string) => {
     console.log(`Kick command detected: nickName=${nickName}`);
 
   } else if (parts[0] === 'quit') {
-    console.log(`Quit command detected: currentChannel=${currentChannel}`);
+    if (currentChannel) {
+      channelStore.removeChannel(currentChannel.name);
+      channelStore.selectChannel(channelStore.channels[0]);
+      console.log(`Quit command detected: currentChannel=${currentChannel.name}`);
+    }
 
   } else if (parts[0] === 'cancel') {
-    console.log(`Cancel command detected: currentChannel=${currentChannel}`);
-
+    if (currentChannel) {
+      channelStore.removeChannel(currentChannel.name);
+      channelStore.selectChannel(channelStore.channels[0]);
+      console.log(`Cancel command detected: currentChannel=${currentChannel.name}`);
+    }
+  } else if (parts[0] === 'list') {
+    if (currentChannel) {
+      const users = channelStore.getUsersInChannel(currentChannel.name);
+      console.log(`Users in channel ${currentChannel.name}: ${users}`);
+    }
   }
 };
 

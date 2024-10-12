@@ -27,5 +27,15 @@ export const useChannelStore = defineStore('channelStore', () => {
     return selectedChannel.value;
   };
 
-  return { channels, selectedChannel, selectChannel, addNewChannel, getSelectedChannel };
+  const removeChannel = (channelName: string) => {
+    const index = channels.value.findIndex((channel) => channel.name === channelName);
+    channels.value.splice(index, 1);
+  }
+
+  const getUsersInChannel = (channelName: string) => {
+    const channel = channels.value.find(channel => channel.name === channelName);
+    return channel ? channel.users : [];
+  };
+
+  return { channels, selectedChannel, selectChannel, removeChannel, addNewChannel, getSelectedChannel, getUsersInChannel };
 });

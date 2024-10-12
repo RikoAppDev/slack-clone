@@ -81,13 +81,8 @@ const onEnterPress = (event: KeyboardEvent) => {
   }
 };
 
-const capitalizeFirstLetter = (name: string) => {
-  if (!name) return name;
-  return name.charAt(0).toUpperCase() + name.slice(1);
-};
-
 const handleCreateChannel = () => {
-  const channelName = capitalizeFirstLetter(newChannelName.value.trim());
+  const channelName = newChannelName.value.trim();
 
   const newChannel: Channel = {
     name: channelName,
@@ -99,7 +94,7 @@ const handleCreateChannel = () => {
 
     setDefault();
     handleOpeningModal();
-    // channelStore.selectChannel();
+    channelStore.selectChannel(newChannel);
 
     $q.notify({
       type: 'positive',
