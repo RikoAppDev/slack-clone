@@ -8,25 +8,27 @@ const messageStore = useMessageStore();
 const channelStore = useChannelStore();
 
 const currentChannel = ref(channelStore.getSelectedChannel());
-const messages = ref(messageStore.fetchMessagesForChannel(currentChannel.value.name));
+const messages = ref(messageStore.fetchMessagesForChannel(currentChannel.value.name, 1));
 
 watch(
   () => channelStore.getSelectedChannel(),
   (newChannel) => {
+    messageStore.clearMessages();
     currentChannel.value = newChannel;
-    messages.value = messageStore.fetchMessagesForChannel(newChannel.name);
+    messages.value = messageStore.fetchMessagesForChannel(newChannel.name, 1);
   }
 );
+
+async function onLoad(index: number, done: VoidFunction) {
+  const newMessages = messageStore.fetchMessagesForChannel(currentChannel.value.name, index);
+  messages.value = [...newMessages, ...messages.value];
+  done();
+}
 </script>
 
 <template>
-  <div ref="chatContainer" class="full-width full-height q-px-sm q-scroll">
-    <q-infinite-scroll reverse>
-      <template>
-        <div class="row justify-center q-my-md">
-          <q-spinner color="primary" name="dots" size="40px" />
-        </div>
-      </template>
+  <div class="full-width full-height q-px-sm q-scroll">
+    <q-infinite-scroll @load="onLoad" reverse>
       <div
         v-for="(item, index) in messages"
         :key="index"

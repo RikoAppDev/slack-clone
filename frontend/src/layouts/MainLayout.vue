@@ -15,13 +15,11 @@ const channelStore = useChannelStore();
 interface Profile {
   name: string;
   nickname: string;
-  imgUrl: string;
 }
 
 const profile: Profile = {
   name: 'Janko Hrasko',
   nickname: '@janik_na_hrasku',
-  imgUrl: 'https://picsum.photos/100?random=0',
 };
 </script>
 
@@ -40,7 +38,6 @@ const profile: Profile = {
         />
         <q-toolbar-title>Riso&Riko co.</q-toolbar-title>
         <ProfileButtonComponent
-          :img-url="profile.imgUrl"
           :name="profile.name"
           :nickname="profile.nickname"
         />
