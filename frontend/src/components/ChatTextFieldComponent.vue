@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
+import { ref, watch, nextTick } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { Channel } from 'app/frontend/src/types/channel';
 
 const channelStore = useChannelStore();
-const currentChannel = channelStore.getSelectedChannel();
+const currentChannel = ref(channelStore.getSelectedChannel());
 
 const messageStore = useMessageStore();
 const messageText = ref('');
+const showUserList = ref(false); // Controls whether to show the user list
 
 const commandRegex = /^\/(join\s+\w+(\s+private)?|invite\s+\w+\s+a|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
+
+watch(() => channelStore.getSelectedChannel(), (newChannel) => {
+  currentChannel.value = newChannel;
+});
 
 const onKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -29,7 +34,6 @@ const handleCommand = (command: string) => {
   const match = command.match(commandRegex);
 
   if (!match) return;
-  // match[0] is the full command, match[1] is the command without the '/' at the beginning
   const parts = match[1].split(/\s+/);
 
   if (parts[0] === 'join') {
@@ -48,34 +52,11 @@ const handleCommand = (command: string) => {
     } else {
       channelStore.selectChannel(existingChannel);
     }
-  } else if (parts[0] === 'invite') {
-    const nickName = parts[1];
-    console.log(`Invite command detected: nickName=${nickName}`);
-
-  } else if (parts[0] === 'revoke') {
-    const nickName = parts[1];
-    console.log(`Revoke command detected: nickName=${nickName}`);
-
-  } else if (parts[0] === 'kick') {
-    const nickName = parts[1];
-    console.log(`Kick command detected: nickName=${nickName}`);
-
-  } else if (parts[0] === 'quit') {
-    if (currentChannel) {
-      channelStore.removeChannel(currentChannel.name);
-      channelStore.selectChannel(channelStore.channels[0]);
-      console.log(`Quit command detected: currentChannel=${currentChannel.name}`);
-    }
-
-  } else if (parts[0] === 'cancel') {
-    if (currentChannel) {
-      channelStore.removeChannel(currentChannel.name);
-      channelStore.selectChannel(channelStore.channels[0]);
-      console.log(`Cancel command detected: currentChannel=${currentChannel.name}`);
-    }
   } else if (parts[0] === 'list') {
-    if (currentChannel) {
-      console.log(`Users in channel ${currentChannel.name}: ${(currentChannel.users ?? []).map(user => user.username).join(', ')}`);    }
+    if (currentChannel.value) {
+      showUserList.value = true; // Show user list when `/list` is used
+      console.log(`Users in channel ${currentChannel.value.name}: ${(currentChannel.value.users ?? []).map(user => user.username).join(', ')}`);
+    }
   }
 };
 
@@ -92,9 +73,16 @@ const sendMessage = () => {
     messageText.value = '';
 
     nextTick(() => {
-      window.scrollTo(0, document.body.scrollHeight);
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
     });
   }
+};
+
+const closeUserList = () => {
+  showUserList.value = false; // Hide the user list when the close button is clicked
 };
 </script>
 
@@ -118,6 +106,31 @@ const sendMessage = () => {
       class="send-button gt-xs"
     />
   </div>
+
+  <!-- Conditionally show the user list based on showUserList -->
+  <div v-if="showUserList" class="user-list-container">
+    <!-- Header with channel name and close button in the same row -->
+    <div class="user-list-header">
+      <q-item-label class="text-h6">Users in {{ currentChannel.name }}</q-item-label>
+      <q-btn
+        flat
+        icon="close"
+        color="negative"
+        @click="closeUserList"
+        class="close-btn"
+      />
+    </div>
+
+    <!-- Horizontal scrolling row of users -->
+    <div class="user-row">
+      <q-item v-for="user in currentChannel?.users ?? []" :key="user.username" class="user-item">
+        <q-item-section>
+          <q-item-label>{{ user.username }}</q-item-label>
+          <q-item-label caption>{{ user.status }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -130,5 +143,39 @@ const sendMessage = () => {
   display: flex;
   flex-wrap: nowrap;
   gap: 10px;
+}
+
+.user-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.user-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.close-btn {
+  margin: 0;
+  padding: 0;
+}
+
+.user-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 10px 0;
+}
+
+.user-item {
+  flex: 0 0 auto;
+  text-align: center;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 10px;
 }
 </style>

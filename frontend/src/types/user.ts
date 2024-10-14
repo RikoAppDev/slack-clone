@@ -7,8 +7,8 @@ export interface User {
 }
 
 export enum Status {
-  OFFLINE,
-  ONLINE,
-  DND,
-  INVISIBLE,
+  OFFLINE = 'Offline',
+  ONLINE = 'Online',
+  DND = 'Do Not Disturb',
+  INVISIBLE = 'Invisible',
 }
