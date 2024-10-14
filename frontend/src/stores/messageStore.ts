@@ -52,7 +52,9 @@ export const useMessageStore = defineStore('messageStore', () => {
       { text: `This is the ${channelName} channel.`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm') },
 
     ];
-    messages.value = allMessages.slice(start, end);
+
+    const newMessages = allMessages.slice(start, end);
+    messages.value = [...newMessages, ...messages.value];
     return messages.value;
   };
 

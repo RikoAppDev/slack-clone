@@ -75,15 +75,13 @@ const handleCommand = (command: string) => {
     }
   } else if (parts[0] === 'list') {
     if (currentChannel) {
-      const users = channelStore.getUsersInChannel(currentChannel.name);
-      console.log(`Users in channel ${currentChannel.name}: ${users}`);
-    }
+      console.log(`Users in channel ${currentChannel.name}: ${(currentChannel.users ?? []).map(user => user.username).join(', ')}`);    }
   }
 };
 
 const sendMessage = () => {
   const decodedMessage = decodeHTMLEntities(messageText.value);
-  const trimmedMessage = decodedMessage.trim();
+  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
 
   if (trimmedMessage !== '') {
     if (commandRegex.test(trimmedMessage)) {
