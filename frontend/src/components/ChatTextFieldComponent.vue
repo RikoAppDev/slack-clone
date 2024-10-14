@@ -87,26 +87,6 @@ const closeUserList = () => {
 </script>
 
 <template>
-  <div class="full-width items-center bg-white panel">
-    <q-editor
-      v-model="messageText"
-      :toolbar="[['bold', 'italic', 'strike', 'underline']]"
-      @keydown="onKeyDown"
-      placeholder="Type a message"
-      aria-placeholder="Type a message"
-      min-height="5rem"
-    />
-
-    <q-btn
-      round
-      unelevated
-      icon="send"
-      color="secondary"
-      @click="sendMessage"
-      class="send-button gt-xs"
-    />
-  </div>
-
   <!-- Conditionally show the user list based on showUserList -->
   <div v-if="showUserList" class="user-list-container">
     <!-- Header with channel name and close button in the same row -->
@@ -131,6 +111,26 @@ const closeUserList = () => {
       </q-item>
     </div>
   </div>
+
+  <div class="full-width items-center bg-white panel">
+    <q-editor
+      v-model="messageText"
+      :toolbar="[['bold', 'italic', 'strike', 'underline']]"
+      @keydown="onKeyDown"
+      placeholder="Type a message"
+      aria-placeholder="Type a message"
+      min-height="5rem"
+    />
+
+    <q-btn
+      round
+      unelevated
+      icon="send"
+      color="secondary"
+      @click="sendMessage"
+      class="send-button gt-xs"
+    />
+  </div>
 </template>
 
 <style scoped>
@@ -148,14 +148,12 @@ const closeUserList = () => {
 .user-list-container {
   max-height: 300px;
   overflow-y: auto;
-  padding: 10px;
 }
 
 .user-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
 }
 
 .close-btn {
@@ -168,7 +166,7 @@ const closeUserList = () => {
   flex-wrap: nowrap;
   overflow-x: auto;
   gap: 20px;
-  padding: 10px 0;
+  padding-bottom: 15px;
 }
 
 .user-item {
