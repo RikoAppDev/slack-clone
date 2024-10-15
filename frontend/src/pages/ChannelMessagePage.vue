@@ -10,13 +10,13 @@ import ChatTextFieldComponent from 'components/ChatTextFieldComponent.vue';
       class="chat-page full-width column"
       style="flex-grow: 1; overflow-y: auto"
     >
-      <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto">
+      <div class="full-width q-px-md" style="flex-grow: 1; overflow-y: auto">
         <ChatScrollComponent />
       </div>
     </div>
 
     <!-- Chat Input at the Bottom -->
-    <div class="chat-input sticky q-pa-sm full-width bg-white">
+    <div class="chat-input sticky q-px-sm q-pb-sm full-width bg-white">
       <ChatTextFieldComponent />
     </div>
   </q-page>

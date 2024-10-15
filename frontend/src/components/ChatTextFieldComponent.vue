@@ -119,7 +119,7 @@ const closeUserList = () => {
       @keydown="onKeyDown"
       placeholder="Type a message"
       aria-placeholder="Type a message"
-      min-height="5rem"
+      min-height="3rem"
     />
 
     <q-btn
@@ -128,7 +128,7 @@ const closeUserList = () => {
       icon="send"
       color="secondary"
       @click="sendMessage"
-      class="send-button gt-xs"
+      class="send-button"
     />
   </div>
 </template>
@@ -141,7 +141,6 @@ const closeUserList = () => {
 
 .panel {
   display: flex;
-  flex-wrap: nowrap;
   gap: 10px;
 }
 
