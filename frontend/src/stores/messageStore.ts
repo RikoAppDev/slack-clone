@@ -12,8 +12,8 @@ export const useMessageStore = defineStore('messageStore', () => {
   const messages = ref<Message[]>([]);
   const pageSize = 10;
 
-  const fetchMessagesForChannel = (channelName: string, page: number) => {
-    const start = (page - 1) * pageSize;
+  async function fetchMessagesForChannel(channelName: string, page: number): Promise<Message[]> {
+    const start = (page - 1) * pageSize - 5;
     const end = start + pageSize;
     const allMessages = [
       { text: `Welcome to ${channelName}!`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm') },
@@ -56,7 +56,7 @@ export const useMessageStore = defineStore('messageStore', () => {
     const newMessages = allMessages.slice(start, end);
     messages.value = [...newMessages, ...messages.value];
     return messages.value;
-  };
+  }
 
   const addMessage = (message: string) => {
     messages.value.push({

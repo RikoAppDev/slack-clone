@@ -48,6 +48,7 @@ const handleCommand = (command: string) => {
         private: isPrivate,
       };
 
+      channelStore.selectChannel(newChannel);
       channelStore.addNewChannel(newChannel);
     } else {
       channelStore.selectChannel(existingChannel);

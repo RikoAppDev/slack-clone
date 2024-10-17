@@ -11,17 +11,19 @@ const currentChannel = ref(channelStore.getSelectedChannel());
 
 watch(
   () => channelStore.getSelectedChannel(),
-  (newChannel) => {
+  async (newChannel) => {
     messageStore.clearMessages();
     currentChannel.value = newChannel;
-    messageStore.messages = messageStore.fetchMessagesForChannel(newChannel.name, 1);
+    messageStore.messages = await messageStore.fetchMessagesForChannel(newChannel.name, 1);
   }
 );
 
 async function onLoad(index: number, done: VoidFunction) {
-  const newMessages = messageStore.fetchMessagesForChannel(currentChannel.value.name, index);
-  messageStore.messages = [...messageStore.messages, ...newMessages];
-  done();
+  setTimeout(async () => {
+    const newMessages = await messageStore.fetchMessagesForChannel(currentChannel.value.name, index);
+    messageStore.messages = [...newMessages];
+    done();
+  }, 1000);
 }
 </script>
 
