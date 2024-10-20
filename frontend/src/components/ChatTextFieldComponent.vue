@@ -2,16 +2,14 @@
 import { ref, watch, nextTick } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
-import { Channel } from 'app/frontend/src/types/channel';
+import { date } from 'quasar';
 
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
 
 const messageStore = useMessageStore();
 const messageText = ref('');
-const showUserList = ref(false); // Controls whether to show the user list
-
-const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
+const showUserList = ref(false);
 
 watch(() => channelStore.getSelectedChannel(), (newChannel) => {
   currentChannel.value = newChannel;
@@ -30,55 +28,18 @@ const decodeHTMLEntities = (text: string) => {
   return element.value;
 };
 
-const handleCommand = (command: string) => {
-  const match = command.match(commandRegex);
-
-  if (!match) return;
-  const parts = match[1].split(/\s+/);
-
-  if (parts[0] === 'join') {
-    const isPrivate = parts[1] === 'private';
-    const channelName = isPrivate ? parts[2] : parts[1];
-
-    const existingChannel = channelStore.channels.find(channel => channel.name === channelName);
-
-    if (!existingChannel) {
-      const newChannel: Channel = {
-        name: channelName,
-        private: isPrivate,
-      };
-
-      channelStore.addNewChannel(newChannel);
-      channelStore.selectChannel(newChannel);
-    } else {
-      channelStore.selectChannel(existingChannel);
-    }
-  } else if (parts[0] === 'list') {
-    if (currentChannel.value) {
-      showUserList.value = !showUserList.value;
-    }
-  } else if (parts[0] === 'invite') {
-    const channelName = parts[1];
-    const invitationChannel: Channel = {
-      name: channelName,
-      private: true,
-      isInvitation: true,
-    };
-
-    channelStore.channels.unshift(invitationChannel);
-  }
-};
-
 const sendMessage = () => {
   const decodedMessage = decodeHTMLEntities(messageText.value);
   const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
 
-  if (trimmedMessage !== '') {
-    if (commandRegex.test(trimmedMessage)) {
-      handleCommand(trimmedMessage);
-    } else {
-      messageStore.addMessage(trimmedMessage);
-    }
+  if (trimmedMessage !== '' && currentChannel.value) {
+    const message = {
+      text: trimmedMessage,
+      name: 'You',
+      timestamp: date.formatDate(new Date(), 'HH:mm'),
+      channelName: currentChannel.value.name,
+    };
+    messageStore.addMessage(message);
     messageText.value = '';
 
     nextTick(() => {
@@ -91,16 +52,14 @@ const sendMessage = () => {
 };
 
 const closeUserList = () => {
-  showUserList.value = false; // Hide the user list when the close button is clicked
+  showUserList.value = false;
 };
 </script>
 
 <template>
-  <!-- Conditionally show the user list based on showUserList -->
   <div v-if="showUserList" class="user-list-container">
-    <!-- Header with channel name and close button in the same row -->
     <div class="user-list-header">
-      <q-item-label class="text-h6">Users in {{ currentChannel.name }}</q-item-label>
+      <q-item-label class="text-h6">Users in {{ currentChannel?.name }}</q-item-label>
       <q-btn
         flat
         icon="close"
@@ -110,7 +69,6 @@ const closeUserList = () => {
       />
     </div>
 
-    <!-- Horizontal scrolling row of users -->
     <div class="user-row">
       <q-item v-for="user in currentChannel?.users ?? []" :key="user.username" class="user-item">
         <q-item-section>

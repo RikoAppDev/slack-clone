@@ -12,18 +12,23 @@ const currentChannel = ref(channelStore.getSelectedChannel());
 watch(
   () => channelStore.getSelectedChannel(),
   async (newChannel) => {
-    messageStore.clearMessages();
-    currentChannel.value = newChannel;
-    messageStore.messages = await messageStore.fetchMessagesForChannel(newChannel.name, 1);
+    if (newChannel) {
+      currentChannel.value = newChannel;
+      if (!messageStore.messages[newChannel.name]) {
+        await messageStore.fetchMessagesForChannel(newChannel.name, 1);
+      }
+    }
   }
 );
 
 async function onLoad(index: number, done: VoidFunction) {
   setTimeout(async () => {
-    const newMessages = await messageStore.fetchMessagesForChannel(currentChannel.value.name, index);
-    messageStore.messages = [...newMessages];
+    if (currentChannel.value) {
+      const newMessages = await messageStore.fetchMessagesForChannel(currentChannel.value.name, index);
+      messageStore.messages[currentChannel.value.name] = [...newMessages];
+    }
     done();
-  }, 1000);
+  }, 500);
 }
 </script>
 
@@ -31,7 +36,7 @@ async function onLoad(index: number, done: VoidFunction) {
   <div class="full-width full-height q-px-sm q-scroll">
     <q-infinite-scroll @load="onLoad" reverse>
       <div
-        v-for="(item, index) in messageStore.messages"
+        v-for="(item, index) in currentChannel?.name ? messageStore.messages[currentChannel.name] ?? [] : []"
         :key="index"
         class="row no-wrap items-start"
       >
@@ -44,17 +49,3 @@ async function onLoad(index: number, done: VoidFunction) {
     </q-infinite-scroll>
   </div>
 </template>
-
-<style scoped>
-.full-width {
-  width: 100%;
-}
-
-.full-height {
-  height: 100%;
-}
-
-.q-scroll {
-  overflow-y: auto;
-}
-</style>
