@@ -48,8 +48,10 @@ export const useChannelStore = defineStore('channelStore', {
       return this.selectedChannel;
     },
     removeChannel(channelName: string) {
-      const index = this.channels.findIndex((channel) => channel.name === channelName);
-      this.channels.splice(index, 1);
+      this.channels = this.channels.filter(channel => channel.name !== channelName);
+      if (this.selectedChannel?.name === channelName) {
+        this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
+      }
     },
   },
 });

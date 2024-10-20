@@ -3,13 +3,14 @@ import { ref, watch, nextTick } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { date } from 'quasar';
+import { Channel } from 'app/frontend/src/types/channel';
 
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
-
 const messageStore = useMessageStore();
 const messageText = ref('');
-const showUserList = ref(false);
+const showUserList = ref(false); // Controls whether to show the user list
+const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
 watch(() => channelStore.getSelectedChannel(), (newChannel) => {
   currentChannel.value = newChannel;
@@ -28,20 +29,64 @@ const decodeHTMLEntities = (text: string) => {
   return element.value;
 };
 
+const handleCommand = (command: string) => {
+  const match = command.match(commandRegex);
+  if (!match) return;
+  const parts = match[1].split(/\s+/);
+  if (parts[0] === 'join') {
+    const isPrivate = parts[1] === 'private';
+    const channelName = isPrivate ? parts[2] : parts[1];
+    const existingChannel = channelStore.channels.find(channel => channel.name === channelName);
+    if (!existingChannel) {
+      const newChannel: Channel = {
+        name: channelName,
+        private: isPrivate,
+      };
+      channelStore.addNewChannel(newChannel);
+      channelStore.selectChannel(newChannel);
+    } else {
+      channelStore.selectChannel(existingChannel);
+    }
+  } else if (parts[0] === 'list') {
+    if (currentChannel.value) {
+      showUserList.value = !showUserList.value;
+    }
+  } else if (parts[0] === 'invite') {
+    const channelName = parts[1];
+    const invitationChannel: Channel = {
+      name: channelName,
+      private: true,
+      isInvitation: true,
+    };
+    channelStore.channels.unshift(invitationChannel);
+  } else if (parts[0] === 'quit') {
+    if (currentChannel.value) {
+      channelStore.removeChannel(currentChannel.value.name);
+      if (channelStore.channels.length > 0) {
+        channelStore.selectChannel(channelStore.channels[0]);
+      } else {
+        currentChannel.value = null;
+      }
+    }
+  }
+};
+
 const sendMessage = () => {
   const decodedMessage = decodeHTMLEntities(messageText.value);
   const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
-
   if (trimmedMessage !== '' && currentChannel.value) {
-    const message = {
-      text: trimmedMessage,
-      name: 'You',
-      timestamp: date.formatDate(new Date(), 'HH:mm'),
-      channelName: currentChannel.value.name,
-    };
-    messageStore.addMessage(message);
+    if (commandRegex.test(trimmedMessage)) {
+      handleCommand(trimmedMessage);
+    } else {
+      const message = {
+        text: trimmedMessage,
+        name: 'You',
+        timestamp: date.formatDate(new Date(), 'HH:mm'),
+        channelName: currentChannel.value.name,
+      };
+      messageStore.addMessage(message);
+    }
     messageText.value = '';
-
     nextTick(() => {
       window.scrollTo({
         top: document.body.scrollHeight,
@@ -52,12 +97,14 @@ const sendMessage = () => {
 };
 
 const closeUserList = () => {
-  showUserList.value = false;
+  showUserList.value = false; // Hide the user list when the close button is clicked
 };
 </script>
 
 <template>
+  <!-- Conditionally show the user list based on showUserList -->
   <div v-if="showUserList" class="user-list-container">
+    <!-- Header with channel name and close button in the same row -->
     <div class="user-list-header">
       <q-item-label class="text-h6">Users in {{ currentChannel?.name }}</q-item-label>
       <q-btn
@@ -69,6 +116,7 @@ const closeUserList = () => {
       />
     </div>
 
+    <!-- Horizontal scrolling row of users -->
     <div class="user-row">
       <q-item v-for="user in currentChannel?.users ?? []" :key="user.username" class="user-item">
         <q-item-section>
@@ -78,7 +126,6 @@ const closeUserList = () => {
       </q-item>
     </div>
   </div>
-
   <div class="full-width items-center bg-white panel">
     <q-editor
       v-model="messageText"
@@ -88,7 +135,6 @@ const closeUserList = () => {
       aria-placeholder="Type a message"
       min-height="3rem"
     />
-
     <q-btn
       round
       unelevated
