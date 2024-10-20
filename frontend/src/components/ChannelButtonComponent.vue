@@ -1,5 +1,19 @@
 <template>
+  <div v-if="isInvitation" class="invitation-wrapper">
+    <p class="text-body2 invite ellipsis" @click="notifyOnInvitationClick">
+      {{ `🔔 Invitation to ${name}` }}
+    </p>
+    <div class="actions">
+      <q-btn unelevated size="14px" flat rounded @click="acceptInvitation"
+        >✅ Accept
+      </q-btn>
+      <q-btn unelevated size="14px" flat rounded @click="rejectInvitation"
+        >❌ Reject
+      </q-btn>
+    </div>
+  </div>
   <q-btn
+    v-else
     unelevated
     size="18px"
     :to="link"
@@ -17,14 +31,29 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { defineProps } from 'vue';
+import { useChannelStore } from '../stores/channelStore';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+const channelStore = useChannelStore();
+
+function notifyOnInvitationClick() {
+  $q.notify({
+    type: 'negative',
+    message: 'You need to accept invite to enter this channel',
+    position: 'top',
+  });
+}
+
+const props = defineProps({
   name: {
     type: String,
     required: true,
   },
   link: {
     type: String,
-    required: true,
+    required: false,
   },
   private: {
     type: Boolean,
@@ -34,7 +63,31 @@ defineProps({
     type: Boolean,
     required: true,
   },
+  isInvitation: {
+    type: Boolean,
+    required: false,
+  },
 });
+
+const acceptInvitation = () => {
+  const originalChannel = channelStore.channels.find(
+    (channel) => channel.name === props.name
+  );
+  console.log(originalChannel);
+  if (originalChannel) {
+    originalChannel.isInvitation = false;
+    channelStore.selectChannel(originalChannel);
+  } else {
+    channelStore.addNewChannel({
+      name: props.name,
+      private: false,
+    });
+  }
+};
+
+const rejectInvitation = () => {
+  channelStore.removeChannel(props.name);
+};
 </script>
 
 <style scoped>
@@ -55,17 +108,20 @@ defineProps({
 
 p {
   margin: 0;
+  width: inherit;
 }
 
-.lock {
-  position: absolute;
-  z-index: 10;
-  right: 0;
-  top: 0;
-  font-size: 1rem;
-  width: 1.8rem;
-  background: #ff5a5f;
-  border-radius: 50%;
-  translate: 20% -20%;
+.invitation-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding: 10px;
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  gap: 2px;
+  margin-top: 10px;
 }
 </style>

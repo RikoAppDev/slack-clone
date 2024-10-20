@@ -11,7 +11,7 @@ const messageStore = useMessageStore();
 const messageText = ref('');
 const showUserList = ref(false); // Controls whether to show the user list
 
-const commandRegex = /^\/(join\s+\w+(\s+private)?|invite\s+\w+\s+a|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
+const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
 watch(() => channelStore.getSelectedChannel(), (newChannel) => {
   currentChannel.value = newChannel;
@@ -37,8 +37,8 @@ const handleCommand = (command: string) => {
   const parts = match[1].split(/\s+/);
 
   if (parts[0] === 'join') {
-    const channelName = parts[1];
-    const isPrivate = parts[2] === 'private';
+    const isPrivate = parts[1] === 'private';
+    const channelName = isPrivate ? parts[2] : parts[1];
 
     const existingChannel = channelStore.channels.find(channel => channel.name === channelName);
 
@@ -48,16 +48,24 @@ const handleCommand = (command: string) => {
         private: isPrivate,
       };
 
-      channelStore.selectChannel(newChannel);
       channelStore.addNewChannel(newChannel);
+      channelStore.selectChannel(newChannel);
     } else {
       channelStore.selectChannel(existingChannel);
     }
   } else if (parts[0] === 'list') {
     if (currentChannel.value) {
-      showUserList.value = true; // Show user list when `/list` is used
-      console.log(`Users in channel ${currentChannel.value.name}: ${(currentChannel.value.users ?? []).map(user => user.username).join(', ')}`);
+      showUserList.value = !showUserList.value;
     }
+  } else if (parts[0] === 'invite') {
+    const channelName = parts[1];
+    const invitationChannel: Channel = {
+      name: channelName,
+      private: true,
+      isInvitation: true,
+    };
+
+    channelStore.channels.unshift(invitationChannel);
   }
 };
 

@@ -55,16 +55,37 @@ const profile: Profile = {
         <p class="channel">Channels</p>
       </q-item>
       <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
-      <q-list class="q-col-gutter-none full-width">
+      <q-list class="q-col-gutter-none full-width channel-list">
         <q-item
-          v-for="(channel, index) in channelStore.channels"
+          v-for="(channel, index) in channelStore.channels.filter(
+            (c) => c.isInvitation
+          )"
+          :key="'invitation-' + index"
+          class="q-my-none q-px-xs q-pb-none"
+        >
+          <ChannelButtonComponent
+            :name="channel.name"
+            :private="channel.private"
+            :isSelected="channel === channelStore.selectedChannel"
+            :isInvitation="channel.isInvitation"
+          />
+        </q-item>
+        <div
+          v-if="channelStore.channels.filter((c) => c.isInvitation).length != 0"
+          class="q-mb-sm bg-primary rounded-borders divider self-center"
+        />
+        <!-- Regular Channels -->
+        <q-item
+          v-for="(channel, index) in channelStore.channels.filter(
+            (c) => !c.isInvitation
+          )"
           :key="index"
           class="q-my-none q-px-xs q-pb-none"
         >
           <ChannelButtonComponent
             :name="channel.name"
             :private="channel.private"
-            :isSelected="channel == channelStore.selectedChannel"
+            :isSelected="channel === channelStore.selectedChannel"
             @click="channelStore.selectChannel(channel)"
           />
         </q-item>
@@ -93,6 +114,12 @@ const profile: Profile = {
   align-items: start;
   border-right: 2px #ff5a5f solid;
   padding-bottom: 10px;
+}
+
+.channel-list {
+  display: flex;
+  flex-direction: column;
+  max-width: 240px;
 }
 
 .channel {

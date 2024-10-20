@@ -89,7 +89,13 @@ const handleCreateChannel = () => {
     private: newChannelPrivate.value,
   };
 
-  if (channelName !== '') {
+  if (channelName.length > 80) {
+    $q.notify({
+      type: 'negative',
+      message: 'Channel name cannot be longer than 80 characters!',
+      position: 'top',
+    });
+  } else if (channelName !== '') {
     channelStore.addNewChannel(newChannel);
 
     setDefault();
