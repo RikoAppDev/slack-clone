@@ -4,6 +4,7 @@ import { useChannelStore } from '../stores/channelStore';
 import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
 import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
 import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
+import LeaveChannelButtonComponent from 'components/LeaveChannelButtonComponent.vue';
 
 const leftDrawerOpen = ref<boolean>(false);
 const toggleLeftDrawer = (): void => {
@@ -93,6 +94,9 @@ const profile: Profile = {
       <q-item class="q-my-none q-pa-none q-px-xs full-width">
         <CreateNewChannelButtonComponent />
       </q-item>
+      <q-item class="leave-channel-btn q-my-none q-pa-none q-px-xs full-width">
+        <LeaveChannelButtonComponent />
+      </q-item>
     </q-drawer>
 
     <!-- Main Page Content -->
@@ -119,7 +123,7 @@ const profile: Profile = {
 .channel-list {
   display: flex;
   flex-direction: column;
-  max-width: 240px;
+  max-width: 238px;
 }
 
 .channel {
@@ -134,5 +138,9 @@ const profile: Profile = {
   height: 2px;
 
   transform: translateY(-50%);
+}
+
+.leave-channel-btn {
+  align-self: end;
 }
 </style>

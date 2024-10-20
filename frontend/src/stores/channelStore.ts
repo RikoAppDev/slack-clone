@@ -53,5 +53,11 @@ export const useChannelStore = defineStore('channelStore', {
         this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
       }
     },
-  },
+    initializeSelectedChannel() {
+      this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
+    }
+  }
 });
+
+const channelStore = useChannelStore();
+channelStore.initializeSelectedChannel();
