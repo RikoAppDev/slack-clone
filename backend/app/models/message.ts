@@ -12,13 +12,13 @@ export default class Message extends BaseModel {
     declare content: string
 
     @column()
-    declare senderId: number
+    declare sender_id: number
 
     @column()
-    declare channelId: number
+    declare channel_id: number
 
     @column.dateTime({ autoCreate: true })
-    declare sentAt: DateTime
+    declare sent_at: DateTime
 
     @hasOne(() => User, {
         localKey: 'senderId',

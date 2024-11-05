@@ -3,12 +3,11 @@ import Channel from '../../app/models/channel.ts'
 
 export default class ChannelSeeder extends BaseSeeder {
     public async run() {
-        const uniqueKey = 'name'
-
-        await Channel.updateOrCreateMany(uniqueKey, [
-            {
-                name: 'general',
-            },
+        await Channel.createMany([
+            { name: 'General' },
+            { name: 'Development' },
+            { name: 'Design' },
+            { name: 'Marketing' },
         ])
     }
 }
