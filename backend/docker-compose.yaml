@@ -1,0 +1,15 @@
+services:
+    db:
+        image: postgres:13  # Specify the version for stability
+        restart: always
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_DATABASE}
+        ports:
+            - "${DB_PORT}:5432"
+        volumes:
+            - my_dbdata:/var/lib/postgresql/data
+
+volumes:
+    my_dbdata:
