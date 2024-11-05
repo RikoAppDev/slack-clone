@@ -9,8 +9,8 @@ export default class MessageController {
             // Create a new message record
             const message = await Message.create({
                 content: data.content,
-                senderId: auth.user?.$attributes.id,
-                channelId: data.channel_id,
+                sender_id: auth.user?.$attributes.id,
+                channel_id: data.channel_id,
             })
 
             return response.status(201).json({
