@@ -33,6 +33,7 @@
     },
     "devDependencies": {
         "@adonisjs/assembler": "^7.8.2",
+        "@adonisjs/cli": "^4.0.13",
         "@adonisjs/eslint-config": "^2.0.0-beta.6",
         "@adonisjs/prettier-config": "^1.4.0",
         "@adonisjs/tsconfig": "^1.4.0",
