@@ -9,10 +9,6 @@
 
 import router from '@adonisjs/core/services/router'
 
-router.get('/', async () => {
-    return {
-        hello: 'world',
-    }
-})
+const MessageController = () => import('#controllers/messages_controller')
 
-router
+router.post('/messages', [MessageController, 'addMessage'])

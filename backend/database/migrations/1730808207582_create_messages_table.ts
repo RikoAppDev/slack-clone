@@ -20,12 +20,6 @@ export default class extends BaseSchema {
                 .references('id')
                 .inTable('channels')
                 .onDelete('CASCADE')
-            table
-                .integer('mentions')
-                .unsigned()
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE')
         })
     }
 
