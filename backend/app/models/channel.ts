@@ -1,14 +1,34 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import Message from './message.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
+import { randomUUID } from 'node:crypto'
+import User from '#models/user'
 
 export default class Channel extends BaseModel {
+    static selfAssignPrimaryKey = true
+
     @column({ isPrimary: true })
-    declare id: number
+    declare id: string
+
+    @beforeCreate()
+    static assignUuid(channel: Channel) {
+        channel.id = randomUUID()
+    }
+
+    @hasMany(() => Message, {
+        foreignKey: 'channel_id',
+    })
+    declare messages: relations.HasMany<typeof Message>
 
     @column()
     declare name: string
+
+    @column()
+    declare is_private: boolean
+
+    @column.dateTime({ autoCreate: true })
+    declare last_activity_at: DateTime
 
     @column.dateTime({ autoCreate: true })
     declare created_at: DateTime
@@ -16,8 +36,8 @@ export default class Channel extends BaseModel {
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     declare updated_at: DateTime
 
-    @hasMany(() => Message, {
-        foreignKey: 'channelId',
+    @hasOne(() => User, {
+        foreignKey: 'id',
     })
-    declare messages: relations.HasMany<typeof Message>
+    declare created_by: relations.HasOne<typeof User>
 }

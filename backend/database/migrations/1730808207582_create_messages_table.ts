@@ -5,21 +5,11 @@ export default class extends BaseSchema {
 
     async up() {
         this.schema.createTable(this.tableName, (table) => {
-            table.increments('id')
+            table.uuid('id').primary()
             table.string('content').notNullable()
-            table.timestamp('sent_at', { useTz: true })
-            table
-                .integer('sender_id')
-                .unsigned()
-                .references('id')
-                .inTable('users')
-                .onDelete('CASCADE')
-            table
-                .integer('channel_id')
-                .unsigned()
-                .references('id')
-                .inTable('channels')
-                .onDelete('CASCADE')
+            table.timestamp('sent_at', { useTz: true }).notNullable()
+            table.uuid('sender_id').references('id').inTable('users').onDelete('CASCADE')
+            table.uuid('channel_id').references('id').inTable('channels').onDelete('CASCADE')
         })
     }
 

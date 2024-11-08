@@ -5,24 +5,23 @@ export default class extends BaseSchema {
 
     async up() {
         this.schema.createTable(this.tableName, (table) => {
-            table.increments('id')
             table
-                .integer('user_id')
-                .unsigned()
+                .uuid('user_id')
                 .notNullable()
                 .references('id')
                 .inTable('users')
                 .onDelete('CASCADE')
+
             table
-                .integer('channel_id')
-                .unsigned()
+                .uuid('channel_id')
                 .notNullable()
                 .references('id')
                 .inTable('channels')
                 .onDelete('CASCADE')
-            table.unique(['user_id', 'channel_id'])
-            table.timestamp('created_at')
-            table.timestamp('updated_at')
+
+            table.primary(['user_id', 'channel_id'])
+            table.timestamp('created_at').defaultTo(this.now())
+            table.timestamp('updated_at').defaultTo(this.now())
         })
     }
 

@@ -1,12 +1,13 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import Message from './message.ts'
 import Channel from './channel.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
+import { randomUUID } from 'node:crypto'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
     uids: ['email'],
@@ -14,11 +15,24 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 })
 
 export default class User extends compose(BaseModel, AuthFinder) {
+    static selfAssignPrimaryKey = true
+
     @column({ isPrimary: true })
-    declare id: number
+    declare id: string
+
+    @beforeCreate()
+    static assignUuid(user: User) {
+        user.id = randomUUID()
+    }
 
     @column()
-    declare username: string | null
+    declare firstname: string
+
+    @column()
+    declare lastname: string
+
+    @column()
+    declare username: string
 
     @column()
     declare email: string
@@ -33,7 +47,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     declare updated_at: DateTime | null
 
     @hasMany(() => Message, {
-        foreignKey: 'senderId',
+        foreignKey: 'sender_id',
     })
     declare messages: relations.HasMany<typeof Message>
 

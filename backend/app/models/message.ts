@@ -1,32 +1,40 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column, hasOne } from '@adonisjs/lucid/orm'
 import Channel from './channel.ts'
 import User from './user.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
+import { randomUUID } from 'node:crypto'
 
 export default class Message extends BaseModel {
+    static selfAssignPrimaryKey = true
+
     @column({ isPrimary: true })
-    declare id: number
+    declare id: string
+
+    @beforeCreate()
+    static assignUuid(message: Message) {
+        message.id = randomUUID()
+    }
 
     @column()
     declare content: string
 
     @column()
-    declare sender_id: number
+    declare sender_id: string
 
     @column()
-    declare channel_id: number
+    declare channel_id: string
 
     @column.dateTime({ autoCreate: true })
     declare sent_at: DateTime
 
     @hasOne(() => User, {
-        localKey: 'senderId',
+        localKey: 'sender_id',
     })
     declare author: relations.HasOne<typeof User>
 
     @hasOne(() => Channel, {
-        localKey: 'channelId',
+        localKey: 'channel_id',
     })
     declare channel: relations.HasOne<typeof Channel>
 }
