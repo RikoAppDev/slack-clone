@@ -3,7 +3,13 @@ import router from '@adonisjs/core/services/router'
 const MessageController = () => import('#controllers/messages_controller')
 const AuthController = () => import('#controllers/auth_controller')
 
-router.post('/messages', [MessageController, 'addMessage'])
+// Message Routes
+router
+    .group(() => {
+        router.post('create', [MessageController, 'create'])
+        router.get('retrieve', [MessageController, 'retrieve'])
+    })
+    .prefix('/channels/:channel_name/messages')
 
 // Authentication Routes
 router

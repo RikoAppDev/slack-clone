@@ -1,43 +1,39 @@
 import { defineStore } from 'pinia';
-import { date } from 'quasar';
-
-interface Message {
-  text: string;
-  name: string;
-  timestamp: string;
-  channelName: string;
-}
+import { Message } from 'app/frontend/src/types/message';
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
     messages: {} as { [key: string]: Message[] },
-    pageSize: 10,
+    pageSize: 15,
+    currentPage: 1,
   }),
   actions: {
     async fetchMessagesForChannel(channelName: string, page: number): Promise<Message[]> {
-      const start = (page - 1) * this.pageSize;
-      const end = start + this.pageSize;
-      const allMessages = [
-        { text: `Welcome to ${channelName}!`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm'), channelName },
-        { text: `This is the ${channelName} channel.`, name: 'System', timestamp: date.formatDate(new Date(), 'HH:mm'), channelName },
-      ];
+      try {
+        const response = await fetch(`/api/channels/${channelName}/messages/retrieve?page=${page}&pageSize=${this.pageSize}`);
+        const data = await response.json();
+        return data.data;
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+        return [];
+      }
+    },
+    async addMessage(message: Message) {
+      try {
+        const response = await fetch(`/api/channels/${message.channelName}/messages/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: message.text }),
+        });
 
-      const newMessages = allMessages.slice(start, end);
-      if (!this.messages[channelName]) {
-        this.messages[channelName] = [];
-      }
-      this.messages[channelName] = [...newMessages, ...this.messages[channelName]];
-      return this.messages[channelName];
-    },
-    addMessage(message: Message) {
-      if (!this.messages[message.channelName]) {
-        this.messages[message.channelName] = [];
-      }
-      this.messages[message.channelName].push(message);
-    },
-    clearMessages(channelName: string) {
-      if (this.messages[channelName]) {
-        this.messages[channelName] = [];
+        const data = await response.json();
+        if (!this.messages[message.channelName]) {
+          this.messages[message.channelName] = [];
+        }
+        this.messages[message.channelName].push(data.data);
+
+      } catch (error) {
+        console.error('Failed to add message to the database:', error);
       }
     },
   },

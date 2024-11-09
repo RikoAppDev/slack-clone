@@ -63,6 +63,7 @@ export default class AuthController {
 
     // Log out the authenticated user
     public async logout({ auth, response }: HttpContext) {
+        // @ts-ignore
         await auth.use('api').revoke()
         return response.ok({ message: 'Logout successful' })
     }
