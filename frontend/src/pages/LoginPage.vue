@@ -70,8 +70,8 @@ const $q = useQuasar();
 const router = useRouter();
 const userStore = useUserStore();
 
-const email = ref('');
-const password = ref('');
+const email = ref('john@example.com');
+const password = ref('password:123');
 const rememberMe = ref(false);
 const showPassword = ref(false);
 

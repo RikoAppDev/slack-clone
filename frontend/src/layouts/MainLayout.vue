@@ -12,16 +12,6 @@ const toggleLeftDrawer = (): void => {
 };
 
 const channelStore = useChannelStore();
-
-interface Profile {
-  name: string;
-  nickname: string;
-}
-
-const profile: Profile = {
-  name: 'Janko Hrasko',
-  nickname: '@janik_na_hrasku',
-};
 </script>
 
 <template>
@@ -38,10 +28,7 @@ const profile: Profile = {
           @click="toggleLeftDrawer"
         />
         <q-toolbar-title>Riso&Riko co.</q-toolbar-title>
-        <ProfileButtonComponent
-          :name="profile.name"
-          :nickname="profile.nickname"
-        />
+        <ProfileButtonComponent />
       </q-toolbar>
     </q-header>
 

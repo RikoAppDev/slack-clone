@@ -1,6 +1,7 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import User from '../../app/models/user.ts'
 import { DateTime } from 'luxon'
+import { UserFactory } from '#database/factories/user_factory'
 
 export default class UserSeeder extends BaseSeeder {
     public async run() {
@@ -10,7 +11,7 @@ export default class UserSeeder extends BaseSeeder {
                 lastname: 'Doe',
                 username: 'john_doe',
                 email: 'john@example.com',
-                password: 'password1',
+                password: 'password:123',
                 created_at: DateTime.local(),
             },
             {
@@ -18,7 +19,7 @@ export default class UserSeeder extends BaseSeeder {
                 lastname: 'Doe',
                 username: 'jane_doe',
                 email: 'jane@example.com',
-                password: 'password2',
+                password: 'password:123',
                 created_at: DateTime.local(),
             },
             {
@@ -26,7 +27,7 @@ export default class UserSeeder extends BaseSeeder {
                 lastname: 'Palice',
                 username: 'alice',
                 email: 'alice@example.com',
-                password: 'password3',
+                password: 'password:123',
                 created_at: DateTime.local(),
             },
             {
@@ -34,9 +35,11 @@ export default class UserSeeder extends BaseSeeder {
                 lastname: 'Bobek',
                 username: 'bob',
                 email: 'bob@example.com',
-                password: 'password4',
+                password: 'password:123',
                 created_at: DateTime.local(),
             },
         ])
+
+        await UserFactory.createMany(10)
     }
 }

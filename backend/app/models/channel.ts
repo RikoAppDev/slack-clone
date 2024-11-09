@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import Message from './message.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
@@ -36,8 +36,11 @@ export default class Channel extends BaseModel {
     @column.dateTime({ autoCreate: true, autoUpdate: true })
     declare updated_at: DateTime
 
-    @hasOne(() => User, {
-        foreignKey: 'id',
+    @column()
+    declare created_by: string
+
+    @belongsTo(() => User, {
+        foreignKey: 'created_by',
     })
-    declare created_by: relations.HasOne<typeof User>
+    declare creator: relations.BelongsTo<typeof User>
 }

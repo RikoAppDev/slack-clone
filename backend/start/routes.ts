@@ -15,7 +15,7 @@ router
 // Channel Routes
 router
     .group(() => {
-        router.get('retrieve', [ChannelController, 'retrieve']);
+        router.get('retrieve', [ChannelController, 'retrieve'])
     })
     .prefix('/channels')
 

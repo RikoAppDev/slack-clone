@@ -57,7 +57,7 @@ export default class AuthController {
                 token: 'token',
             })
         } catch (error) {
-            return response.unauthorized({ message: 'Login failed', error: error.message })
+            return response.unauthorized({ message: 'Invalid credentials', error: error.message })
         }
     }
 
