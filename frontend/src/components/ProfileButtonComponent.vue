@@ -67,14 +67,23 @@ const handleStatusChange = () => {
   userStore.changeStatus(group.value);
 };
 
-const handleLogout = () => {
-  $q.notify({
-    type: 'positive',
-    message: 'Logout successful',
-    position: 'top',
-  });
+const handleLogout = async () => {
+  try {
+    await userStore.logout();
 
-  userStore.logout();
-  router.push('/login');
+    $q.notify({
+      type: 'positive',
+      message: 'Logout successful',
+      position: 'top',
+    });
+
+    await router.push('/login');
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.message || 'An error occurred',
+      position: 'top',
+    });
+  }
 };
 </script>

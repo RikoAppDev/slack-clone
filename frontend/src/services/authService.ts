@@ -1,4 +1,3 @@
-import { User } from 'app/frontend/src/types/user';
 import {
   LoginCredentialsDao,
   SignupDataDao,
@@ -38,9 +37,9 @@ export const authService = {
     return data;
   },
 
-  // Future API call to get user data from a token
-  async getUserData(token: string) {
-    const response = await fetch('/api/me', {
+  async me(token: string | null) {
+    const response = await fetch(process.env.API_URL + '/auth/me', {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -55,18 +54,18 @@ export const authService = {
     return data;
   },
 
-  // Future API call to update profile
-  async updateProfile(updatedUserData: Partial<User>) {
-    const response = await fetch('/api/update-profile', {
-      method: 'PATCH',
-      body: JSON.stringify(updatedUserData),
-      headers: { 'Content-Type': 'application/json' },
+  async logout(token: string | null) {
+    const response = await fetch(process.env.API_URL + '/auth/logout', {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Profile update failed');
+      throw new Error(data.message || 'Logout failed');
     }
 
     return data;

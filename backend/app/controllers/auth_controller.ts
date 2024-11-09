@@ -1,26 +1,22 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
-import hash from '@adonisjs/core/services/hash'
+import { loginAuthValidator, registerAuthValidator } from '#validators/auth'
 
 export default class AuthController {
     // Register a new user
     async register({ request, response }: HttpContext) {
-        const { firstname, lastname, username, email, password } = request.only([
-            'firstname',
-            'lastname',
-            'username',
-            'email',
-            'password',
-        ])
+        const data = await request.validateUsing(registerAuthValidator)
 
-        const user = await User.findBy('email', email)
+        const user = await User.findBy('email', data.email)
 
         if (user) {
             return response.conflict({ message: 'Email already in use' })
         }
 
         try {
-            const newUser = await User.create({ firstname, lastname, username, email, password })
+            const newUser = await User.create(data)
+
+            const token = await User.accessTokens.create(newUser)
 
             return response.created({
                 user: {
@@ -28,7 +24,7 @@ export default class AuthController {
                     lastname: newUser.lastname,
                     username: newUser.username,
                 },
-                token: 'token',
+                token: token.value!.release(),
             })
         } catch (error) {
             return response.badRequest({ message: 'Registration failed', error: error.message })
@@ -37,24 +33,23 @@ export default class AuthController {
 
     // Log in an existing user
     async login({ request, response }: HttpContext) {
-        const { email, password } = request.only(['email', 'password'])
+        const { email, password } = await request.validateUsing(loginAuthValidator)
+
+        console.log(email, password)
 
         try {
             // Verify user credentials
-            const user = await User.query().where('email', email).firstOrFail()
-            if (!(await hash.verify(user.password, password))) {
-                return response.unauthorized({ message: 'Invalid credentials' })
-            }
+            const user = await User.verifyCredentials(email, password)
 
-            // TODO: token
-            // const token = await auth.use('api').generate(user)
+            const token = await User.accessTokens.create(user)
+
             return response.ok({
                 user: {
                     firstname: user.firstname,
                     lastname: user.lastname,
                     username: user.username,
                 },
-                token: 'token',
+                token: token.value!.release(),
             })
         } catch (error) {
             return response.unauthorized({ message: 'Invalid credentials', error: error.message })
@@ -62,9 +57,20 @@ export default class AuthController {
     }
 
     // Log out the authenticated user
-    public async logout({ auth, response }: HttpContext) {
-        // @ts-ignore
-        await auth.use('api').revoke()
+    async logout({ auth, response }: HttpContext) {
+        const user = auth.user!
+
+        await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+
         return response.ok({ message: 'Logout successful' })
+    }
+
+    // Get user data
+    async me({ auth }: HttpContext) {
+        await auth.check()
+
+        return {
+            user: auth.user,
+        }
     }
 }
