@@ -1,17 +1,24 @@
 import { RouteRecordRaw } from 'vue-router';
 
-import LoginPage from 'src/pages/LoginPage.vue';
-import SignupPage from 'src/pages/SignupPage.vue';
 import ForgotPasswordPage from 'src/pages/ForgotPasswordPage.vue';
-import ResetPasswordConfirmPage from 'src/pages/ResetPasswordConfirmPage.vue';
+import { useUserStore } from '../stores/user';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: (to, from, next) => {
+      const userStore = useUserStore();
+      if (!userStore.isAuthenticated) {
+        next('/login'); // Redirect to login if not authenticated
+      } else {
+        next();
+      }
+    },
     children: [
       {
-        path: '', component: () => import('pages/ChannelMessagePage.vue')
+        path: '',
+        component: () => import('pages/ChannelMessagePage.vue'),
       },
     ],
   },
@@ -19,9 +26,12 @@ const routes: RouteRecordRaw[] = [
   { path: '/home', redirect: '/' },
 
   // auth
-  { path: '/login', component: LoginPage },
-  { path: '/signup', component: SignupPage },
-  { path: '/forgot-password', component: ForgotPasswordPage },
+  { path: '/login', component: () => import('pages/LoginPage.vue') },
+  { path: '/signup', component: () => import('pages/SignupPage.vue') },
+  {
+    path: '/forgot-password',
+    component: () => import('pages/ForgotPasswordPage.vue'),
+  },
   {
     path: '/password-reset',
     redirect: '/password-reset/request',
@@ -31,10 +41,12 @@ const routes: RouteRecordRaw[] = [
         component: ForgotPasswordPage,
         props: { isResetPassword: true },
       },
-      { path: 'confirm', component: ResetPasswordConfirmPage },
+      {
+        path: 'confirm',
+        component: () => import('pages/ResetPasswordConfirmPage.vue'),
+      },
     ],
   },
-
 
   {
     path: '/:catchAll(.*)*',

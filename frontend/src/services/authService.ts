@@ -1,18 +1,12 @@
 import { User } from 'app/frontend/src/types/user';
+import {
+  LoginCredentialsDao,
+  SignupDataDao,
+} from 'app/frontend/src/types/auth';
 
-// TODO: example of future endpoint calls
-
-export const apiService = {
-  // Future API call for signup
-  async signup(signupData: {
-    firstname: string;
-    lastname: string;
-    username: string;
-    email: string;
-    password: string;
-  }) {
-    // Simulate or make an actual API request
-    const response = await fetch('/api/signup', {
+export const authService = {
+  async signup(signupData: SignupDataDao) {
+    const response = await fetch(process.env.API_URL + '/auth/register', {
       method: 'POST',
       body: JSON.stringify(signupData),
       headers: { 'Content-Type': 'application/json' },
@@ -20,6 +14,7 @@ export const apiService = {
 
     const data = await response.json();
 
+    // Bad request or Conflict
     if (!response.ok) {
       throw new Error(data.message || 'Signup failed');
     }
@@ -27,9 +22,8 @@ export const apiService = {
     return data;
   },
 
-  // Future API call for login
-  async login(credentials: { email: string; password: string }) {
-    const response = await fetch('/api/login', {
+  async login(credentials: LoginCredentialsDao) {
+    const response = await fetch(process.env.API_URL + '/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
       headers: { 'Content-Type': 'application/json' },
@@ -41,7 +35,7 @@ export const apiService = {
       throw new Error(data.message || 'Login failed');
     }
 
-    return data; // Should return token and user data
+    return data;
   },
 
   // Future API call to get user data from a token

@@ -92,7 +92,7 @@ const onSubmit = async () => {
     });
     return;
   }
-  // TODO: Handle form submit logic
+
   try {
     await userStore.login({
       email: email.value,
@@ -108,7 +108,7 @@ const onSubmit = async () => {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'An error occurred',
+      message: error.message || 'An error occurred',
       position: 'top',
     });
   }

@@ -14,6 +14,7 @@
           size="sm"
           :options="options"
           v-model="group"
+          @update:model-value="handleStatusChange"
         />
       </div>
 
@@ -50,22 +51,10 @@ const $q = useQuasar();
 const router = useRouter();
 const userStore = useUserStore();
 
-defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  tag: {
-    type: String,
-    required: true,
-  },
-  imgUrl: {
-    type: String,
-    required: true,
-  },
-});
+const name = userStore.getFullName;
+const tag = userStore.getUsername;
 
-const group = ref(userStore.status);
+const group = ref(userStore.getStatus);
 
 const options = [
   { label: 'Online', value: Status.ONLINE, color: 'green' },
@@ -74,12 +63,18 @@ const options = [
   { label: 'Offline', value: Status.OFFLINE, color: 'red' },
 ];
 
-const handleLogout = async () => {
+const handleStatusChange = () => {
+  userStore.changeStatus(group.value);
+};
+
+const handleLogout = () => {
   $q.notify({
     type: 'positive',
     message: 'Logout successful',
     position: 'top',
   });
-  await router.push('/login');
+
+  userStore.logout();
+  router.push('/login');
 };
 </script>

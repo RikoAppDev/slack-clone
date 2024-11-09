@@ -22,12 +22,3 @@ export interface SignupDataDao {
   email: string;
   password: string;
 }
-
-export interface UserDao {
-  firstname: string;
-  lastname: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  role: string;
-}

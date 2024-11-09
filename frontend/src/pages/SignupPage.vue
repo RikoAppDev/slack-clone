@@ -117,15 +117,15 @@ const $q = useQuasar();
 const router = useRouter();
 const userStore = useUserStore();
 
-const firstname = ref('');
-const lastname = ref('');
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const passwordRepeated = ref('');
+const firstname = ref('Riko');
+const lastname = ref('Duvi');
+const username = ref('rikoduvi');
+const email = ref('test@gmail.com');
+const password = ref('Heslo:123');
+const passwordRepeated = ref('Heslo:123');
 const showPassword = ref(false);
 const rememberMe = ref(false);
-const termsAccepted = ref(false);
+const termsAccepted = ref(true);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
@@ -159,7 +159,6 @@ const onSubmit = async () => {
     return;
   }
 
-  // TODO: Handle form submit logic
   try {
     await userStore.signup({
       firstname: firstname.value,
@@ -178,7 +177,7 @@ const onSubmit = async () => {
   } catch (error) {
     $q.notify({
       type: 'negative',
-      message: error.response?.data?.message || 'An error occurred',
+      message: error.message || 'An error occurred',
       position: 'top',
     });
   }
