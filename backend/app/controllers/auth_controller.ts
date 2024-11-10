@@ -65,10 +65,12 @@ export default class AuthController {
 
     // Get user data
     async me({ auth }: HttpContext) {
-        await auth.check()
-
         return {
-            user: auth.user,
+            user: {
+                firstname: auth.user?.firstname,
+                lastname: auth.user?.lastname,
+                username: auth.user?.username,
+            },
         }
     }
 }

@@ -69,7 +69,7 @@ const handleStatusChange = () => {
 
 const handleLogout = async () => {
   try {
-    await userStore.logout();
+    await userStore.logout(true);
 
     $q.notify({
       type: 'positive',
@@ -79,11 +79,8 @@ const handleLogout = async () => {
 
     await router.push('/login');
   } catch (error: any) {
-    $q.notify({
-      type: 'negative',
-      message: error.message || 'An error occurred',
-      position: 'top',
-    });
+    console.log('Session logout failed');
+    await router.push('/login');
   }
 };
 </script>

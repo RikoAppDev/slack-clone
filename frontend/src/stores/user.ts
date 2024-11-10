@@ -71,8 +71,10 @@ export const useUserStore = defineStore('user', () => {
   };
 
   // Logout action: Clears user data and removes token
-  const logout = async () => {
-    await authService.logout();
+  const logout = async (request: boolean) => {
+    if (request) {
+      await authService.logout();
+    }
 
     token.value = null;
     user.value = null;
@@ -81,24 +83,22 @@ export const useUserStore = defineStore('user', () => {
     localStorage.clear();
   };
 
-  // TODO: Check authentication: Checks for persisted token and user on page load
   const checkAuth = async () => {
     const savedToken = Cookies.get('authToken');
 
     if (savedToken) {
       try {
-        // Optionally, verify token validity with the backend in the future
-        const data = await authService.me();
+        await authService.me();
 
-        token.value = savedToken;
-        user.value = data.user;
-        status.value = Status.ONLINE; // Update user status based on authentication
+        // token.value = savedToken;
+        // user.value = data.user;
+        // status.value = Status.ONLINE; // Update user status based on authentication
       } catch (error) {
         console.error('Token verification failed:', error);
-        await logout(); // If token is invalid, clear session
+        await logout(false); // If token is invalid, clear session
       }
     } else {
-      await logout();
+      await logout(false);
     }
   };
 

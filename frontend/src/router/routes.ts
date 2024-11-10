@@ -7,6 +7,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
     beforeEnter: (to, from, next) => {
       const userStore = useUserStore();
       if (!userStore.isAuthenticated) {
