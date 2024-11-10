@@ -1,40 +1,60 @@
 import { defineStore } from 'pinia';
-import { Message } from 'app/frontend/src/types/message';
+import { Message } from '../types/message';
+import { messService } from '../services/messService';
+import { useChannelStore } from './channelStore';
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
     messages: {} as { [key: string]: Message[] },
     pageSize: 15,
-    currentPage: 1,
+    currentPage: {} as { [key: string]: number },
+    hasMoreMessages: {} as { [key: string]: boolean },
   }),
   actions: {
-    async fetchMessagesForChannel(channelName: string, page: number): Promise<Message[]> {
-      try {
-        const response = await fetch(`/api/channels/${channelName}/messages/retrieve?page=${page}&pageSize=${this.pageSize}`);
-        const data = await response.json();
-        return data.data;
-      } catch (error) {
-        console.error('Failed to fetch messages:', error);
-        return [];
+    async fetchMessagesForChannel(channelName: string, page: number) {
+      const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
+
+      console.log(data);
+
+      // Transform the data to match the Message interface
+      const transformedMessages = data.data.data.map((msg: any) => ({
+        text: msg.content,
+        name: msg.senderId,
+        timestamp: msg.sentAt,
+        channelName: channelName,
+      }));
+
+      if (!this.messages[channelName]) {
+        this.messages[channelName] = [];
+        this.currentPage[channelName] = 1;
       }
-    },
+      this.messages[channelName] = [...this.messages[channelName], ...transformedMessages];
+      this.hasMoreMessages[channelName] = transformedMessages.length === this.pageSize;
+      },
+
     async addMessage(message: Message) {
-      try {
-        const response = await fetch(`/api/channels/${message.channelName}/messages/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: message.text }),
-        });
+      const content = message.text;
+      const data = await messService.addMessage(content);
 
-        const data = await response.json();
-        if (!this.messages[message.channelName]) {
-          this.messages[message.channelName] = [];
-        }
-        this.messages[message.channelName].push(data.data);
+      const channelName = useChannelStore().getSelectedChannel()?.name;
 
-      } catch (error) {
-        console.error('Failed to add message to the database:', error);
+      if (!channelName) {
+        throw new Error('No channel selected');
       }
+
+      if (!this.messages[channelName]) {
+        this.messages[channelName] = [];
+      }
+
+      // Transform the data to match the Message interface
+      const transformedMessage = {
+        text: data.data.content,
+        name: data.data.senderId,
+        timestamp: data.data.sentAt,
+        channelName: channelName,
+      };
+
+      this.messages[channelName].push(transformedMessage);
     },
   },
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { date } from 'quasar';
@@ -9,7 +9,7 @@ const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
 const messageStore = useMessageStore();
 const messageText = ref('');
-const showUserList = ref(false); // Controls whether to show the user list
+const showUserList = ref(false);
 const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
 watch(() => channelStore.getSelectedChannel(), (newChannel) => {
@@ -87,24 +87,16 @@ const sendMessage = () => {
       messageStore.addMessage(message);
     }
     messageText.value = '';
-    nextTick(() => {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-      });
-    });
   }
 };
 
 const closeUserList = () => {
-  showUserList.value = false; // Hide the user list when the close button is clicked
+  showUserList.value = false;
 };
 </script>
 
 <template>
-  <!-- Conditionally show the user list based on showUserList -->
   <div v-if="showUserList" class="user-list-container">
-    <!-- Header with channel name and close button in the same row -->
     <div class="user-list-header">
       <q-item-label class="text-h6">Users in {{ currentChannel?.name }}</q-item-label>
       <q-btn
@@ -115,8 +107,6 @@ const closeUserList = () => {
         class="close-btn"
       />
     </div>
-
-    <!-- Horizontal scrolling row of users -->
     <div class="user-row">
       <q-item v-for="user in currentChannel?.users ?? []" :key="user.username" class="user-item">
         <q-item-section>

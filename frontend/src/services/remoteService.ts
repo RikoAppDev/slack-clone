@@ -5,9 +5,15 @@ export const api = async (
   url: string,
   payload = {},
 ) => {
-  const token = Cookies.get('authToken')
+  const token = Cookies.get('authToken');
 
-  return await fetch(process.env.API_URL + url, {
+  // Append payload as query parameters if it's a GET request
+  let fullUrl = process.env.API_URL + url;
+  if (method === 'GET' && Object.keys(payload).length) {
+    const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
+    fullUrl += `?${queryParams}`;
+  }
+  return await fetch(fullUrl, {
     method,
     headers: {
       'Content-Type': 'application/json',

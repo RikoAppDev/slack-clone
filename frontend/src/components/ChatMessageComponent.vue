@@ -19,7 +19,6 @@ const highlightMentions = (text: string) => {
       bg-color="white"
       text-color="black"
     >
-      <!-- Render the highlighted text with v-html -->
       <div v-html="highlightMentions(props.text)"></div>
     </q-chat-message>
   </div>

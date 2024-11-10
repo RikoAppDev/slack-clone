@@ -12,6 +12,7 @@ router
         router.get('retrieve', [MessageController, 'retrieve'])
     })
     .prefix('/channels/:channel_name/messages')
+    .use(middleware.auth())
 
 // Channel Routes
 router
