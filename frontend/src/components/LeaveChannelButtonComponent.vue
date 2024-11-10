@@ -28,19 +28,27 @@ const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
 
 const handleLeaveChannel = () => {
-  currentChannel.value = channelStore.getSelectedChannel()
+  currentChannel.value = channelStore.getSelectedChannel();
   if (currentChannel.value) {
-    channelStore.removeChannel(currentChannel.value.name);
-    if (channelStore.channels.length > 0) {
-      channelStore.selectChannel(channelStore.channels[0]);
-    } else {
-      currentChannel.value = null;
+    try {
+      channelStore.removeChannel(currentChannel.value.name);
+      if (channelStore.channels.length > 0) {
+        channelStore.selectChannel(channelStore.channels[0]);
+      } else {
+        currentChannel.value = null;
+      }
+      $q.notify({
+        type: 'positive',
+        message: 'Channel left successfully',
+        position: 'top',
+      });
+    } catch (error) {
+      $q.notify({
+        type: 'negative',
+        message: 'Failed to remove channel:',
+        position: 'top',
+      });
     }
-    $q.notify({
-      type: 'positive',
-      message: 'Channel left successfully',
-      position: 'top',
-    });
   }
 };
 </script>

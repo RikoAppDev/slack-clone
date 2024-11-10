@@ -4,6 +4,7 @@ import Message from './message.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
 import User from '#models/user'
+import ChannelUser from '#models/channel_user'
 
 export default class Channel extends BaseModel {
     static selfAssignPrimaryKey = true
@@ -15,6 +16,11 @@ export default class Channel extends BaseModel {
     static assignUuid(channel: Channel) {
         channel.id = randomUUID()
     }
+
+    @hasMany(() => ChannelUser, {
+        foreignKey: 'channel_id',
+    })
+    declare channelUsers: relations.HasMany<typeof ChannelUser>
 
     @hasMany(() => Message, {
         foreignKey: 'channel_id',

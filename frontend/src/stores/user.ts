@@ -72,7 +72,7 @@ export const useUserStore = defineStore('user', () => {
 
   // Logout action: Clears user data and removes token
   const logout = async () => {
-    await authService.logout(token.value);
+    await authService.logout();
 
     token.value = null;
     user.value = null;
@@ -88,7 +88,7 @@ export const useUserStore = defineStore('user', () => {
     if (savedToken) {
       try {
         // Optionally, verify token validity with the backend in the future
-        const data = await authService.me(savedToken);
+        const data = await authService.me();
 
         token.value = savedToken;
         user.value = data.user;

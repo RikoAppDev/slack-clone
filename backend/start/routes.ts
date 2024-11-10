@@ -16,9 +16,13 @@ router
 // Channel Routes
 router
     .group(() => {
-        router.get('retrieve', [ChannelController, 'retrieve'])
+        router.get('retrieve', [ChannelController, 'retrieve']).as('channels.retrieve')
+        router.post('create', [ChannelController, 'create']).as('channels.create')
+        router.delete(':name/delete', [ChannelController, 'delete']).as('channels.delete')
     })
     .prefix('/channels')
+    .use(middleware.auth())
+    .as('channels')
 
 // Authentication Routes
 router

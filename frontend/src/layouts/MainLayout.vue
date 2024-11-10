@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useChannelStore } from '../stores/channelStore';
 import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
 import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
 import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
 import LeaveChannelButtonComponent from 'components/LeaveChannelButtonComponent.vue';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
 
 const leftDrawerOpen = ref<boolean>(false);
 const toggleLeftDrawer = (): void => {
@@ -12,6 +15,18 @@ const toggleLeftDrawer = (): void => {
 };
 
 const channelStore = useChannelStore();
+
+onMounted(async () => {
+  try {
+    await channelStore.fetchChannels();
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.message || 'An error occurred while fetching channels',
+      position: 'top',
+    });
+  }
+});
 </script>
 
 <template>
@@ -44,20 +59,22 @@ const channelStore = useChannelStore();
       </q-item>
       <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
       <q-list class="q-col-gutter-none full-width channel-list">
-        <q-item
-          v-for="(channel, index) in channelStore.channels.filter(
-            (c) => c.isInvitation
-          )"
-          :key="'invitation-' + index"
-          class="q-my-none q-px-xs q-pb-none"
-        >
-          <ChannelButtonComponent
-            :name="channel.name"
-            :private="channel.private"
-            :isSelected="channel === channelStore.selectedChannel"
-            :isInvitation="channel.isInvitation"
-          />
-        </q-item>
+        <template v-if="channelStore.channels.length != 0">
+          <q-item
+            v-for="(channel, index) in channelStore.channels.filter(
+              (c) => c.isInvitation
+            )"
+            :key="'invitation-' + index"
+            class="q-my-none q-px-xs q-pb-none"
+          >
+            <ChannelButtonComponent
+              :name="channel.name"
+              :private="channel.private"
+              :isSelected="channel === channelStore.selectedChannel"
+              :isInvitation="channel.isInvitation"
+            />
+          </q-item>
+        </template>
         <div
           v-if="channelStore.channels.filter((c) => c.isInvitation).length != 0"
           class="q-mb-sm bg-primary rounded-borders divider self-center"

@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import { useChannelStore } from '../stores/channelStore';
 import { useQuasar } from 'quasar';
 

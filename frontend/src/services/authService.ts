@@ -30,8 +30,8 @@ export const authService = {
     return data;
   },
 
-  async me(token: any) {
-    const response = await api('GET', '/auth/me', {}, token);
+  async me() {
+    const response = await api('GET', '/auth/me', {});
 
     const data = await response.json();
 
@@ -42,8 +42,8 @@ export const authService = {
     return data;
   },
 
-  async logout(token: any) {
-    const response = await api('DELETE', '/auth/logout', {}, token);
+  async logout() {
+    const response = await api('DELETE', '/auth/logout', {});
 
     const data = await response.json();
 

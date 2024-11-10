@@ -96,6 +96,8 @@ const handleCreateChannel = () => {
       position: 'top',
     });
   } else if (channelName !== '') {
+    try {
+
     channelStore.addNewChannel(newChannel);
 
     setDefault();
@@ -107,6 +109,13 @@ const handleCreateChannel = () => {
       message: 'Channel created successfully',
       position: 'top',
     });
+    } catch (error) {
+      $q.notify({
+        type: 'negative',
+        message: 'Failed to add new channel',
+        position: 'top',
+      });
+    }
   } else {
     $q.notify({
       type: 'negative',
