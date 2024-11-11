@@ -15,13 +15,14 @@ watch(
     if (newChannel) {
       page.value = 1;
       currentChannel.value = newChannel;
+      await messageStore.fetchMessagesForChannel(currentChannel.value.name, page.value);
     }
   }
 );
 
 async function onLoad(index: number, done: VoidFunction) {
-  if (currentChannel.value?.name) {
-    await messageStore.fetchMessagesForChannel(currentChannel.value.name, page.value);
+  if (currentChannel.value?.name && messageStore.hasMoreMessages[currentChannel.value.name]) {
+    await messageStore.fetchMessagesForChannel(currentChannel.value.name, page.value + 1);
     page.value++;
   }
   done();
@@ -38,7 +39,7 @@ async function onLoad(index: number, done: VoidFunction) {
       </template>
       <div v-if="currentChannel?.name && messageStore.messages[currentChannel.name]?.length">
         <div
-          v-for="(item, index) in  [...messageStore.messages[currentChannel.name]].reverse()"
+          v-for="(item, index) in  [...messageStore.messages[currentChannel.name]]"
           :key="index"
           class="row no-wrap items-start"
         >

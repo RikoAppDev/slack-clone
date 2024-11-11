@@ -14,22 +14,14 @@ export const useMessageStore = defineStore('messageStore', {
     async fetchMessagesForChannel(channelName: string, page: number) {
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
 
-      console.log(data);
-
-      // Transform the data to match the Message interface
-      const transformedMessages = data.data.data.map((msg: any) => ({
-        text: msg.content,
-        name: msg.senderId,
-        timestamp: msg.sentAt,
-        channelName: channelName,
-      }));
+      console.log(data.data);
 
       if (!this.messages[channelName]) {
         this.messages[channelName] = [];
         this.currentPage[channelName] = 1;
       }
-      this.messages[channelName] = [...this.messages[channelName], ...transformedMessages];
-      this.hasMoreMessages[channelName] = transformedMessages.length === this.pageSize;
+      this.messages[channelName] = [...this.messages[channelName], ...data.data];
+      this.hasMoreMessages[channelName] = data.data.length === this.pageSize;
       },
 
     async addMessage(message: Message) {
@@ -46,15 +38,7 @@ export const useMessageStore = defineStore('messageStore', {
         this.messages[channelName] = [];
       }
 
-      // Transform the data to match the Message interface
-      const transformedMessage = {
-        text: data.data.content,
-        name: data.data.senderId,
-        timestamp: data.data.sentAt,
-        channelName: channelName,
-      };
-
-      this.messages[channelName].push(transformedMessage);
+      this.messages[channelName].push(data.data);
     },
   },
 });

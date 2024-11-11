@@ -1,6 +1,8 @@
 import { HttpContext } from '@adonisjs/core/http'
 import Message from '../models/message.ts'
 import Channel from '../models/channel.ts'
+import db from '@adonisjs/lucid/services/db'
+import { DateTime } from 'luxon'
 
 export default class MessageController {
     async create({ request, response, auth }: HttpContext) {
@@ -16,11 +18,33 @@ export default class MessageController {
                 content: data.content,
                 sender_id: auth.user?.$attributes.id,
                 channel_id: channel.id,
+                sent_at: DateTime.now(),
             })
+
+            // Query to get the full details for the created message
+            const [messageWithDetails] = await db
+                .from('messages')
+                .join('users', 'messages.sender_id', '=', 'users.id')
+                .join('channels', 'messages.channel_id', '=', 'channels.id')
+                .where('messages.id', message.id)
+                .select(
+                    'messages.content as text',
+                    'users.username as name',
+                    'messages.sent_at as timestamp',
+                    'channels.name as channelName'
+                )
+
+            // Transform the data into the expected structure
+            const transformedData = {
+                text: messageWithDetails.text,
+                name: messageWithDetails.name,
+                timestamp: messageWithDetails.timestamp,
+                channelName: messageWithDetails.channelName,
+            }
 
             return response.status(201).json({
                 message: 'Message added successfully',
-                data: message,
+                data: transformedData,
             })
         } catch (error) {
             return response.status(500).json({
@@ -39,15 +63,32 @@ export default class MessageController {
             // Find the channel by name
             const channel = await Channel.query().where('name', channelName).firstOrFail()
 
-            // Retrieve messages by channel ID with pagination
-            const messages = await Message.query()
-                .where('channel_id', channel.id)
-                .orderBy('sent_at', 'desc')
+            // Query messages with pagination and join Users to get sender's username
+            const messages = await db
+                .from('messages')
+                .join('users', 'messages.sender_id', '=', 'users.id')
+                .join('channels', 'messages.channel_id', '=', 'channels.id')
+                .where('channels.id', channel.id)
+                .select(
+                    'messages.content as text',
+                    'users.username as name',
+                    'messages.sent_at as timestamp',
+                    'channels.name as channelName'
+                )
+                .orderBy('messages.sent_at', 'desc')
                 .paginate(page, pageSize)
+
+            // Transform messages into the required structure
+            const transformedData = messages.all().map((msg) => ({
+                text: msg.text,
+                name: msg.name,
+                timestamp: msg.timestamp,
+                channelName: msg.channelName,
+            }))
 
             return response.status(200).json({
                 message: 'Messages retrieved successfully',
-                data: messages,
+                data: transformedData,
             })
         } catch (error) {
             return response.status(500).json({

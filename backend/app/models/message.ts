@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, hasOne } from '@adonisjs/lucid/orm'
 import Channel from './channel.ts'
 import User from './user.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
@@ -28,10 +28,10 @@ export default class Message extends BaseModel {
     @column.dateTime({ autoCreate: true })
     declare sent_at: DateTime
 
-    @hasOne(() => User, {
+    @belongsTo(() => User, {
         localKey: 'sender_id',
     })
-    declare author: relations.HasOne<typeof User>
+    declare author: relations.BelongsTo<typeof User>
 
     @hasOne(() => Channel, {
         localKey: 'channel_id',
