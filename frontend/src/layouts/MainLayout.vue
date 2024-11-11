@@ -6,6 +6,7 @@ import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonCo
 import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
 import LeaveChannelButtonComponent from 'components/LeaveChannelButtonComponent.vue';
 import { useQuasar } from 'quasar';
+import { io } from 'socket.io-client'
 
 const $q = useQuasar();
 
@@ -19,6 +20,18 @@ const channelStore = useChannelStore();
 onMounted(async () => {
   try {
     await channelStore.fetchChannels();
+    const socket = io('http://localhost:3333');
+
+    socket.on('connect', ()=>{
+      console.log('connected')
+    })
+
+    //listen to ping sent by socket.io
+    socket.on('ping',(data)=>{
+      console.log(data)
+    })
+
+
   } catch (error: any) {
     $q.notify({
       type: 'negative',
