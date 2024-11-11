@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { nextTick } from 'vue';
+
 const props = defineProps<{
   text: string;
   name: string;
@@ -7,6 +9,14 @@ const props = defineProps<{
 
 const highlightMentions = (text: string) => {
   const mentionRegex = /(@\w+)/g;
+
+  nextTick(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth'
+    })
+  });
+  
   return text.replace(mentionRegex, '<span class="tag">$1</span>');
 };
 </script>

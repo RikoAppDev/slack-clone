@@ -32,11 +32,6 @@ async function onLoad(index: number, done: VoidFunction) {
 <template>
   <div class="full-width full-height q-px-sm q-scroll">
     <q-infinite-scroll @load="onLoad" reverse>
-      <template v-slot:loading>
-        <div class="row justify-center q-my-md">
-          <q-spinner color="primary" name="dots" size="40px" />
-        </div>
-      </template>
       <div v-if="currentChannel?.name && messageStore.messages[currentChannel.name]?.length">
         <div
           v-for="(item, index) in  [...messageStore.messages[currentChannel.name]]"
