@@ -3,6 +3,7 @@ import Message from '../models/message.ts'
 import Channel from '../models/channel.ts'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
+import ws from '../services/ws.ts'
 
 export default class MessageController {
     async create({ request, response, auth }: HttpContext) {
@@ -38,7 +39,9 @@ export default class MessageController {
                 channelName: messageWithDetails.channelName,
             }
 
-            return response.status(201).json({
+            ws.io?.emit('ping', JSON.stringify(transformedData))
+
+            return response.ok({
                 message: 'Message added successfully',
                 data: transformedData,
             })
@@ -72,6 +75,13 @@ export default class MessageController {
                 .orderBy('messages.sent_at', 'desc')
                 .paginate(page, pageSize)
 
+            if (!messages) {
+                return response.ok({
+                    message: 'No messages found for this channel.',
+                    data: [],
+                })
+            }
+
             const transformedData = messages.all().map((msg) => ({
                 text: msg.text,
                 name: msg.name,
@@ -79,12 +89,12 @@ export default class MessageController {
                 channelName: msg.channelName,
             }))
 
-            return response.status(200).json({
+            return response.ok({
                 message: 'Messages retrieved successfully',
                 data: transformedData,
             })
         } catch (error) {
-            return response.status(500).json({
+            return response.internalServerError({
                 message: 'Error retrieving messages',
                 error: error.message,
             })

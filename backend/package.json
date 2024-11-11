@@ -59,7 +59,8 @@
         "@vinejs/vine": "^2.1.0",
         "luxon": "^3.5.0",
         "pg": "^8.13.0",
-        "reflect-metadata": "^0.2.2"
+        "reflect-metadata": "^0.2.2",
+        "socket.io": "^4.8.1"
     },
     "hotHook": {
         "boundaries": [
