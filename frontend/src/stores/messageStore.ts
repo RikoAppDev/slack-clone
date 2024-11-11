@@ -14,12 +14,13 @@ export const useMessageStore = defineStore('messageStore', {
     async fetchMessagesForChannel(channelName: string, page: number) {
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
 
-      console.log(data.data);
+      const channelStore = useChannelStore();
 
-      if (!this.messages[channelName]) {
+      if (channelStore.selectedChannel && channelName === channelStore.selectedChannel.name) {
         this.messages[channelName] = [];
         this.currentPage[channelName] = 1;
       }
+
       // Sedliacky fix
       this.messages[channelName] = [...this.messages[channelName], ...data.data]
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());

@@ -4,7 +4,7 @@ import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { date } from 'quasar';
 import { Channel } from 'app/frontend/src/types/channel';
-import { me } from '../services/authService.ts'
+import { authService } from '../services/authService'
 
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
@@ -61,6 +61,11 @@ const handleCommand = (command: string) => {
     };
     channelStore.channels.unshift(invitationChannel);
   } else if (parts[0] === 'quit') {
+    const data = authService.me();
+
+    if (data) {
+      console.log(data);
+    }
 
     if (currentChannel.value) {
       channelStore.removeChannel(currentChannel.value.name);
@@ -69,14 +74,22 @@ const handleCommand = (command: string) => {
       } else {
         currentChannel.value = null;
       }
-    } else if (parts[0] === 'cancel') {
-      if (currentChannel.value) {
+    }
+  } else if (parts[0] === 'cancel') {
+    const data = authService.me();
+
+    if (data) {
+      console.log(data);
+    }
+
+    if (currentChannel.value) {
+      if (currentChannel.value.isInvitation) {
         channelStore.removeChannel(currentChannel.value.name);
-        if (channelStore.channels.length > 0) {
-          channelStore.selectChannel(channelStore.channels[0]);
-        } else {
-          currentChannel.value = null;
-        }
+      }
+      if (channelStore.channels.length > 0) {
+        channelStore.selectChannel(channelStore.channels[0]);
+      } else {
+        currentChannel.value = null;
       }
     }
   }

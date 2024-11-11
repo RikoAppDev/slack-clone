@@ -6,11 +6,11 @@ import ChatMessageComponent from 'components/ChatMessageComponent.vue';
 
 const messageStore = useMessageStore();
 const channelStore = useChannelStore();
-const currentChannel = ref(channelStore.getSelectedChannel());
+const currentChannel = ref(channelStore.selectedChannel);
 const page = ref(1);
 
 watch(
-  () => channelStore.getSelectedChannel(),
+  () => channelStore.selectedChannel,
   async (newChannel) => {
     if (newChannel) {
       page.value = 1;
