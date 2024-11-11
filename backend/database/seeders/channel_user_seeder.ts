@@ -1,6 +1,7 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import User from '../../app/models/user.ts'
 import Channel from '#models/channel'
+import { MembershipRole, MembershipStatus } from '#models/enum'
 
 export default class ChannelUserSeeder extends BaseSeeder {
     public async run() {
@@ -16,9 +17,77 @@ export default class ChannelUserSeeder extends BaseSeeder {
         const channel4 = await Channel.findByOrFail('name', 'Marketing')
 
         // Attach users to channels by UUID
-        await user1.related('channels').attach([channel1.id])
-        await user2.related('channels').attach([channel2.id])
-        await user3.related('channels').attach([channel3.id])
-        await user4.related('channels').attach([channel4.id])
+        await user1.related('channels').attach({
+            [channel1.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.ADMIN,
+            },
+            [channel2.id]: {
+                status: MembershipStatus.INVITED,
+                role: MembershipRole.MEMBER,
+            },
+            [channel3.id]: {
+                status: MembershipStatus.INVITED,
+                role: MembershipRole.MEMBER,
+            },
+            [channel4.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+        })
+        await user2.related('channels').attach({
+            [channel1.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+            [channel2.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.ADMIN,
+            },
+            [channel3.id]: {
+                status: MembershipStatus.INVITED,
+                role: MembershipRole.MEMBER,
+            },
+            [channel4.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+        })
+        await user3.related('channels').attach({
+            [channel1.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+            [channel2.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+            [channel3.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.ADMIN,
+            },
+            [channel4.id]: {
+                status: MembershipStatus.INVITED,
+                role: MembershipRole.MEMBER,
+            },
+        })
+        await user4.related('channels').attach({
+            [channel1.id]: {
+                status: MembershipStatus.BANNED,
+                role: MembershipRole.MEMBER,
+            },
+            [channel2.id]: {
+                status: MembershipStatus.INVITED,
+                role: MembershipRole.MEMBER,
+            },
+            [channel3.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.MEMBER,
+            },
+            [channel4.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.ADMIN,
+            },
+        })
     }
 }

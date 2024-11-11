@@ -51,9 +51,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
     })
     declare messages: relations.HasMany<typeof Message>
 
+    @hasMany(() => Message, {
+        foreignKey: 'mentioned_user_id',
+    })
+    declare mentions: relations.HasMany<typeof Message>
+
     @manyToMany(() => Channel, {
         pivotTable: 'channel_users',
+        localKey: 'id',
         pivotForeignKey: 'user_id',
+        relatedKey: 'id',
         pivotRelatedForeignKey: 'channel_id',
         pivotTimestamps: true,
     })

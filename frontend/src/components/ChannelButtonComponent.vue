@@ -92,7 +92,7 @@ const acceptInvitation = async () => {
 };
 
 const rejectInvitation = () => {
-  channelStore.removeChannel(props.name);
+  channelStore.rejectInvitation(props.name);
 };
 </script>
 

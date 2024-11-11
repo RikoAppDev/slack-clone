@@ -2,7 +2,7 @@ import { api } from './remoteService';
 
 export const inviteService = {
   async acceptInvite(channelName: string) {
-    const response = await api('PUT', '/invite/accept', channelName);
+    const response = await api('PUT', '/invite/accept', { channelName });
 
     const data = await response.json();
 
@@ -14,7 +14,7 @@ export const inviteService = {
   },
 
   async rejectInvite(channelName: string) {
-    const response = await api('DELETE', '/invite/reject', channelName);
+    const response = await api('DELETE', '/invite/reject', { channelName });
 
     const data = await response.json();
 
