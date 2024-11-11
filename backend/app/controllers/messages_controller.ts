@@ -10,10 +10,8 @@ export default class MessageController {
             const data = request.only(['content'])
             const channelName = request.param('channel_name')
 
-            // Find the channel by name
             const channel = await Channel.query().where('name', channelName).firstOrFail()
 
-            // Create a new message record
             const message = await Message.create({
                 content: data.content,
                 sender_id: auth.user?.$attributes.id,
@@ -21,7 +19,6 @@ export default class MessageController {
                 sent_at: DateTime.now(),
             })
 
-            // Query to get the full details for the created message
             const [messageWithDetails] = await db
                 .from('messages')
                 .join('users', 'messages.sender_id', '=', 'users.id')
@@ -34,7 +31,6 @@ export default class MessageController {
                     'channels.name as channelName'
                 )
 
-            // Transform the data into the expected structure
             const transformedData = {
                 text: messageWithDetails.text,
                 name: messageWithDetails.name,
@@ -60,10 +56,8 @@ export default class MessageController {
             const page = request.input('page', 1)
             const pageSize = request.input('pageSize', 15)
 
-            // Find the channel by name
             const channel = await Channel.query().where('name', channelName).firstOrFail()
 
-            // Query messages with pagination and join Users to get sender's username
             const messages = await db
                 .from('messages')
                 .join('users', 'messages.sender_id', '=', 'users.id')
@@ -78,7 +72,6 @@ export default class MessageController {
                 .orderBy('messages.sent_at', 'desc')
                 .paginate(page, pageSize)
 
-            // Transform messages into the required structure
             const transformedData = messages.all().map((msg) => ({
                 text: msg.text,
                 name: msg.name,

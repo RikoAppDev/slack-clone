@@ -20,7 +20,9 @@ export const useMessageStore = defineStore('messageStore', {
         this.messages[channelName] = [];
         this.currentPage[channelName] = 1;
       }
-      this.messages[channelName] = [...this.messages[channelName], ...data.data];
+      // Sedliacky fix
+      this.messages[channelName] = [...this.messages[channelName], ...data.data]
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       this.hasMoreMessages[channelName] = data.data.length === this.pageSize;
       },
 
