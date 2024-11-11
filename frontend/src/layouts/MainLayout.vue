@@ -59,38 +59,34 @@ onMounted(async () => {
       </q-item>
       <div class="q-mb-sm bg-primary rounded-borders divider self-center" />
       <q-list class="q-col-gutter-none full-width channel-list">
-        <template v-if="channelStore.channels.length != 0">
+        <template v-if="channelStore.invitations.length != 0">
           <q-item
-            v-for="(channel, index) in channelStore.channels.filter(
-              (c) => c.isInvitation
-            )"
+            v-for="(channel, index) in channelStore.invitations"
             :key="'invitation-' + index"
             class="q-my-none q-px-xs q-pb-none"
           >
             <ChannelButtonComponent
               :name="channel.name"
-              :private="channel.private"
-              :isSelected="channel === channelStore.selectedChannel"
+              :private="channel.isPrivate"
+              :isSelected="false"
               :isInvitation="channel.isInvitation"
             />
           </q-item>
         </template>
         <div
-          v-if="channelStore.channels.filter((c) => c.isInvitation).length != 0"
+          v-if="channelStore.invitations.length != 0"
           class="q-mb-sm bg-primary rounded-borders divider self-center"
         />
         <!-- Regular Channels -->
         <q-item
-          v-for="(channel, index) in channelStore.channels.filter(
-            (c) => !c.isInvitation
-          )"
+          v-for="(channel, index) in channelStore.channels"
           :key="index"
           class="q-my-none q-px-xs q-pb-none"
         >
           <ChannelButtonComponent
             :name="channel.name"
-            :private="channel.private"
-            :isSelected="channel === channelStore.selectedChannel"
+            :private="channel.isPrivate"
+            :isSelected="channel.name === channelStore.selectedChannel?.name"
             @click="channelStore.selectChannel(channel)"
           />
         </q-item>

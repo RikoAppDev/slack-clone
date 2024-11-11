@@ -4,6 +4,7 @@ import { middleware } from '#start/kernel'
 const MessageController = () => import('#controllers/messages_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ChannelController = () => import('#controllers/channel_controller')
+const InvitesController = () => import('#controllers/invites_controller')
 
 // Message Routes
 router
@@ -14,12 +15,21 @@ router
     .prefix('/channels/:channel_name/messages')
     .use(middleware.auth())
 
+router
+    .group(() => {
+        router.put('accept', [InvitesController, 'accept']).as('invite.accept')
+        router.delete('reject', [InvitesController, 'reject']).as('invite.reject')
+    })
+    .prefix('/invite')
+    .use(middleware.auth())
+    .as('invite')
+
 // Channel Routes
 router
     .group(() => {
         router.get('retrieve', [ChannelController, 'retrieve']).as('channels.retrieve')
         router.post('create', [ChannelController, 'create']).as('channels.create')
-        router.delete(':name/delete', [ChannelController, 'delete']).as('channels.delete')
+        router.delete('delete', [ChannelController, 'delete']).as('channels.delete')
     })
     .prefix('/channels')
     .use(middleware.auth())

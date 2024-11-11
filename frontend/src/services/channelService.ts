@@ -3,7 +3,7 @@ import { Channel } from '../types/channel';
 
 export const channelService = {
   async fetchChannels() {
-    const response = await api('GET', '/channels/retrieve', {});
+    const response = await api('GET', '/channels/retrieve');
 
     const data = await response.json();
 
@@ -20,14 +20,18 @@ export const channelService = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('Failed to create channel');
+      if (response.status == 409) {
+        throw new Error(data.message);
+      } else {
+        throw new Error('Failed to create channel');
+      }
     }
 
     return data;
   },
 
   async removeChannel(channelName: string) {
-    const response = await api('DELETE', `/channels/${channelName}/delete`, {});
+    const response = await api('DELETE', '/channels/delete', { channelName });
 
     const data = await response.json();
 

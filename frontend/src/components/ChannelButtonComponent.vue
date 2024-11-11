@@ -68,18 +68,25 @@ const props = defineProps({
   },
 });
 
-const acceptInvitation = () => {
-  const originalChannel = channelStore.channels.find(
-    (channel) => channel.name === props.name
-  );
-  console.log(originalChannel);
-  if (originalChannel) {
-    originalChannel.isInvitation = false;
-    channelStore.selectChannel(originalChannel);
-  } else {
-    channelStore.addNewChannel({
-      name: props.name,
-      private: false,
+const acceptInvitation = async () => {
+  try {
+    const originalChannel = channelStore.channels.find(
+      (channel) => channel.name === props.name
+    );
+    console.log(originalChannel);
+
+    await channelStore.acceptInvitation(originalChannel?.name);
+
+    $q.notify({
+      type: 'positive',
+      message: 'Invite accepted successfully',
+      position: 'top',
+    });
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.message || 'An error occurred',
+      position: 'top',
     });
   }
 };

@@ -81,12 +81,12 @@ const onEnterPress = (event: KeyboardEvent) => {
   }
 };
 
-const handleCreateChannel = () => {
+const handleCreateChannel = async () => {
   const channelName = newChannelName.value.trim();
 
   const newChannel: Channel = {
     name: channelName,
-    private: newChannelPrivate.value,
+    isPrivate: newChannelPrivate.value,
   };
 
   if (channelName.length > 80) {
@@ -97,22 +97,21 @@ const handleCreateChannel = () => {
     });
   } else if (channelName !== '') {
     try {
+      await channelStore.addNewChannel(newChannel);
 
-    channelStore.addNewChannel(newChannel);
+      setDefault();
+      handleOpeningModal();
+      channelStore.selectChannel(newChannel);
 
-    setDefault();
-    handleOpeningModal();
-    channelStore.selectChannel(newChannel);
-
-    $q.notify({
-      type: 'positive',
-      message: 'Channel created successfully',
-      position: 'top',
-    });
-    } catch (error) {
+      $q.notify({
+        type: 'positive',
+        message: 'Channel created successfully',
+        position: 'top',
+      });
+    } catch (error: any) {
       $q.notify({
         type: 'negative',
-        message: 'Failed to add new channel',
+        message: error.message || 'Failed to add new channel',
         position: 'top',
       });
     }

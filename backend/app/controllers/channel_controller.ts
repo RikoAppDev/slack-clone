@@ -1,6 +1,7 @@
 import { HttpContext } from '@adonisjs/core/http'
 import Channel from '../models/channel.ts'
 import ChannelUser from '#models/channel_user'
+import { MembershipRole, MembershipStatus } from '#models/enum'
 
 export default class ChannelController {
     /**
@@ -14,16 +15,25 @@ export default class ChannelController {
                 return response.unauthorized({ message: 'User not authenticated' })
             }
 
-            // Fetch channels where the user is either a member or an admin and the status is active
+            // Fetch channels where the user is either a member or invited
             const channelUsers = await ChannelUser.query()
-                .preload('channel')
+                .preload('channel', (channelQuery) => {
+                    channelQuery.select('name', 'is_private')
+                })
+                .preload('user')
                 .where('user_id', userId)
-            // .whereIn('role', ['member', 'admin'])
-            // .where('status', 'active') // Filter by active status
+                .whereIn('status', ['active', 'invited'])
 
-            return response.ok({
-                channels: channelUsers.map((cu) => cu.channel), // Map to actual channel data
-            })
+            // Format response to include channel data and `isInvitation` flag
+            const channels = channelUsers.map((cu) => ({
+                name: cu.channel.name,
+                isPrivate: cu.channel.is_private,
+                users: cu.user,
+                isInvitation: cu.status === 'invited',
+                role: cu.role,
+            }))
+
+            return response.ok({ channels })
         } catch (error) {
             return response.internalServerError({
                 message: 'Error retrieving channels',
@@ -42,15 +52,36 @@ export default class ChannelController {
                 return response.unauthorized({ message: 'User not authenticated' })
             }
 
-            const { name, private: isPrivate } = request.only(['name', 'private'])
+            const { name, isPrivate } = request.all()
 
-            await Channel.create({
+            const channel = await Channel.findBy('name', name)
+
+            if (channel) {
+                return response.conflict({ message: 'Channel name is already in use' })
+            }
+
+            const newChannel = await Channel.create({
                 name,
                 is_private: isPrivate,
                 created_by: userId,
             })
 
-            return response.created({ message: 'Channel created successfully' })
+            await ChannelUser.create({
+                channelId: newChannel.id,
+                userId: userId,
+                role: MembershipRole.ADMIN,
+                status: MembershipStatus.ACTIVE,
+            })
+
+            return response.created({
+                channel: {
+                    name: newChannel.name,
+                    isPrivate,
+                    users: [],
+                    isInvitation: false,
+                    role: MembershipRole.ADMIN,
+                },
+            })
         } catch (error) {
             return response.internalServerError({
                 message: 'Error creating channel',
@@ -62,15 +93,14 @@ export default class ChannelController {
     /**
      * Delete a channel by its name, if it belongs to the authenticated user.
      */
-    async delete({ response, auth, params }: HttpContext) {
+    async delete({ response, auth, request }: HttpContext) {
         try {
             const userId = auth.user?.id
             if (!userId) {
                 return response.unauthorized({ message: 'User not authenticated' })
             }
 
-            const channelName = params.name
-            console.log(channelName)
+            const { channelName } = request.all()
 
             const channel = await Channel.query()
                 .where('name', channelName)

@@ -40,7 +40,7 @@ const handleCommand = (command: string) => {
     if (!existingChannel) {
       const newChannel: Channel = {
         name: channelName,
-        private: isPrivate,
+        isPrivate: isPrivate,
       };
       channelStore.addNewChannel(newChannel);
       channelStore.selectChannel(newChannel);
@@ -55,7 +55,7 @@ const handleCommand = (command: string) => {
     const channelName = parts[1];
     const invitationChannel: Channel = {
       name: channelName,
-      private: true,
+      isPrivate: true,
       isInvitation: true,
     };
     channelStore.channels.unshift(invitationChannel);
