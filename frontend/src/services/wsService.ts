@@ -20,17 +20,14 @@ class WsService {
   }
 
   sendMessage(channel: string, message: string) {
-    this.socket.emit('sendMessage', { channel, message });
+    const username = this.username;
+    this.socket.emit('sendMessage', { channel, message, username });
     console.log(`Message sent to channel: ${channel}`);
   }
 
-  onMessage(callback: (message: string) => void) {
+  onMessage(callback: (message: string, username: string) => void) {
     this.socket.on('receiveMessage', callback);
     console.log('Message received');
-  }
-
-  onDisconnect(callback: () => void) {
-    this.socket.on('disconnect', callback);
   }
 }
 

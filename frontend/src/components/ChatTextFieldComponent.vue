@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
-import { date } from 'quasar';
 import { Channel } from 'app/frontend/src/types/channel';
 import { authService } from '../services/authService';
 import { wsService } from '../services/wsService';
 
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
-const messageStore = useMessageStore();
 const messageText = ref('');
 const showUserList = ref(false);
 const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
@@ -103,13 +100,6 @@ const sendMessage = () => {
     if (commandRegex.test(trimmedMessage)) {
       handleCommand(trimmedMessage);
     } else {
-      const message = {
-        text: trimmedMessage,
-        name: 'You',
-        timestamp: date.formatDate(new Date(), 'HH:mm'),
-        channelName: currentChannel.value.name,
-      };
-      messageStore.addMessage(message);
       wsService.sendMessage(currentChannel.value.name, trimmedMessage);
     }
     messageText.value = '';

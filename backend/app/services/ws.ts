@@ -26,8 +26,8 @@ class Ws {
                 console.log(`User joined channel: ${channel}`)
             })
 
-            socket.on('sendMessage', ({ channel, message }) => {
-                this.io?.to(channel).emit('receiveMessage', message)
+            socket.on('sendMessage', ({ channel, message, username }) => {
+                this.io?.to(channel).emit('receiveMessage', message, username)
                 console.log(`Message sent to channel: ${channel}`)
             })
 

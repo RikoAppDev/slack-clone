@@ -20,9 +20,9 @@ const channelStore = useChannelStore();
 
 onMounted(async () => {
   try {
+    const data = await authService.me();
+    wsService.initialize(data.user.username)
     await channelStore.fetchChannels();
-    const username = await authService.me();
-    wsService.initialize(username)
 
   } catch (error: any) {
     $q.notify({

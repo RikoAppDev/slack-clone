@@ -55,7 +55,7 @@ watch(
   }
 );
 
-wsService.onMessage( (message) => {
+wsService.onMessage( (message, username) => {
   const channelName = useChannelStore().getSelectedChannel()?.name;
 
   if (channelName) {
@@ -66,7 +66,7 @@ wsService.onMessage( (message) => {
 
     const newMessage = {
       text: message,
-      name: wsService.username,
+      name: username,
       timestamp: new Date().toISOString(),
       channelName,
     }
