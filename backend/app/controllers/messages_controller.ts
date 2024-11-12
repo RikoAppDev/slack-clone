@@ -3,7 +3,6 @@ import Message from '../models/message.ts'
 import Channel from '../models/channel.ts'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
-import ws from '../services/ws.ts'
 
 export default class MessageController {
     async create({ request, response, auth }: HttpContext) {
@@ -39,14 +38,12 @@ export default class MessageController {
                 channelName: messageWithDetails.channelName,
             }
 
-            ws.io?.emit('ping', JSON.stringify(transformedData))
-
             return response.ok({
                 message: 'Message added successfully',
                 data: transformedData,
             })
         } catch (error) {
-            return response.status(500).json({
+            return response.internalServerError({
                 message: 'Error adding message',
                 error: error.message,
             })

@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import { Message } from '../types/message';
 import { messService } from '../services/messService';
+import { wsService } from '../services/wsService';
 import { useChannelStore } from './channelStore';
+import { watch } from 'vue';
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
@@ -13,13 +15,6 @@ export const useMessageStore = defineStore('messageStore', {
   actions: {
     async fetchMessagesForChannel(channelName: string, page: number) {
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
-
-      const channelStore = useChannelStore();
-
-      if (channelStore.selectedChannel && channelName === channelStore.selectedChannel.name) {
-        this.messages[channelName] = [];
-        this.currentPage[channelName] = 1;
-      }
 
       // Sedliacky fix
       this.messages[channelName] = [...this.messages[channelName], ...data.data]
@@ -44,4 +39,38 @@ export const useMessageStore = defineStore('messageStore', {
       this.messages[channelName].push(data.data);
     },
   },
+});
+
+const channelStore = useChannelStore();
+
+watch(
+  () => channelStore.selectedChannel,
+  (newChannel) => {
+    if (newChannel) {
+      const channelName = newChannel.name;
+      const messageStore = useMessageStore();
+      messageStore.messages[channelName] = [];
+      messageStore.currentPage[channelName] = 1;
+    }
+  }
+);
+
+wsService.onMessage( (message) => {
+  const channelName = useChannelStore().getSelectedChannel()?.name;
+
+  if (channelName) {
+    const messageStore = useMessageStore();
+    if (!messageStore.messages[channelName]) {
+      messageStore.messages[channelName] = [];
+    }
+
+    const newMessage = {
+      text: message,
+      name: wsService.username,
+      timestamp: new Date().toISOString(),
+      channelName,
+    }
+
+    messageStore.messages[channelName].push(newMessage);
+  }
 });

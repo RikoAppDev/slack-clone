@@ -4,7 +4,8 @@ import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { date } from 'quasar';
 import { Channel } from 'app/frontend/src/types/channel';
-import { authService } from '../services/authService'
+import { authService } from '../services/authService';
+import { wsService } from '../services/wsService';
 
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
@@ -109,6 +110,7 @@ const sendMessage = () => {
         channelName: currentChannel.value.name,
       };
       messageStore.addMessage(message);
+      wsService.sendMessage(currentChannel.value.name, trimmedMessage);
     }
     messageText.value = '';
   }

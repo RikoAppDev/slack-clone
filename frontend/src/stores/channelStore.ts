@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Channel } from '../types/channel';
 import { channelService } from '../services/channelService';
 import { inviteService } from '../services/inviteService';
+import { wsService } from '../services/wsService';
 
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
@@ -12,7 +13,6 @@ export const useChannelStore = defineStore('channelStore', {
   actions: {
     async fetchChannels() {
       const data = await channelService.fetchChannels();
-
       this.channels = data.channels;
 
       this.invitations = this.channels.filter((c) => c.isInvitation == true);
@@ -22,6 +22,7 @@ export const useChannelStore = defineStore('channelStore', {
 
     selectChannel(channel: Channel) {
       this.selectedChannel = channel;
+      wsService.joinChannel(channel.name);
     },
 
     async addNewChannel(newChannel: Channel) {
@@ -51,6 +52,9 @@ export const useChannelStore = defineStore('channelStore', {
 
     initializeSelectedChannel() {
       this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
+      if (this.selectedChannel) {
+        wsService.joinChannel(this.selectedChannel.name);
+      }
     },
 
     async acceptInvitation(name: any) {

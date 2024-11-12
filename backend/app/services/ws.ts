@@ -1,5 +1,6 @@
 import { Server } from 'socket.io'
 import server from '@adonisjs/core/services/server'
+
 class Ws {
     io: Server | undefined
     private booted = false
@@ -17,6 +18,22 @@ class Ws {
             cors: {
                 origin: '*',
             },
+        })
+
+        this.io.on('connection', (socket) => {
+            socket.on('joinChannel', (channel) => {
+                socket.join(channel)
+                console.log(`User joined channel: ${channel}`)
+            })
+
+            socket.on('sendMessage', ({ channel, message }) => {
+                this.io?.to(channel).emit('receiveMessage', message)
+                console.log(`Message sent to channel: ${channel}`)
+            })
+
+            socket.on('disconnect', () => {
+                console.log('user disconnected')
+            })
         })
     }
 }
