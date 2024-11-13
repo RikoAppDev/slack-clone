@@ -70,12 +70,7 @@ const props = defineProps({
 
 const acceptInvitation = async () => {
   try {
-    const originalChannel = channelStore.channels.find(
-      (channel) => channel.name === props.name
-    );
-    console.log(originalChannel);
-
-    await channelStore.acceptInvitation(originalChannel?.name);
+    await channelStore.acceptInvitation(props.name);
 
     $q.notify({
       type: 'positive',
@@ -100,6 +95,11 @@ const rejectInvitation = () => {
 .wrapper {
   border-radius: 50px;
   transition: border-radius 150ms ease-in-out;
+}
+
+.q-btn__content {
+  width: 100%;
+  justify-content: space-between;
 }
 
 .wrapper:hover {

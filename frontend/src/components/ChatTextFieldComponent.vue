@@ -12,11 +12,15 @@ const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
 const messageText = ref('');
 const showUserList = ref(false);
-const commandRegex = /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
+const commandRegex =
+  /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
-watch(() => channelStore.getSelectedChannel(), (newChannel) => {
-  currentChannel.value = newChannel;
-});
+watch(
+  () => channelStore.getSelectedChannel(),
+  (newChannel) => {
+    currentChannel.value = newChannel;
+  }
+);
 
 const onKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -38,7 +42,9 @@ const handleCommand = (command: string) => {
   if (parts[0] === 'join') {
     const isPrivate = parts[1] === 'private';
     const channelName = isPrivate ? parts[2] : parts[1];
-    const existingChannel = channelStore.channels.find(channel => channel.name === channelName);
+    const existingChannel = channelStore.channels.find(
+      (channel) => channel.name === channelName
+    );
     if (!existingChannel) {
       const newChannel: Channel = {
         name: channelName,
@@ -55,12 +61,13 @@ const handleCommand = (command: string) => {
     }
   } else if (parts[0] === 'invite') {
     const channelName = parts[1];
+    const username = parts[2];
     const invitationChannel: Channel = {
       name: channelName,
       isPrivate: true,
       isInvitation: true,
     };
-    channelStore.channels.unshift(invitationChannel);
+    channelStore.invite(invitationChannel, username);
   } else if (parts[0] === 'quit') {
     const data = authService.me();
 
@@ -124,7 +131,9 @@ const closeUserList = () => {
 <template>
   <div v-if="showUserList" class="user-list-container">
     <div class="user-list-header">
-      <q-item-label class="text-h6">Users in {{ currentChannel?.name }}</q-item-label>
+      <q-item-label class="text-h6"
+        >Users in {{ currentChannel?.name }}
+      </q-item-label>
       <q-btn
         flat
         icon="close"
@@ -134,7 +143,11 @@ const closeUserList = () => {
       />
     </div>
     <div class="user-row">
-      <q-item v-for="user in currentChannel?.users ?? []" :key="user.username" class="user-item">
+      <q-item
+        v-for="user in currentChannel?.users ?? []"
+        :key="user.username"
+        class="user-item"
+      >
         <q-item-section>
           <q-item-label>{{ user.username }}</q-item-label>
           <q-item-label caption>{{ user.status }}</q-item-label>

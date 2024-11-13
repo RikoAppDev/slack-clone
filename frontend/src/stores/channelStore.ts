@@ -35,6 +35,10 @@ export const useChannelStore = defineStore('channelStore', {
       console.log(this.getSelectedChannel());
     },
 
+    async invite(newChannel: Channel, username: string) {
+      await inviteService.invite(newChannel, username);
+    },
+
     getSelectedChannel() {
       return this.selectedChannel;
     },
@@ -64,6 +68,7 @@ export const useChannelStore = defineStore('channelStore', {
       this.invitations = this.invitations.filter(
         (channel) => channel.name !== data.channel.name
       );
+      this.channels.push(data.channel);
     },
 
     async rejectInvitation(name: string) {

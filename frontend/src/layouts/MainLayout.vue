@@ -92,6 +92,7 @@ onMounted(async () => {
             :name="channel.name"
             :private="channel.isPrivate"
             :isSelected="channel.name === channelStore.selectedChannel?.name"
+            :role="channel.role"
             @click="channelStore.selectChannel(channel)"
           />
         </q-item>

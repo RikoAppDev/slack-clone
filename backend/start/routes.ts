@@ -19,6 +19,7 @@ router
     .group(() => {
         router.put('accept', [InvitesController, 'accept']).as('invite.accept')
         router.delete('reject', [InvitesController, 'reject']).as('invite.reject')
+        router.post('new', [InvitesController, 'invite']).as('invite.new')
     })
     .prefix('/invite')
     .use(middleware.auth())
