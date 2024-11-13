@@ -1,5 +1,4 @@
 import { io, Socket } from 'socket.io-client';
-import ChannelUser from "app/backend/app/models/channel_user";
 
 class WsService {
   private socket: Socket;

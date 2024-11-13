@@ -4,9 +4,6 @@ import ChannelUser from '#models/channel_user'
 import { MembershipRole, MembershipStatus } from '#models/enum'
 
 export default class ChannelController {
-    /**
-     * Retrieve channels for the authenticated user.
-     */
     async retrieve({ response, auth }: HttpContext) {
         try {
             const userId = auth.user?.id
@@ -15,7 +12,6 @@ export default class ChannelController {
                 return response.unauthorized({ message: 'User not authenticated' })
             }
 
-            // Fetch channels where the user is either a member or invited
             const channelUsers = await ChannelUser.query()
                 .preload('channel', (channelQuery) => {
                     channelQuery.select('name', 'is_private')
@@ -24,7 +20,6 @@ export default class ChannelController {
                 .where('user_id', userId)
                 .whereIn('status', ['active', 'invited'])
 
-            // Format response to include channel data and `isInvitation` flag
             const channels = channelUsers.map((cu) => ({
                 name: cu.channel.name,
                 isPrivate: cu.channel.is_private,
@@ -42,9 +37,6 @@ export default class ChannelController {
         }
     }
 
-    /**
-     * Create a new channel for the authenticated user.
-     */
     async create({ request, response, auth }: HttpContext) {
         try {
             const userId = auth.user?.id
@@ -104,9 +96,6 @@ export default class ChannelController {
         }
     }
 
-    /**
-     * Delete a channel by its name, if it belongs to the authenticated user.
-     */
     async delete({ response, auth, request }: HttpContext) {
         try {
             const userId = auth.user?.id
