@@ -9,6 +9,7 @@ export const useChannelStore = defineStore('channelStore', {
     invitations: [] as Channel[],
     channels: [] as Channel[],
     selectedChannel: null as Channel | null,
+    users: [] as string[],
   }),
   actions: {
     async fetchChannels() {

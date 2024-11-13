@@ -1,8 +1,9 @@
 import { io, Socket } from 'socket.io-client';
+import ChannelUser from "app/backend/app/models/channel_user";
 
 class WsService {
   private socket: Socket;
-  public username: string;
+  username: string;
 
   constructor() {
     this.socket = io('http://localhost:3333');
@@ -29,6 +30,12 @@ class WsService {
     this.socket.on('receiveMessage', callback);
     console.log('Message received');
   }
+
+  kickUser(channel: string, username: string) {
+    this.socket.emit('kickUser', { channel, username });
+    console.log(`User ${username} kicked from channel: ${channel}`);
+  }
+
 }
 
 export const wsService = new WsService();

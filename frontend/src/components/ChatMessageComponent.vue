@@ -16,7 +16,7 @@ const highlightMentions = (text: string) => {
       behavior: 'smooth'
     })
   });
-  
+
   return text.replace(mentionRegex, '<span class="tag">$1</span>');
 };
 </script>

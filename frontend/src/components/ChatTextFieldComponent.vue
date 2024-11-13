@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { Channel } from 'app/frontend/src/types/channel';
 import { authService } from '../services/authService';
 import { wsService } from '../services/wsService';
+import { date } from 'quasar';
 
+const messageStore = useMessageStore();
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
 const messageText = ref('');
@@ -74,12 +77,6 @@ const handleCommand = (command: string) => {
       }
     }
   } else if (parts[0] === 'cancel') {
-    const data = authService.me();
-
-    if (data) {
-      console.log(data);
-    }
-
     if (currentChannel.value) {
       if (currentChannel.value.isInvitation) {
         channelStore.removeChannel(currentChannel.value.name);
@@ -89,6 +86,12 @@ const handleCommand = (command: string) => {
       } else {
         currentChannel.value = null;
       }
+    }
+  } else if (parts[0] === 'kick') {
+    const username = parts[1];
+    if (currentChannel.value) {
+      wsService.kickUser(currentChannel.value.name, username);
+      channelStore.removeChannel(currentChannel.value.name);
     }
   }
 };
@@ -101,6 +104,13 @@ const sendMessage = () => {
       handleCommand(trimmedMessage);
     } else {
       wsService.sendMessage(currentChannel.value.name, trimmedMessage);
+      const message = {
+        text: trimmedMessage,
+        name: wsService.username,
+        timestamp: date.formatDate(new Date(), 'HH:mm'),
+        channelName: currentChannel.value.name,
+      };
+      messageStore.addMessage(message);
     }
     messageText.value = '';
   }

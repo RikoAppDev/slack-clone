@@ -56,8 +56,22 @@ export default class ChannelController {
 
             const channel = await Channel.findBy('name', name)
 
-            if (channel) {
-                return response.conflict({ message: 'Channel name is already in use' })
+            if (channel && !channel.is_private) {
+                await ChannelUser.create({
+                    channelId: channel.id,
+                    userId: userId,
+                    role: MembershipRole.MEMBER,
+                    status: MembershipStatus.ACTIVE,
+                })
+                return response.created({
+                    channel: {
+                        name: channel.name,
+                        isPrivate,
+                        users: [],
+                        isInvitation: false,
+                        role: MembershipRole.ADMIN,
+                    },
+                })
             }
 
             const newChannel = await Channel.create({

@@ -16,7 +16,6 @@ export const useMessageStore = defineStore('messageStore', {
     async fetchMessagesForChannel(channelName: string, page: number) {
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
 
-      // Sedliacky fix
       this.messages[channelName] = [...this.messages[channelName], ...data.data]
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       this.hasMoreMessages[channelName] = data.data.length === this.pageSize;
@@ -24,7 +23,7 @@ export const useMessageStore = defineStore('messageStore', {
 
     async addMessage(message: Message) {
       const content = message.text;
-      const data = await messService.addMessage(content);
+      await messService.addMessage(content);
 
       const channelName = useChannelStore().getSelectedChannel()?.name;
 
@@ -35,9 +34,7 @@ export const useMessageStore = defineStore('messageStore', {
       if (!this.messages[channelName]) {
         this.messages[channelName] = [];
       }
-
-      this.messages[channelName].push(data.data);
-    },
+      },
   },
 });
 

@@ -1,4 +1,5 @@
 import { Server } from 'socket.io'
+import ChannelUser from '#models/channel_user'
 import server from '@adonisjs/core/services/server'
 
 class Ws {
@@ -31,8 +32,10 @@ class Ws {
                 console.log(`Message sent to channel: ${channel}`)
             })
 
-            socket.on('disconnect', () => {
-                console.log('user disconnected')
+            socket.on('kickUser', ({ channel, username }) => {
+                socket.leave(channel)
+                ChannelUser.query().where('channel_id', channel).where('user_id', username).delete()
+                console.log(`User ${username} kicked from channel: ${channel}`)
             })
         })
     }
