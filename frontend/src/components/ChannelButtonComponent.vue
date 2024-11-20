@@ -24,15 +24,24 @@
         : 'wrapper full-width row content-start'
     "
   >
-    <p class="text-body2 ellipsis">
-      {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
-    </p>
+    <template v-if="role == MembershipRole.ADMIN">
+      <p class="text-body2 ellipsis channel-name">
+        {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
+      </p>
+      <p class="admin">👑</p>
+    </template>
+    <template v-else>
+      <p class="text-body2 ellipsis">
+        {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
+      </p>
+    </template>
   </q-btn>
 </template>
 
 <script setup lang="ts">
 import { useChannelStore } from '../stores/channelStore';
 import { useQuasar } from 'quasar';
+import { MembershipRole } from '../types/enum';
 
 const $q = useQuasar();
 const channelStore = useChannelStore();
@@ -61,6 +70,10 @@ const props = defineProps({
   isSelected: {
     type: Boolean,
     required: true,
+  },
+  role: {
+    type: String,
+    required: false,
   },
   isInvitation: {
     type: Boolean,
@@ -91,15 +104,18 @@ const rejectInvitation = () => {
 };
 </script>
 
-<style scoped>
+<style>
 .wrapper {
   border-radius: 50px;
   transition: border-radius 150ms ease-in-out;
 }
 
-.q-btn__content {
-  width: 100%;
-  justify-content: space-between;
+.admin {
+  width: 20%;
+}
+
+.channel-name {
+  width: 80%;
 }
 
 .wrapper:hover {

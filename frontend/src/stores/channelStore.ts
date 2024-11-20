@@ -55,6 +55,18 @@ export const useChannelStore = defineStore('channelStore', {
       }
     },
 
+    async quitChannel(channelName: string) {
+      await channelService.quitChannel(channelName);
+
+      this.channels = this.channels.filter(
+        (channel) => channel.name !== channelName
+      );
+      if (this.selectedChannel?.name === channelName) {
+        this.selectedChannel =
+          this.channels.length > 0 ? this.channels[0] : null;
+      }
+    },
+
     initializeSelectedChannel() {
       this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
       if (this.selectedChannel) {
@@ -69,6 +81,8 @@ export const useChannelStore = defineStore('channelStore', {
         (channel) => channel.name !== data.channel.name
       );
       this.channels.push(data.channel);
+
+      this.selectChannel(this.channels[this.channels.length - 1]);
     },
 
     async rejectInvitation(name: string) {

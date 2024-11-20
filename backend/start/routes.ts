@@ -15,6 +15,7 @@ router
     .prefix('/channels/:channel_name/messages')
     .use(middleware.auth())
 
+// Invite Routes
 router
     .group(() => {
         router.put('accept', [InvitesController, 'accept']).as('invite.accept')
@@ -31,6 +32,7 @@ router
         router.get('retrieve', [ChannelController, 'retrieve']).as('channels.retrieve')
         router.post('create', [ChannelController, 'create']).as('channels.create')
         router.delete('delete', [ChannelController, 'delete']).as('channels.delete')
+        router.delete('quit', [ChannelController, 'quit']).as('channels.quit')
     })
     .prefix('/channels')
     .use(middleware.auth())

@@ -60,10 +60,10 @@ const handleCommand = (command: string) => {
       showUserList.value = !showUserList.value;
     }
   } else if (parts[0] === 'invite') {
-    const channelName = parts[1];
-    const username = parts[2];
+    const channelName = currentChannel.value?.name;
+    const username = parts[1];
     const invitationChannel: Channel = {
-      name: channelName,
+      name: channelName as string,
       isPrivate: true,
       isInvitation: true,
     };

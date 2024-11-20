@@ -36,7 +36,19 @@ export const channelService = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('Failed to remove channel');
+      throw new Error('Failed to delete channel');
+    }
+
+    return data;
+  },
+
+  async quitChannel(channelName: string) {
+    const response = await api('DELETE', '/channels/quit', { channelName });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error('Failed to quit channel');
     }
 
     return data;

@@ -124,4 +124,40 @@ export default class ChannelController {
             })
         }
     }
+
+    async quit({ response, auth, request }: HttpContext) {
+        try {
+            const userId = auth.user?.id
+            if (!userId) {
+                return response.unauthorized({ message: 'User not authenticated' })
+            }
+
+            const { channelName } = request.all()
+
+            const channel = await Channel.query().where('name', channelName).first()
+
+            if (!channel) {
+                return response.notFound({ message: 'Channel not found' })
+            }
+
+            const channelUser = await ChannelUser.query()
+                .where('channelId', channel.id)
+                .andWhere('user_id', userId)
+                .andWhere('status', 'active')
+                .first()
+
+            if (!channelUser) {
+                return response.notFound({ message: 'User not found in channel' })
+            }
+
+            await channelUser.delete()
+
+            return response.ok({ message: 'Channel quit successfully' })
+        } catch (error) {
+            return response.internalServerError({
+                message: 'Error quitting channel',
+                error: error.message,
+            })
+        }
+    }
 }
