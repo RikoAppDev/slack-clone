@@ -26,6 +26,7 @@ export default class extends BaseSchema {
                 useNative: true,
                 enumName: 'user_role', // Enum name for PostgreSQL
                 existingType: false,
+                schemaName: 'public',
             })
 
             // Enum for status with active, banned, invited
@@ -33,6 +34,7 @@ export default class extends BaseSchema {
                 useNative: true,
                 enumName: 'channel_user_status', // Enum name for PostgreSQL
                 existingType: false,
+                schemaName: 'public',
             })
 
             // Primary key consisting of both user_id and channel_id
@@ -46,8 +48,8 @@ export default class extends BaseSchema {
 
     async down() {
         // Drop the enums before dropping the table
-        this.schema.raw('DROP TYPE IF EXISTS "user_role"')
-        this.schema.raw('DROP TYPE IF EXISTS "channel_user_status"')
+        this.schema.raw('DROP TYPE IF EXISTS "channel_user_status" cascade')
+        this.schema.raw('DROP TYPE IF EXISTS "user_role" cascade')
 
         // Drop the table
         this.schema.dropTable(this.tableName)
