@@ -154,8 +154,6 @@ export default class ChannelController {
 
             const channel = await Channel.query().where('name', channelName).first()
 
-            console.log(channel)
-
             if (!channel) {
                 return response.notFound({ message: 'Channel not found' })
             }
@@ -166,13 +164,11 @@ export default class ChannelController {
                 .andWhere('status', 'active')
                 .first()
 
-            console.log(channelUser)
-
             if (!channelUser) {
                 return response.notFound({ message: 'User not found in channel' })
             }
 
-            await channelUser.delete()
+            await channel.related('users').detach([userId])
 
             return response.ok({ message: 'Channel quit successfully' })
         } catch (error) {
