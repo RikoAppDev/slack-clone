@@ -58,11 +58,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     @manyToMany(() => Channel, {
         pivotTable: 'channel_users',
-        localKey: 'id',
-        pivotForeignKey: 'user_id',
-        relatedKey: 'id',
-        pivotRelatedForeignKey: 'channel_id',
         pivotTimestamps: true,
+        // pivotColumns: ['role', 'status'],
     })
     declare channels: relations.ManyToMany<typeof Channel>
 

@@ -1,5 +1,6 @@
 <template>
   <q-btn
+    v-if="channelStore.getSelectedChannel()"
     unelevated
     size="18px"
     :icon="
@@ -39,8 +40,10 @@ const currentChannel = ref(channelStore.getSelectedChannel());
 const handleLeaveChannel = async () => {
   currentChannel.value = channelStore.getSelectedChannel();
   if (currentChannel.value) {
+    const channelRole = currentChannel.value.role;
+
     try {
-      if (currentChannel.value.role == MembershipRole.ADMIN) {
+      if (channelRole === MembershipRole.ADMIN) {
         await channelStore.removeChannel(currentChannel.value.name);
       } else {
         await channelStore.quitChannel(currentChannel.value.name);
@@ -55,7 +58,7 @@ const handleLeaveChannel = async () => {
         type: 'positive',
         position: 'top',
         message:
-          currentChannel.value?.role === MembershipRole.ADMIN
+          channelRole === MembershipRole.ADMIN
             ? 'Channel deleted successfully'
             : 'Channel left successfully',
       });
@@ -63,7 +66,7 @@ const handleLeaveChannel = async () => {
       $q.notify({
         type: 'negative',
         message:
-          currentChannel.value?.role === MembershipRole.ADMIN
+          channelRole === MembershipRole.ADMIN
             ? 'Failed to remove channel'
             : 'Failed to leave channel',
         position: 'top',

@@ -12,18 +12,19 @@ export default class ChannelController {
                 return response.unauthorized({ message: 'User not authenticated' })
             }
 
-            const channelUsers = await ChannelUser.query()
+            const myChannels = await ChannelUser.query()
                 .preload('channel', (channelQuery) => {
-                    channelQuery.select('name', 'is_private')
+                    channelQuery.select('name', 'is_private').preload('users', (userQuery) => {
+                        userQuery.select('id', 'firstname', 'lastname', 'username')
+                    })
                 })
-                .preload('user')
-                .where('user_id', userId)
+                .where('userId', userId)
                 .whereIn('status', ['active', 'invited'])
 
-            const channels = channelUsers.map((cu) => ({
+            const channels = myChannels.map((cu) => ({
                 name: cu.channel.name,
                 isPrivate: cu.channel.is_private,
-                users: cu.user,
+                users: cu.status === 'invited' ? [] : cu.channel.users,
                 isInvitation: cu.status === 'invited',
                 role: cu.role,
             }))
@@ -38,17 +39,17 @@ export default class ChannelController {
     }
 
     async create({ request, response, auth }: HttpContext) {
+        const userId = auth.user?.id
+        if (!userId) {
+            return response.unauthorized({ message: 'User not authenticated' })
+        }
+
+        const { name, isPrivate, join } = request.all()
+
+        const channel = await Channel.findBy('name', name)
+
         try {
-            const userId = auth.user?.id
-            if (!userId) {
-                return response.unauthorized({ message: 'User not authenticated' })
-            }
-
-            const { name, isPrivate } = request.all()
-
-            const channel = await Channel.findBy('name', name)
-
-            if (channel && !channel.is_private) {
+            if (channel && join) {
                 await ChannelUser.create({
                     channelId: channel.id,
                     userId: userId,
@@ -61,9 +62,22 @@ export default class ChannelController {
                         isPrivate,
                         users: [],
                         isInvitation: false,
-                        role: MembershipRole.ADMIN,
+                        role: MembershipRole.MEMBER,
                     },
                 })
+            }
+
+            if (channel) {
+                if (channel.is_private) {
+                    return response.conflict({
+                        message:
+                            "Channel already exists, but it's private try to contact admin to send invitation",
+                    })
+                } else {
+                    return response.conflict({
+                        message: 'Channel already exists, try to use different name',
+                    })
+                }
             }
 
             const newChannel = await Channel.create({
@@ -90,7 +104,7 @@ export default class ChannelController {
             })
         } catch (error) {
             return response.internalServerError({
-                message: 'Error creating channel',
+                message: join ? 'Error joining channel' : 'Error creating channel',
                 error: error.message,
             })
         }
@@ -105,10 +119,14 @@ export default class ChannelController {
 
             const { channelName } = request.all()
 
+            console.log(channelName, userId)
+
             const channel = await Channel.query()
                 .where('name', channelName)
                 .andWhere('created_by', userId)
                 .first()
+
+            console.log(channel)
 
             if (!channel) {
                 return response.notFound({ message: 'Channel not found or access denied' })
@@ -136,6 +154,8 @@ export default class ChannelController {
 
             const channel = await Channel.query().where('name', channelName).first()
 
+            console.log(channel)
+
             if (!channel) {
                 return response.notFound({ message: 'Channel not found' })
             }
@@ -145,6 +165,8 @@ export default class ChannelController {
                 .andWhere('user_id', userId)
                 .andWhere('status', 'active')
                 .first()
+
+            console.log(channelUser)
 
             if (!channelUser) {
                 return response.notFound({ message: 'User not found in channel' })

@@ -3,9 +3,11 @@ import { ref, watch } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { Channel } from 'app/frontend/src/types/channel';
-import { authService } from '../services/authService';
 import { wsService } from '../services/wsService';
-import { date } from 'quasar';
+import { date, useQuasar } from 'quasar';
+import { MembershipRole } from '../types/enum';
+
+const $q = useQuasar();
 
 const messageStore = useMessageStore();
 const channelStore = useChannelStore();
@@ -35,7 +37,7 @@ const decodeHTMLEntities = (text: string) => {
   return element.value;
 };
 
-const handleCommand = (command: string) => {
+const handleCommand = async (command: string) => {
   const match = command.match(commandRegex);
   if (!match) return;
   const parts = match[1].split(/\s+/);
@@ -50,8 +52,7 @@ const handleCommand = (command: string) => {
         name: channelName,
         isPrivate: isPrivate,
       };
-      channelStore.addNewChannel(newChannel);
-      channelStore.selectChannel(newChannel);
+      await channelStore.addNewChannel(newChannel, true);
     } else {
       channelStore.selectChannel(existingChannel);
     }
@@ -60,23 +61,18 @@ const handleCommand = (command: string) => {
       showUserList.value = !showUserList.value;
     }
   } else if (parts[0] === 'invite') {
-    const channelName = currentChannel.value?.name;
+    const channelName = currentChannel.value?.name as string;
     const username = parts[1];
-    const invitationChannel: Channel = {
-      name: channelName as string,
-      isPrivate: true,
-      isInvitation: true,
-    };
-    channelStore.invite(invitationChannel, username);
+
+    await channelStore.invite(channelName, username);
   } else if (parts[0] === 'quit') {
-    const data = authService.me();
-
-    if (data) {
-      console.log(data);
-    }
-
     if (currentChannel.value) {
-      channelStore.removeChannel(currentChannel.value.name);
+      if (currentChannel.value.role == MembershipRole.ADMIN) {
+        await channelStore.removeChannel(currentChannel.value.name);
+      } else {
+        await channelStore.quitChannel(currentChannel.value.name);
+      }
+
       if (channelStore.channels.length > 0) {
         channelStore.selectChannel(channelStore.channels[0]);
       } else {
@@ -85,20 +81,45 @@ const handleCommand = (command: string) => {
     }
   } else if (parts[0] === 'cancel') {
     if (currentChannel.value) {
-      if (currentChannel.value.isInvitation) {
-        channelStore.removeChannel(currentChannel.value.name);
-      }
-      if (channelStore.channels.length > 0) {
-        channelStore.selectChannel(channelStore.channels[0]);
-      } else {
-        currentChannel.value = null;
+      const channelRole = currentChannel.value.role;
+
+      try {
+        if (channelRole === MembershipRole.ADMIN) {
+          await channelStore.removeChannel(currentChannel.value.name);
+        } else {
+          await channelStore.quitChannel(currentChannel.value.name);
+        }
+
+        if (channelStore.channels.length > 0) {
+          channelStore.selectChannel(channelStore.channels[0]);
+        } else {
+          currentChannel.value = null;
+        }
+
+        $q.notify({
+          type: 'positive',
+          position: 'top',
+          message:
+            channelRole === MembershipRole.ADMIN
+              ? 'Channel deleted successfully'
+              : 'Channel left successfully',
+        });
+      } catch (error) {
+        $q.notify({
+          type: 'negative',
+          message:
+            currentChannel.value?.role == MembershipRole.ADMIN
+              ? 'Failed to remove channel'
+              : 'Failed to leave channel',
+          position: 'top',
+        });
       }
     }
   } else if (parts[0] === 'kick') {
     const username = parts[1];
     if (currentChannel.value) {
       wsService.kickUser(currentChannel.value.name, username);
-      channelStore.removeChannel(currentChannel.value.name);
+      await channelStore.removeChannel(currentChannel.value.name);
     }
   }
 };
@@ -106,16 +127,16 @@ const handleCommand = (command: string) => {
 const sendMessage = () => {
   const decodedMessage = decodeHTMLEntities(messageText.value);
   const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
-  if (trimmedMessage !== '' && currentChannel.value) {
+  if (trimmedMessage !== '') {
     if (commandRegex.test(trimmedMessage)) {
       handleCommand(trimmedMessage);
-    } else {
-      wsService.sendMessage(currentChannel.value.name, trimmedMessage);
+    } else if (currentChannel.value) {
+      wsService.sendMessage(currentChannel.value!.name, trimmedMessage);
       const message = {
         text: trimmedMessage,
         name: wsService.username,
         timestamp: date.formatDate(new Date(), 'HH:mm'),
-        channelName: currentChannel.value.name,
+        channelName: currentChannel.value!.name,
       };
       messageStore.addMessage(message);
     }

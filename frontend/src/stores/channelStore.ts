@@ -26,16 +26,15 @@ export const useChannelStore = defineStore('channelStore', {
       wsService.joinChannel(channel.name);
     },
 
-    async addNewChannel(newChannel: Channel) {
-      const data = await channelService.addNewChannel(newChannel);
+    async addNewChannel(newChannel: Channel, isJoin = false) {
+      const data = await channelService.addNewChannel(newChannel, isJoin);
 
       this.channels.push(data.channel);
 
       this.selectChannel(this.channels[this.channels.length - 1]);
-      console.log(this.getSelectedChannel());
     },
 
-    async invite(newChannel: Channel, username: string) {
+    async invite(newChannel: string, username: string) {
       await inviteService.invite(newChannel, username);
     },
 

@@ -2,6 +2,7 @@ import factory from '@adonisjs/lucid/factories'
 import Channel from '#models/channel'
 import User from '#models/user'
 import { DateTime } from 'luxon'
+import Message from '#models/message'
 
 export const ChannelFactory = factory
     .define(Channel, async ({ faker }) => {
@@ -16,4 +17,7 @@ export const ChannelFactory = factory
             created_by: faker.helpers.arrayElement(userIds), // Randomly assigns one of the four users
         }
     })
+    .relation('users', () => User)
+    .relation('creator', () => User)
+    .relation('messages', () => Message)
     .build()

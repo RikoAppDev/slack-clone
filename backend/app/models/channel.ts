@@ -1,5 +1,12 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import {
+    BaseModel,
+    beforeCreate,
+    belongsTo,
+    column,
+    hasMany,
+    manyToMany,
+} from '@adonisjs/lucid/orm'
 import Message from './message.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
@@ -49,4 +56,11 @@ export default class Channel extends BaseModel {
         foreignKey: 'created_by',
     })
     declare creator: relations.BelongsTo<typeof User>
+
+    @manyToMany(() => User, {
+        pivotTable: 'channel_users',
+        pivotTimestamps: true,
+        // pivotColumns: ['role', 'status'],
+    })
+    declare users: relations.ManyToMany<typeof User>
 }

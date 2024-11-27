@@ -101,7 +101,6 @@ const handleCreateChannel = async () => {
 
       setDefault();
       handleOpeningModal();
-      channelStore.selectChannel(newChannel);
 
       $q.notify({
         type: 'positive',

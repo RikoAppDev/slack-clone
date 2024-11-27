@@ -1,8 +1,7 @@
 import { api } from './remoteService';
-import { Channel } from '../types/channel';
 
 export const inviteService = {
-  async invite(channelName: Channel, username: string) {
+  async invite(channelName: string, username: string) {
     const response = await api('POST', '/invite/new', {
       channelName,
       username,

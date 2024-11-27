@@ -14,8 +14,12 @@ export const channelService = {
     return data;
   },
 
-  async addNewChannel(newChannel: Channel) {
-    const response = await api('POST', '/channels/create', newChannel);
+  async addNewChannel(newChannel: Channel, isJoin: boolean) {
+    const response = await api(
+      'POST',
+      `/channels/create?join=${isJoin}`,
+      newChannel
+    );
 
     const data = await response.json();
 
@@ -23,7 +27,9 @@ export const channelService = {
       if (response.status == 409) {
         throw new Error(data.message);
       } else {
-        throw new Error('Failed to create channel');
+        throw new Error(
+          isJoin ? 'Failed to join channel' : 'Failed to create channel'
+        );
       }
     }
 
