@@ -64,7 +64,21 @@ const handleCommand = async (command: string) => {
     const channelName = currentChannel.value?.name as string;
     const username = parts[1];
 
-    await channelStore.invite(channelName, username);
+    try {
+      await channelStore.invite(channelName, username);
+
+      $q.notify({
+        type: 'positive',
+        message: `Invitation into ${channelName} channel sent to ${username}`,
+        position: 'top',
+      });
+    } catch (error: any) {
+      $q.notify({
+        type: 'negative',
+        message: error.message || 'Failed to sent invite',
+        position: 'top',
+      });
+    }
   } else if (parts[0] === 'quit') {
     if (currentChannel.value) {
       if (currentChannel.value.role == MembershipRole.ADMIN) {

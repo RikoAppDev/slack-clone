@@ -99,8 +99,22 @@ const acceptInvitation = async () => {
   }
 };
 
-const rejectInvitation = () => {
-  channelStore.rejectInvitation(props.name);
+const rejectInvitation = async () => {
+  try {
+    await channelStore.rejectInvitation(props.name);
+
+    $q.notify({
+      type: 'positive',
+      message: `Invitation to ${props.name} channel was rejected`,
+      position: 'top',
+    });
+  } catch (error: any) {
+    $q.notify({
+      type: 'negative',
+      message: error.message || 'An error occurred',
+      position: 'top',
+    });
+  }
 };
 </script>
 

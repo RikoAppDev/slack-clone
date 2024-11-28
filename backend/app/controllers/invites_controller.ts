@@ -69,7 +69,8 @@ export default class InvitesController {
             }
 
             // Find the channel by its unique name
-            const channel = await Channel.query().where('name', channelName).first()
+            const channel = await Channel.findBy('name', channelName)
+
             if (!channel) {
                 return response.notFound({ message: 'Channel not found' })
             }
@@ -80,15 +81,11 @@ export default class InvitesController {
                 .andWhere('channel_id', channel.id)
                 .andWhere('role', MembershipRole.MEMBER)
                 .andWhere('status', MembershipStatus.INVITED) // Check if status is "invited"
-                .first()
+                .update({ status: MembershipStatus.ACTIVE, updated_at: new Date() })
 
             if (!inviteRecord) {
                 return response.notFound({ message: 'Invite not found or access denied' })
             }
-
-            // Update the invite status to 'ACTIVE'
-            inviteRecord.status = MembershipStatus.ACTIVE
-            await inviteRecord.save()
 
             return response.accepted({ channel: { ...inviteRecord, name: channel.name } })
         } catch (error) {
@@ -113,7 +110,8 @@ export default class InvitesController {
             }
 
             // Find the channel by its unique name
-            const channel = await Channel.query().where('name', channelName).first()
+            const channel = await Channel.findBy('name', channelName)
+
             if (!channel) {
                 return response.notFound({ message: 'Channel not found' })
             }
@@ -131,7 +129,7 @@ export default class InvitesController {
             }
 
             // Delete the invite record to signify rejection
-            await inviteRecord.delete()
+            await channel.related('users').detach([userId])
 
             return response.ok({ message: 'Invite rejected successfully' })
         } catch (error) {
