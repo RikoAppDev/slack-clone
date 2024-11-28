@@ -15,7 +15,7 @@ const currentChannel = ref(channelStore.selectedChannel);
 const messageText = ref('');
 const showUserList = ref(false);
 const commandRegex =
-  /^\/(join\s+(private\s+)?\w+|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
+  /^\/(join\s+\w+(?:\s+private)?|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
 watch(
   () => channelStore.getSelectedChannel(),
@@ -42,8 +42,8 @@ const handleCommand = async (command: string) => {
   if (!match) return;
   const parts = match[1].split(/\s+/);
   if (parts[0] === 'join') {
-    const isPrivate = parts[1] === 'private';
-    const channelName = isPrivate ? parts[2] : parts[1];
+    const channelName = parts[1];
+    const isPrivate = parts[2] === 'private';
     const existingChannel = channelStore.channels.find(
       (channel) => channel.name === channelName
     );

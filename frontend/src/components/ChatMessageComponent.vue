@@ -7,6 +7,15 @@ const props = defineProps<{
   timestamp: string;
 }>();
 
+const formatTimestamp = (timestamp: string) =>
+  new Date(timestamp).toLocaleString('en-GB', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+
 const highlightMentions = (text: string) => {
   const mentionRegex = /(@\w+)/g;
 
@@ -25,7 +34,7 @@ const highlightMentions = (text: string) => {
   <div class="flex justify-center">
     <q-chat-message
       :name="props.name"
-      :stamp="props.timestamp"
+      :stamp="formatTimestamp(props.timestamp)"
       bg-color="white"
       text-color="black"
     >
