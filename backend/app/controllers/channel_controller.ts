@@ -50,16 +50,24 @@ export default class ChannelController {
 
         try {
             if (channel && join) {
+                if (channel.is_private) {
+                    return response.conflict({
+                        message:
+                            "Channel already exists, but it's private try to contact admin to send invitation",
+                    })
+                }
+
                 await ChannelUser.create({
                     channelId: channel.id,
                     userId: userId,
                     role: MembershipRole.MEMBER,
                     status: MembershipStatus.ACTIVE,
                 })
+
                 return response.created({
                     channel: {
                         name: channel.name,
-                        isPrivate,
+                        isPrivate: channel.is_private,
                         users: [],
                         isInvitation: false,
                         role: MembershipRole.MEMBER,
@@ -68,16 +76,9 @@ export default class ChannelController {
             }
 
             if (channel) {
-                if (channel.is_private) {
-                    return response.conflict({
-                        message:
-                            "Channel already exists, but it's private try to contact admin to send invitation",
-                    })
-                } else {
-                    return response.conflict({
-                        message: 'Channel already exists, try to use different name',
-                    })
-                }
+                return response.conflict({
+                    message: 'Channel already exists, try to use different name',
+                })
             }
 
             const newChannel = await Channel.create({
@@ -96,7 +97,7 @@ export default class ChannelController {
             return response.created({
                 channel: {
                     name: newChannel.name,
-                    isPrivate,
+                    isPrivate: newChannel.is_private,
                     users: [],
                     isInvitation: false,
                     role: MembershipRole.ADMIN,
@@ -119,14 +120,10 @@ export default class ChannelController {
 
             const { channelName } = request.all()
 
-            console.log(channelName, userId)
-
             const channel = await Channel.query()
                 .where('name', channelName)
                 .andWhere('created_by', userId)
                 .first()
-
-            console.log(channel)
 
             if (!channel) {
                 return response.notFound({ message: 'Channel not found or access denied' })

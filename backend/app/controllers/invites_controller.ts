@@ -87,7 +87,33 @@ export default class InvitesController {
                 return response.notFound({ message: 'Invite not found or access denied' })
             }
 
-            return response.accepted({ channel: { ...inviteRecord, name: channel.name } })
+            const memberRecord = await ChannelUser.query()
+                .where('userId', userId)
+                .andWhere('channel_id', channel.id)
+                .andWhere('status', MembershipStatus.ACTIVE)
+                .preload('channel', (channelQuery) => {
+                    channelQuery
+                        .select('name', 'is_private')
+                        .where('name', channelName)
+                        .preload('users', (userQuery) => {
+                            userQuery.select('id', 'firstname', 'lastname', 'username')
+                        })
+                })
+                .first()
+
+            if (!memberRecord) {
+                return response.notFound({ message: 'Invite not found or access denied' })
+            }
+
+            return response.ok({
+                channel: {
+                    name: channel.name,
+                    isPrivate: channel.is_private,
+                    users: memberRecord.channel.users,
+                    isInvitation: MembershipStatus.ACTIVE,
+                    role: MembershipRole.MEMBER,
+                },
+            })
         } catch (error) {
             return response.internalServerError({
                 message: 'Error accepting channel invite',

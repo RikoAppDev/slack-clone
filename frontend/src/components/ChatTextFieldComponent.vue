@@ -52,7 +52,22 @@ const handleCommand = async (command: string) => {
         name: channelName,
         isPrivate: isPrivate,
       };
-      await channelStore.addNewChannel(newChannel, true);
+
+      try {
+        await channelStore.addNewChannel(newChannel, true);
+
+        $q.notify({
+          type: 'positive',
+          message: 'Channel joined successfully',
+          position: 'top',
+        });
+      } catch (error: any) {
+        $q.notify({
+          type: 'negative',
+          message: error.message || 'Failed to add new channel',
+          position: 'top',
+        });
+      }
     } else {
       channelStore.selectChannel(existingChannel);
     }
@@ -69,7 +84,7 @@ const handleCommand = async (command: string) => {
 
       $q.notify({
         type: 'positive',
-        message: `Invitation into ${channelName} channel sent to ${username}`,
+        message: `Invitation into ${channelName} channel sent to @${username}`,
         position: 'top',
       });
     } catch (error: any) {
@@ -184,7 +199,7 @@ const closeUserList = () => {
         class="user-item"
       >
         <q-item-section>
-          <q-item-label>{{ user.username }}</q-item-label>
+          <q-item-label>@{{ user.username }}</q-item-label>
           <q-item-label caption>{{ user.status }}</q-item-label>
         </q-item-section>
       </q-item>
