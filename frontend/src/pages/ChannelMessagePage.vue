@@ -20,12 +20,14 @@ const channelStore = useChannelStore();
     </div>
 
     <div v-else class="no-channel">
-      <p class="no-channel-heading">Oh no! It looks like you are not a member of any channel</p>
+      <p class="no-channel-heading">
+        Oh no! It looks like you are not a member of any channel
+      </p>
       <p>
         Try to create your own channel click on plus button or join to someones
         community using
       </p>
-      <code>/join [private] channel_name</code>
+      <code>/join channel_name [private]</code><span>&nbsp;</span>
     </div>
 
     <!-- Chat Input at the Bottom -->
