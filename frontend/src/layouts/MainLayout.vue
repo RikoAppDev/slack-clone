@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useChannelStore } from '../stores/channelStore';
-import { useMessageStore } from '../stores/messageStore';
 import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
 import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
 import ProfileButtonComponent from 'components/ProfileButtonComponent.vue';
@@ -18,16 +17,12 @@ const toggleLeftDrawer = (): void => {
 };
 
 const channelStore = useChannelStore();
-const messageStore = useMessageStore();
 
 onMounted(async () => {
   try {
     const data = await authService.me();
     wsService.initialize(data.user.username);
     await channelStore.fetchChannels();
-    await messageStore.fetchMessagesForChannel(
-      channelStore.getSelectedChannel()?.name as string , 1
-    );
   } catch (error: any) {
     $q.notify({
       type: 'negative',

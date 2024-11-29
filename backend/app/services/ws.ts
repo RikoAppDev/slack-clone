@@ -1,5 +1,4 @@
 import { Server } from 'socket.io'
-import ChannelUser from '#models/channel_user'
 import server from '@adonisjs/core/services/server'
 
 class Ws {
@@ -30,9 +29,10 @@ class Ws {
                 this.io?.to(channel).emit('receiveMessage', message, username)
             })
 
-            socket.on('kickUser', ({ channel, username }) => {
-                socket.leave(channel)
-                ChannelUser.query().where('channel_id', channel).where('user_id', username).delete()
+            socket.on('invitation', ({ channel, username }) => {
+                console.log(channel)
+                console.log(username)
+                this.io?.emit('receiveInvite', channel, username)
             })
         })
     }

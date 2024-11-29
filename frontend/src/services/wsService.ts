@@ -1,4 +1,7 @@
 import { io, Socket } from 'socket.io-client';
+import { useChannelStore } from '../stores/channelStore';
+import { Channel } from '../types/channel';
+import { useMessageStore } from '../stores/messageStore';
 
 class WsService {
   private socket: Socket;
@@ -6,11 +9,44 @@ class WsService {
 
   constructor() {
     this.socket = io('http://localhost:3333');
-    this.username = 'Unknown';
+    this.username = '';
   }
 
   initialize(username: string) {
     this.username = username;
+
+    this.socket.on('receiveInvite', (channel, username) => {
+      // Pride iba tomudo GUI, kto je pozvany check lebo to je broadcast vsetkym 
+      if (username === this.username) {
+        const channelStore = useChannelStore();
+        channel.isInvitation = true;
+        channelStore.invitations.push(channel);
+        console.log(channelStore.invitations);
+      }
+    });
+
+  this.socket.on('receiveMessage', (message, username) => {
+    const channelName = useChannelStore().getSelectedChannel()?.name;
+    
+    if (channelName) {
+      const messageStore = useMessageStore();
+      
+      // Initialize the messages array if it doesn't exist
+      if (!messageStore.messages[channelName]) {
+        messageStore.messages[channelName] = [];
+      }
+
+      const newMessage = {
+        text: message,
+        name: username,
+        timestamp: new Date().toISOString(),
+        channelName,
+      }
+
+      messageStore.messages[channelName].push(newMessage);
+    }
+  });
+
   }
 
   joinChannel(channel: string) {
@@ -22,14 +58,10 @@ class WsService {
     this.socket.emit('sendMessage', { channel, message, username });
   }
 
-  onMessage(callback: (message: string, username: string) => void) {
-    this.socket.on('receiveMessage', callback);
+  invite(channel: Channel, username: string) {
+    this.socket.emit('invitation', { channel, username })
+    console.log('Invitation sent');
   }
-
-  kickUser(channel: string, username: string) {
-    this.socket.emit('kickUser', { channel, username });
-  }
-
 }
 
 export const wsService = new WsService();

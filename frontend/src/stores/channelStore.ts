@@ -3,6 +3,7 @@ import { Channel } from '../types/channel';
 import { channelService } from '../services/channelService';
 import { inviteService } from '../services/inviteService';
 import { wsService } from '../services/wsService';
+import { useMessageStore } from './messageStore';
 
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
@@ -18,12 +19,27 @@ export const useChannelStore = defineStore('channelStore', {
 
       this.invitations = this.channels.filter((c) => c.isInvitation == true);
       this.channels = this.channels.filter((c) => c.isInvitation == false);
-      this.initializeSelectedChannel();
+
+      const messageStore = useMessageStore();
+      this.channels.forEach((channel) => {
+        if (!messageStore.messages[channel.name]) {
+          const messageStore = useMessageStore();
+          messageStore.messages[channel.name] = [];    
+          messageStore.currentPage[channel.name] = 1;
+        }
+     });
+      
+      await this.initializeSelectedChannel();
     },
 
     selectChannel(channel: Channel) {
-      this.selectedChannel = channel;
-      wsService.joinChannel(channel.name);
+      if (this.selectedChannel?.name !== channel.name) {
+        this.selectedChannel = channel;
+        const messageStore = useMessageStore();
+        messageStore.messages[channel.name] = [];    
+        messageStore.currentPage[channel.name] = 1;
+        wsService.joinChannel(channel.name);
+      }
     },
 
     async addNewChannel(newChannel: Channel, isJoin = false) {
@@ -36,6 +52,13 @@ export const useChannelStore = defineStore('channelStore', {
 
     async invite(newChannel: string, username: string) {
       await inviteService.invite(newChannel, username);
+      const channel = this.channels.find((c) => c.name === newChannel);
+
+      if (!channel) {
+        throw new Error('Channel not found');
+      }
+    
+      wsService.invite(channel, username);
     },
 
     getSelectedChannel() {
@@ -66,9 +89,13 @@ export const useChannelStore = defineStore('channelStore', {
       }
     },
 
-    initializeSelectedChannel() {
+    async initializeSelectedChannel() {
       this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
       if (this.selectedChannel) {
+        const messageStore = useMessageStore();
+        await messageStore.fetchMessagesForChannel(
+          this.selectedChannel.name as string , 1
+        );
         wsService.joinChannel(this.selectedChannel.name);
       }
     },

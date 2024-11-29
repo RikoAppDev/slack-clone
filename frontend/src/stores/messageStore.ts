@@ -1,9 +1,7 @@
+import { useChannelStore } from '../stores/channelStore';
 import { defineStore } from 'pinia';
 import { Message } from '../types/message';
 import { messService } from '../services/messService';
-import { wsService } from '../services/wsService';
-import { useChannelStore } from './channelStore';
-import { watch } from 'vue';
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
@@ -36,38 +34,4 @@ export const useMessageStore = defineStore('messageStore', {
       }
       },
   },
-});
-
-const channelStore = useChannelStore();
-
-watch(
-  () => channelStore.selectedChannel,
-  (newChannel) => {
-    if (newChannel) {
-      const channelName = newChannel.name;
-      const messageStore = useMessageStore();
-      messageStore.messages[channelName] = [];
-      messageStore.currentPage[channelName] = 1;
-    }
-  }
-);
-
-wsService.onMessage( (message, username) => {
-  const channelName = useChannelStore().getSelectedChannel()?.name;
-
-  if (channelName) {
-    const messageStore = useMessageStore();
-    if (!messageStore.messages[channelName]) {
-      messageStore.messages[channelName] = [];
-    }
-
-    const newMessage = {
-      text: message,
-      name: username,
-      timestamp: new Date().toISOString(),
-      channelName,
-    }
-
-    messageStore.messages[channelName].push(newMessage);
-  }
 });

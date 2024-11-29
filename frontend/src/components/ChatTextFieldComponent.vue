@@ -147,7 +147,6 @@ const handleCommand = async (command: string) => {
   } else if (parts[0] === 'kick') {
     const username = parts[1];
     if (currentChannel.value) {
-      wsService.kickUser(currentChannel.value.name, username);
       await channelStore.removeChannel(currentChannel.value.name);
     }
   }
@@ -164,7 +163,7 @@ const sendMessage = () => {
       const message = {
         text: trimmedMessage,
         name: wsService.username,
-        timestamp: date.formatDate(new Date(), 'HH:mm'),
+        timestamp: date.formatDate(new Date()),
         channelName: currentChannel.value!.name,
       };
       messageStore.addMessage(message);
