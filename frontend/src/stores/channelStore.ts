@@ -74,6 +74,7 @@ export const useChannelStore = defineStore('channelStore', {
 
     async removeChannel(channelName: string) {
       await channelService.removeChannel(channelName);
+      wsService.deleteChannel(channelName);
 
       this.channels = this.channels.filter(
         (channel) => channel.name !== channelName
@@ -81,7 +82,7 @@ export const useChannelStore = defineStore('channelStore', {
       if (this.selectedChannel?.name === channelName) {
         this.selectedChannel =
           this.channels.length > 0 ? this.channels[0] : null;
-      }
+        }      
     },
 
     async quitChannel(channelName: string) {

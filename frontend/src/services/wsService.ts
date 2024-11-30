@@ -14,9 +14,9 @@ class WsService {
 
   initialize(username: string) {
     this.username = username;
-
+      
     this.socket.on('receiveInvite', (channel, username) => {
-      // Pride iba tomudo GUI, kto je pozvany check lebo to je broadcast vsetkym 
+      // Pride iba tomu na GUI, kto je pozvany check lebo to je broadcast vsetkym 
       if (username === this.username) {
         const channelStore = useChannelStore();
         channel.isInvitation = true;
@@ -25,28 +25,39 @@ class WsService {
       }
     });
 
-  this.socket.on('receiveMessage', (message, username) => {
-    const channelName = useChannelStore().getSelectedChannel()?.name;
-    
-    if (channelName) {
-      const messageStore = useMessageStore();
+    this.socket.on('receiveMessage', (message, username) => {
+      const channelName = useChannelStore().getSelectedChannel()?.name;
       
-      // Initialize the messages array if it doesn't exist
-      if (!messageStore.messages[channelName]) {
-        messageStore.messages[channelName] = [];
+      if (channelName) {
+        const messageStore = useMessageStore();
+        
+        // Initialize the messages array if it doesn't exist
+        if (!messageStore.messages[channelName]) {
+          messageStore.messages[channelName] = [];
+        }
+
+        const newMessage = {
+          text: message,
+          name: username,
+          timestamp: new Date().toISOString(),
+          channelName,
+        }
+
+        messageStore.messages[channelName].push(newMessage);
       }
+    });
 
-      const newMessage = {
-        text: message,
-        name: username,
-        timestamp: new Date().toISOString(),
-        channelName,
+    this.socket.on('channelDeleted', (channelName) => {
+      const channelStore = useChannelStore();
+
+      channelStore.channels = channelStore.channels.filter(
+        (channel) => channel.name !== channelName
+      );
+      if (channelStore.selectedChannel?.name === channelName) {
+        channelStore.selectedChannel =
+        channelStore.channels.length > 0 ? channelStore.channels[0] : null;
       }
-
-      messageStore.messages[channelName].push(newMessage);
-    }
-  });
-
+    });
   }
 
   joinChannel(channel: string) {
@@ -60,7 +71,10 @@ class WsService {
 
   invite(channel: Channel, username: string) {
     this.socket.emit('invitation', { channel, username })
-    console.log('Invitation sent');
+  }
+
+  deleteChannel(channel: string) {
+    this.socket.emit('deleteChannel', channel);
   }
 }
 

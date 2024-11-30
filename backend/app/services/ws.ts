@@ -30,9 +30,11 @@ class Ws {
             })
 
             socket.on('invitation', ({ channel, username }) => {
-                console.log(channel)
-                console.log(username)
                 this.io?.emit('receiveInvite', channel, username)
+            })
+            
+            socket.on('deleteChannel', (channel) => {
+                this.io?.to(channel).emit('channelDeleted', channel)
             })
         })
     }
