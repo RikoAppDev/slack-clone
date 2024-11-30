@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
+import { useUserStore } from '../stores/user';
 import { Channel } from 'app/frontend/src/types/channel';
 import { wsService } from '../services/wsService';
 import { date, useQuasar } from 'quasar';
@@ -11,9 +12,9 @@ const $q = useQuasar();
 
 const messageStore = useMessageStore();
 const channelStore = useChannelStore();
-const currentChannel = ref(channelStore.selectedChannel);
+const userStore = useUserStore();
+const currentChannel = ref(channelStore.getSelectedChannel());
 const messageText = ref('');
-const showUserList = ref(false);
 const commandRegex =
   /^\/(join\s+\w+(?:\s+private)?|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
@@ -70,14 +71,32 @@ const handleCommand = async (command: string) => {
       }
     } else {
       channelStore.selectChannel(existingChannel);
+
+      $q.notify({
+        type: 'positive',
+        message: 'Already in the channel',
+        position: 'top',
+      });
     }
   } else if (parts[0] === 'list') {
     if (currentChannel.value) {
-      showUserList.value = !showUserList.value;
+      channelStore.handleUserList();
     }
   } else if (parts[0] === 'invite') {
     const channelName = currentChannel.value?.name as string;
     const username = parts[1];
+
+    if (
+      currentChannel.value?.isPrivate &&
+      currentChannel.value.role == MembershipRole.MEMBER
+    ) {
+      $q.notify({
+        type: 'negative',
+        message: 'Only ADMIN can sent an invitation to private channel',
+        position: 'top',
+      });
+      return;
+    }
 
     try {
       await channelStore.invite(channelName, username);
@@ -94,18 +113,57 @@ const handleCommand = async (command: string) => {
         position: 'top',
       });
     }
-  } else if (parts[0] === 'quit') {
-    if (currentChannel.value) {
-      if (currentChannel.value.role == MembershipRole.ADMIN) {
-        await channelStore.removeChannel(currentChannel.value.name);
-      } else {
-        await channelStore.quitChannel(currentChannel.value.name);
-      }
+  } else if (
+    parts[0] === 'revoke' &&
+    currentChannel.value?.role == MembershipRole.ADMIN
+  ) {
+    const channelName = currentChannel.value?.name as string;
+    const username = parts[1];
 
-      if (channelStore.channels.length > 0) {
-        channelStore.selectChannel(channelStore.channels[0]);
-      } else {
-        currentChannel.value = null;
+    if (username == userStore.getUsername) {
+      return;
+    }
+
+    try {
+      await channelStore.revoke(channelName, username);
+
+      $q.notify({
+        type: 'positive',
+        message: `User @${username} was removed from ${channelName} channel`,
+        position: 'top',
+      });
+    } catch (error: any) {
+      $q.notify({
+        type: 'negative',
+        message: error.message || 'Failed to sent invite',
+        position: 'top',
+      });
+    }
+  } else if (
+    parts[0] === 'quit' &&
+    currentChannel.value?.role == MembershipRole.ADMIN
+  ) {
+    if (currentChannel.value) {
+      try {
+        await channelStore.removeChannel(currentChannel.value.name);
+
+        if (channelStore.channels.length > 0) {
+          channelStore.selectChannel(channelStore.channels[0]);
+        } else {
+          currentChannel.value = null;
+        }
+
+        $q.notify({
+          type: 'positive',
+          position: 'top',
+          message: 'Channel deleted successfully',
+        });
+      } catch (error) {
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to remove channel',
+          position: 'top',
+        });
       }
     }
   } else if (parts[0] === 'cancel') {
@@ -145,7 +203,7 @@ const handleCommand = async (command: string) => {
       }
     }
   } else if (parts[0] === 'kick') {
-    const username = parts[1];
+    // const username = parts[1];
     if (currentChannel.value) {
       await channelStore.removeChannel(currentChannel.value.name);
     }
@@ -171,14 +229,13 @@ const sendMessage = () => {
     messageText.value = '';
   }
 };
-
-const closeUserList = () => {
-  showUserList.value = false;
-};
 </script>
 
 <template>
-  <div v-if="showUserList" class="user-list-container">
+  <div
+    v-if="channelStore.showUserList && channelStore.getSelectedChannel()"
+    class="user-list-container"
+  >
     <div class="user-list-header">
       <q-item-label class="text-h6"
         >Users in {{ currentChannel?.name }}
@@ -187,7 +244,7 @@ const closeUserList = () => {
         flat
         icon="close"
         color="negative"
-        @click="closeUserList"
+        @click="channelStore.handleUserList()"
         class="close-btn"
       />
     </div>

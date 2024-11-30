@@ -52,7 +52,7 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const name = userStore.getFullName;
-const tag = userStore.getUsername;
+const tag = '@' + userStore.getUsername;
 
 const group = ref(userStore.getStatus);
 

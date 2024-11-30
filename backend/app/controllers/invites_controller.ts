@@ -15,13 +15,13 @@ export default class InvitesController {
             }
 
             // Find the channel by its unique name
-            const channel = await Channel.query().where('name', channelName).first()
+            const channel = await Channel.findBy('name', channelName)
             if (!channel) {
                 return response.notFound({ message: 'Channel not found' })
             }
 
             // Find the user by username
-            const user = await User.query().where('username', username).first()
+            const user = await User.findBy('username', username)
             if (!user) {
                 return response.notFound({ message: 'User not found' })
             }
@@ -50,6 +50,44 @@ export default class InvitesController {
         } catch (error) {
             return response.internalServerError({
                 message: 'Error inviting user to channel',
+                error: error.message,
+            })
+        }
+    }
+
+    async revoke({ request, response }: HttpContext) {
+        try {
+            const { channelName, username } = request.only(['channelName', 'username'])
+
+            if (!channelName || !username) {
+                return response.badRequest({ message: 'Channel name and username are required' })
+            }
+
+            const channel = await Channel.findBy('name', channelName)
+            if (!channel) {
+                return response.notFound({ message: 'Channel not found' })
+            }
+
+            const user = await User.findBy('username', username)
+            if (!user) {
+                return response.notFound({ message: 'User not found' })
+            }
+
+            const membership = await ChannelUser.query()
+                .where('user_id', user.id)
+                .andWhere('channel_id', channel.id)
+                .first()
+
+            if (!membership) {
+                return response.notFound({ message: 'User is not a member of this channel' })
+            }
+
+            await channel.related('users').detach([user.id])
+
+            return response.ok({ message: 'User successfully removed from channel' })
+        } catch (error) {
+            return response.internalServerError({
+                message: 'Error removing user from channel',
                 error: error.message,
             })
         }

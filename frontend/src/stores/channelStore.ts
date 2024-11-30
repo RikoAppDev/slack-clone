@@ -11,6 +11,7 @@ export const useChannelStore = defineStore('channelStore', {
     channels: [] as Channel[],
     selectedChannel: null as Channel | null,
     users: [] as string[],
+    showUserList: JSON.parse(localStorage.getItem('userList') || 'true'),
   }),
   actions: {
     async fetchChannels() {
@@ -24,11 +25,11 @@ export const useChannelStore = defineStore('channelStore', {
       this.channels.forEach((channel) => {
         if (!messageStore.messages[channel.name]) {
           const messageStore = useMessageStore();
-          messageStore.messages[channel.name] = [];    
+          messageStore.messages[channel.name] = [];
           messageStore.currentPage[channel.name] = 1;
         }
-     });
-      
+      });
+
       await this.initializeSelectedChannel();
     },
 
@@ -36,7 +37,7 @@ export const useChannelStore = defineStore('channelStore', {
       if (this.selectedChannel?.name !== channel.name) {
         this.selectedChannel = channel;
         const messageStore = useMessageStore();
-        messageStore.messages[channel.name] = [];    
+        messageStore.messages[channel.name] = [];
         messageStore.currentPage[channel.name] = 1;
         wsService.joinChannel(channel.name);
       }
@@ -57,8 +58,14 @@ export const useChannelStore = defineStore('channelStore', {
       if (!channel) {
         throw new Error('Channel not found');
       }
-    
+
       wsService.invite(channel, username);
+    },
+
+    async revoke(channelName: string, username: string) {
+      await inviteService.revoke(channelName, username);
+
+      // wsService.revoke(this.getSelectedChannel(), username); // Ak potrebuješ websocket notifikáciu
     },
 
     getSelectedChannel() {
@@ -94,7 +101,8 @@ export const useChannelStore = defineStore('channelStore', {
       if (this.selectedChannel) {
         const messageStore = useMessageStore();
         await messageStore.fetchMessagesForChannel(
-          this.selectedChannel.name as string , 1
+          this.selectedChannel.name as string,
+          1
         );
         wsService.joinChannel(this.selectedChannel.name);
       }
@@ -117,6 +125,11 @@ export const useChannelStore = defineStore('channelStore', {
       this.invitations = this.invitations.filter(
         (channel) => channel.name !== name
       );
+    },
+
+    handleUserList() {
+      this.showUserList = !this.showUserList;
+      localStorage.setItem('userList', JSON.stringify(this.showUserList));
     },
   },
 });

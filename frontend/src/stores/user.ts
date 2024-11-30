@@ -25,7 +25,7 @@ export const useUserStore = defineStore('user', () => {
   const getFullName = computed(() =>
     user.value ? `${user.value.firstname} ${user.value.lastname}` : ''
   );
-  const getUsername = computed(() => '@' + user.value?.username);
+  const getUsername = computed(() => user.value?.username);
   const getStatus = computed(() => status.value);
 
   // Actions

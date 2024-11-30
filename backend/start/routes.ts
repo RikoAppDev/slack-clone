@@ -21,6 +21,7 @@ router
         router.put('accept', [InvitesController, 'accept']).as('invite.accept')
         router.delete('reject', [InvitesController, 'reject']).as('invite.reject')
         router.post('new', [InvitesController, 'invite']).as('invite.new')
+        router.delete('revoke', [InvitesController, 'revoke']).as('channels.revoke')
     })
     .prefix('/invite')
     .use(middleware.auth())

@@ -19,11 +19,10 @@
     transition-hide="jump-left"
     class="bg-grey-8 text-white text-body2 q-pa-sm"
   >
-    {{
-      channelStore.getSelectedChannel()?.role == MembershipRole.ADMIN
-        ? 'Delete channel'
-        : 'Leave channel'
-    }}
+    <p v-if="channelStore.getSelectedChannel()?.role == MembershipRole.ADMIN">
+      Delete channel, ⌨️ <code>/quit</code> or <code>/cancel</code>
+    </p>
+    <p v-else>Leave channel, ⌨️ <code>/cancel</code></p>
   </q-tooltip>
 </template>
 

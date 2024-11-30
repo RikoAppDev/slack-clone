@@ -2,6 +2,7 @@ import { HttpContext } from '@adonisjs/core/http'
 import Channel from '../models/channel.ts'
 import ChannelUser from '#models/channel_user'
 import { MembershipRole, MembershipStatus } from '#models/enum'
+import User from '#models/user'
 
 export default class ChannelController {
     async retrieve({ response, auth }: HttpContext) {
@@ -64,11 +65,25 @@ export default class ChannelController {
                     status: MembershipStatus.ACTIVE,
                 })
 
+                const memberRecord = await ChannelUser.query()
+                    .where('userId', userId)
+                    .andWhere('channel_id', channel.id)
+                    .andWhere('status', MembershipStatus.ACTIVE)
+                    .preload('channel', (channelQuery) => {
+                        channelQuery
+                            .select('name', 'is_private')
+                            .where('name', name)
+                            .preload('users', (userQuery) => {
+                                userQuery.select('id', 'firstname', 'lastname', 'username')
+                            })
+                    })
+                    .first()
+
                 return response.created({
                     channel: {
                         name: channel.name,
                         isPrivate: channel.is_private,
-                        users: [],
+                        users: memberRecord?.channel.users,
                         isInvitation: false,
                         role: MembershipRole.MEMBER,
                     },
@@ -98,7 +113,14 @@ export default class ChannelController {
                 channel: {
                     name: newChannel.name,
                     isPrivate: newChannel.is_private,
-                    users: [],
+                    users: [
+                        {
+                            id: userId,
+                            firstname: auth.user.firstname,
+                            lastname: auth.user.lastname,
+                            username: auth.user.username,
+                        } as User,
+                    ],
                     isInvitation: false,
                     role: MembershipRole.ADMIN,
                 },

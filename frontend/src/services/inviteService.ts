@@ -16,6 +16,21 @@ export const inviteService = {
     return data;
   },
 
+  async revoke(channelName: string, username: string) {
+    const response = await api('DELETE', '/invite/revoke', {
+      channelName,
+      username,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to revoke user');
+    }
+
+    return data;
+  },
+
   async acceptInvite(channelName: string) {
     const response = await api('PUT', '/invite/accept', { channelName });
 
