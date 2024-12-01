@@ -26,6 +26,7 @@ class Ws {
             })
 
             socket.on('sendMessage', ({ channel, message, username }) => {
+                console.log(channel)
                 this.io?.to(channel).emit('receiveMessage', message, username)
             })
 
