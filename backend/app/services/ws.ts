@@ -36,6 +36,10 @@ class Ws {
             socket.on('deleteChannel', (channel) => {
                 this.io?.to(channel).emit('channelDeleted', channel)
             })
+
+            socket.on('updateUser', ({ channel, username, isAdd }) => {
+                this.io?.to(channel.name).emit('userUpdated', channel, username, isAdd )
+            })
         })
     }
 }

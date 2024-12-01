@@ -58,6 +58,21 @@ class WsService {
         channelStore.channels.length > 0 ? channelStore.channels[0] : null;
       }
     });
+
+    this.socket.on('userUpdated', (channelName, username, isAdd) => {
+      const channelStore = useChannelStore();
+      console.log(username);
+      const channel = channelStore.channels.find(
+        (channel) => channel.name === channelName
+      );
+      if (channel) {
+        if (isAdd) {
+          // pridat username do listu
+        } else {
+          // odobrat username z listu
+        }
+      }
+    });
   }
 
   joinChannel(channel: string) {
@@ -75,6 +90,10 @@ class WsService {
 
   deleteChannel(channel: string) {
     this.socket.emit('deleteChannel', channel);
+  }
+
+  updateUser(channel: Channel, username: string, isAdd: boolean) {
+    this.socket.emit('updateUser', { channel, username, isAdd });
   }
 }
 

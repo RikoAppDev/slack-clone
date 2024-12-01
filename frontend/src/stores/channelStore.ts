@@ -4,6 +4,7 @@ import { channelService } from '../services/channelService';
 import { inviteService } from '../services/inviteService';
 import { wsService } from '../services/wsService';
 import { useMessageStore } from './messageStore';
+import { useUserStore } from './user';
 
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
@@ -49,6 +50,10 @@ export const useChannelStore = defineStore('channelStore', {
       this.channels.push(data.channel);
 
       this.selectChannel(this.channels[this.channels.length - 1]);
+      const userStore = useUserStore();
+      const username = userStore.getUsername || 'Unknown';
+      wsService.updateUser(newChannel, username, true);
+
     },
 
     async invite(newChannel: string, username: string) {
@@ -95,6 +100,15 @@ export const useChannelStore = defineStore('channelStore', {
         this.selectedChannel =
           this.channels.length > 0 ? this.channels[0] : null;
       }
+      const channel = this.channels.find((c) => c.name === channelName);
+
+      if (!channel) {
+        throw new Error('Channel not found');
+      }
+      
+      const userStore = useUserStore();
+      const username = userStore.getUsername || 'Unknown';
+      wsService.updateUser(channel, username, false);
     },
 
     async initializeSelectedChannel() {
