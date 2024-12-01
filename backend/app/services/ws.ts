@@ -33,8 +33,8 @@ class Ws {
                 this.io?.emit('receiveInvite', channel, username)
             })
             
-            socket.on('deleteChannel', (channel) => {
-                this.io?.to(channel).emit('channelDeleted', channel)
+            socket.on('deleteChannel', (channelName) => {
+                this.io?.to(channelName).emit('channelDeleted', channelName)
             })
 
             socket.on('updateUser', ({ channel, user, isAdd }) => {
