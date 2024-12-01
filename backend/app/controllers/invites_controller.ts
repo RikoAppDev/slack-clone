@@ -37,7 +37,7 @@ export default class InvitesController {
                 await ChannelUser.query()
                     .where('user_id', user.id)
                     .andWhere('channel_id', channel.id)
-                    .update({ status: MembershipStatus.INVITED })
+                    .update({ status: MembershipStatus.INVITED, updated_at: new Date() })
 
                 await Kick.query()
                     .where('channelId', channel.id)

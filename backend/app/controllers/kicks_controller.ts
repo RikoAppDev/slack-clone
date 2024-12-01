@@ -66,7 +66,7 @@ export default class KicksController {
                 .where('channelId', channel.id)
                 .andWhere('kickedId', targetUser.userId)
 
-            if (kickCount.length >= 1 || kicker.role === MembershipRole.ADMIN) {
+            if (kickCount.length >= 3 || kicker.role === MembershipRole.ADMIN) {
                 const banUser = await ChannelUser.query()
                     .where('channelId', channel.id)
                     .whereHas('user', (query) => query.where('username', username))
