@@ -5,13 +5,14 @@ import { inviteService } from '../services/inviteService';
 import { wsService } from '../services/wsService';
 import { useMessageStore } from './messageStore';
 import { useUserStore } from './user';
+import { User } from '../types/user';
 
 export const useChannelStore = defineStore('channelStore', {
   state: () => ({
     invitations: [] as Channel[],
     channels: [] as Channel[],
     selectedChannel: null as Channel | null,
-    users: [] as string[],
+    users: [] as User[],
     showUserList: JSON.parse(localStorage.getItem('userList') || 'true'),
   }),
   actions: {
@@ -51,8 +52,12 @@ export const useChannelStore = defineStore('channelStore', {
 
       this.selectChannel(this.channels[this.channels.length - 1]);
       const userStore = useUserStore();
-      const username = userStore.getUsername || 'Unknown';
-      wsService.updateUser(newChannel, username, true);
+      const user = userStore.user as User;
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+      wsService.updateUser(newChannel, user, true);
 
     },
 
@@ -85,7 +90,7 @@ export const useChannelStore = defineStore('channelStore', {
         (channel) => channel.name !== channelName
       );
       if (this.selectedChannel?.name === channelName) {
-        this.selectedChannel =
+        this.selectedChannel = 
           this.channels.length > 0 ? this.channels[0] : null;
         }      
     },
@@ -107,8 +112,13 @@ export const useChannelStore = defineStore('channelStore', {
       }
       
       const userStore = useUserStore();
-      const username = userStore.getUsername || 'Unknown';
-      wsService.updateUser(channel, username, false);
+      const user = userStore.user as User;
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      wsService.updateUser(channel, user, false);
     },
 
     async initializeSelectedChannel() {
