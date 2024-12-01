@@ -12,6 +12,7 @@ import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
 import User from '#models/user'
 import ChannelUser from '#models/channel_user'
+import Kick from '#models/kick'
 
 export default class Channel extends BaseModel {
     static selfAssignPrimaryKey = true
@@ -60,7 +61,25 @@ export default class Channel extends BaseModel {
     @manyToMany(() => User, {
         pivotTable: 'channel_users',
         pivotTimestamps: true,
-        // pivotColumns: ['role', 'status'],
     })
     declare users: relations.ManyToMany<typeof User>
+
+    @hasMany(() => Kick, {
+        foreignKey: 'channel_id',
+    })
+    declare kickedRecords: relations.HasMany<typeof Kick>
+
+    @manyToMany(() => User, {
+        pivotTable: 'kicks',
+        pivotForeignKey: 'channel_id', // Foreign key in the pivot table referencing this model
+        pivotRelatedForeignKey: 'kicked_id', // Foreign key in the pivot table referencing the related model
+    })
+    declare kickedUsers: relations.ManyToMany<typeof User> // A list of users kicked from this channel
+
+    @manyToMany(() => User, {
+        pivotTable: 'kicks',
+        pivotForeignKey: 'channel_id',
+        pivotRelatedForeignKey: 'kicker_id',
+    })
+    declare kickers: relations.ManyToMany<typeof User> // A list of users who kicked others in this channel
 }

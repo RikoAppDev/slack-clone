@@ -115,6 +115,7 @@ const handleCommand = async (command: string) => {
     }
   } else if (
     parts[0] === 'revoke' &&
+    currentChannel.value?.isPrivate &&
     currentChannel.value?.role == MembershipRole.ADMIN
   ) {
     const channelName = currentChannel.value?.name as string;
@@ -135,7 +136,7 @@ const handleCommand = async (command: string) => {
     } catch (error: any) {
       $q.notify({
         type: 'negative',
-        message: error.message || 'Failed to sent invite',
+        message: error.message || 'Failed to revoke invite',
         position: 'top',
       });
     }
@@ -202,10 +203,24 @@ const handleCommand = async (command: string) => {
         });
       }
     }
-  } else if (parts[0] === 'kick') {
-    // const username = parts[1];
-    if (currentChannel.value) {
-      await channelStore.removeChannel(currentChannel.value.name);
+  } else if (parts[0] === 'kick' && !currentChannel.value?.isPrivate) {
+    const channelName = currentChannel.value?.name as string;
+    const username = parts[1];
+
+    try {
+      await channelStore.kickUser(channelName, username);
+
+      $q.notify({
+        type: 'positive',
+        message: `User @${username} was kicked from ${channelName} channel`,
+        position: 'top',
+      });
+    } catch (error: any) {
+      $q.notify({
+        type: 'negative',
+        message: error.message || 'Failed to kick user',
+        position: 'top',
+      });
     }
   }
 };

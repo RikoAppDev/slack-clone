@@ -3,6 +3,7 @@ import ChannelUser from '#models/channel_user'
 import { MembershipRole, MembershipStatus } from '#models/enum'
 import Channel from '#models/channel'
 import User from '#models/user'
+import Kick from '#models/kick'
 
 export default class InvitesController {
     async invite({ request, response }: HttpContext) {
@@ -27,12 +28,24 @@ export default class InvitesController {
             }
 
             // Check if the user is already invited or a member of the channel
-            const existingInvite = await ChannelUser.query()
+            const membership = await ChannelUser.query()
                 .where('user_id', user.id)
                 .andWhere('channel_id', channel.id)
                 .first()
 
-            if (existingInvite) {
+            if (membership && membership.status === MembershipStatus.BANNED) {
+                await ChannelUser.query()
+                    .where('user_id', user.id)
+                    .andWhere('channel_id', channel.id)
+                    .update({ status: MembershipStatus.INVITED })
+
+                await Kick.query()
+                    .where('channelId', channel.id)
+                    .andWhere('kickedId', user.id)
+                    .delete()
+
+                return response.created({ message: 'Invite sent successfully' })
+            } else if (membership) {
                 return response.conflict({
                     message: 'User is already invited or a member of the channel',
                 })

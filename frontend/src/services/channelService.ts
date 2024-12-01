@@ -8,7 +8,7 @@ export const channelService = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('Failed to fetch channels');
+      throw new Error(data.message || 'Failed to fetch channels');
     }
 
     return data;
@@ -42,7 +42,7 @@ export const channelService = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('Failed to delete channel');
+      throw new Error(data.message || 'Failed to delete channel');
     }
 
     return data;
@@ -54,7 +54,7 @@ export const channelService = {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('Failed to quit channel');
+      throw new Error(data.message || 'Failed to quit channel');
     }
 
     return data;

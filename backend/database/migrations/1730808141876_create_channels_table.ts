@@ -9,8 +9,8 @@ export default class Channels extends BaseSchema {
             table.string('name', 80).notNullable().unique()
             table.boolean('is_private').notNullable().defaultTo(true)
             table.timestamp('last_activity_at', { useTz: true }).notNullable()
-            table.timestamp('created_at', { useTz: true }).notNullable()
-            table.timestamp('updated_at', { useTz: true })
+            table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())
+            table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(this.now())
             table.uuid('created_by').references('id').inTable('users').onDelete('CASCADE')
         })
     }

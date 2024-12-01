@@ -14,7 +14,7 @@ const channelStore = useChannelStore();
       style="flex-grow: 1; overflow-y: auto"
       v-if="channelStore.getSelectedChannel()"
     >
-      <div class="full-width q-px-md" style="flex-grow: 1; overflow-y: auto">
+      <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto">
         <ChatScrollComponent />
       </div>
     </div>

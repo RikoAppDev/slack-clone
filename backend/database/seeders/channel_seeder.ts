@@ -11,8 +11,8 @@ export default class ChannelSeeder extends BaseSeeder {
         const bob = await User.findByOrFail('username', 'bob')
 
         await Channel.createMany([
-            { name: 'General', created_by: john.id },
-            { name: 'Development', created_by: jane.id },
+            { name: 'General', created_by: john.id, is_private: false },
+            { name: 'Development', created_by: jane.id, is_private: false },
             { name: 'Design', created_by: alice.id },
             { name: 'Marketing', created_by: bob.id },
         ])

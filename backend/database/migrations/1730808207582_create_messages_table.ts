@@ -10,6 +10,9 @@ export default class extends BaseSchema {
             table.timestamp('sent_at', { useTz: true }).notNullable()
             table.uuid('sender_id').references('id').inTable('users').onDelete('CASCADE')
             table.uuid('channel_id').references('id').inTable('channels').onDelete('CASCADE')
+
+            table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())
+            table.timestamp('updated_at', { useTz: true }).notNullable().defaultTo(this.now())
         })
     }
 

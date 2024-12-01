@@ -3,6 +3,7 @@ import { Channel } from '../types/channel';
 import { channelService } from '../services/channelService';
 import { inviteService } from '../services/inviteService';
 import { wsService } from '../services/wsService';
+import { kickService } from '../services/kickService';
 import { useMessageStore } from './messageStore';
 
 export const useChannelStore = defineStore('channelStore', {
@@ -82,7 +83,7 @@ export const useChannelStore = defineStore('channelStore', {
       if (this.selectedChannel?.name === channelName) {
         this.selectedChannel =
           this.channels.length > 0 ? this.channels[0] : null;
-        }      
+      }
     },
 
     async quitChannel(channelName: string) {
@@ -126,6 +127,11 @@ export const useChannelStore = defineStore('channelStore', {
       this.invitations = this.invitations.filter(
         (channel) => channel.name !== name
       );
+    },
+
+    async kickUser(newChannel: string, username: string) {
+      const data = await kickService.kickUser(newChannel, username);
+      console.log(data);
     },
 
     handleUserList() {

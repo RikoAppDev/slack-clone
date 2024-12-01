@@ -28,6 +28,12 @@ export default class Message extends BaseModel {
     @column.dateTime({ autoCreate: true })
     declare sent_at: DateTime
 
+    @column.dateTime({ autoCreate: true })
+    declare created_at: DateTime
+
+    @column.dateTime({ autoCreate: true, autoUpdate: true })
+    declare updated_at: DateTime
+
     @belongsTo(() => User, {
         localKey: 'sender_id',
     })

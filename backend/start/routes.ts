@@ -5,6 +5,7 @@ const MessageController = () => import('#controllers/messages_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const ChannelController = () => import('#controllers/channel_controller')
 const InvitesController = () => import('#controllers/invites_controller')
+const KicksController = () => import('#controllers/kicks_controller')
 
 // Message Routes
 router
@@ -14,6 +15,9 @@ router
     })
     .prefix('/channels/:channel_name/messages')
     .use(middleware.auth())
+
+// Kick User Route
+router.post('kick', [KicksController, 'kick']).use(middleware.auth()).as('kick')
 
 // Invite Routes
 router
