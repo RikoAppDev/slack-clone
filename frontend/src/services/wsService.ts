@@ -68,6 +68,19 @@ class WsService {
         console.log('removed user');
       }
     });
+
+    this.socket.on('channelDeleted', (channelName) => {
+      const channelStore = useChannelStore();
+      const selectedChannel = channelStore.getSelectedChannel();
+      
+      if (selectedChannel && selectedChannel.name === channelName) {
+        channelStore.selectChannel(channelStore.channels[0]);
+      }
+      
+      channelStore.channels = channelStore.channels.filter(
+        (channel) => channel.name !== channelName
+      )
+    });
   }
 
   joinChannel(channel: string) {
@@ -83,8 +96,8 @@ class WsService {
     this.socket.emit('invitation', { channel, username })
   }
 
-  deleteChannel(channel: string) {
-    this.socket.emit('deleteChannel', channel);
+  deleteChannel(channelName: string) {
+    this.socket.emit('deleteChannel', channelName);
   }
 
   updateUser(channel: Channel, user: User, isAdd: boolean) {
