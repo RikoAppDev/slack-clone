@@ -12,6 +12,10 @@ export default class MessageController {
 
             const channel = await Channel.query().where('name', channelName).firstOrFail()
 
+            await channel.merge({ 
+                last_activity_at: DateTime.now() 
+              }).save()
+
             const message = await Message.create({
                 content: data.content,
                 sender_id: auth.user?.$attributes.id,

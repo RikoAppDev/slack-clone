@@ -26,6 +26,7 @@ class Ws {
             })
 
             socket.on('sendMessage', ({ channel, message, username }) => {
+                console.log(channel)
                 this.io?.to(channel).emit('receiveMessage', message, username)
             })
 
@@ -33,8 +34,12 @@ class Ws {
                 this.io?.emit('receiveInvite', channel, username)
             })
             
-            socket.on('deleteChannel', (channel) => {
-                this.io?.to(channel).emit('channelDeleted', channel)
+            socket.on('deleteChannel', (channelName) => {
+                this.io?.to(channelName).emit('channelDeleted', channelName)
+            })
+
+            socket.on('updateUser', ({ channel, user, isAdd }) => {
+                this.io?.to(channel.name).emit('userUpdated', channel, user, isAdd )
             })
         })
     }

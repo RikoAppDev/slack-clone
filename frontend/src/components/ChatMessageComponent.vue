@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick } from 'vue';
+import { useUserStore } from '../stores/user';
 
 const props = defineProps<{
   text: string;
@@ -16,15 +17,23 @@ const formatTimestamp = (timestamp: string) =>
     hour12: false,
   });
 
-const highlightMentions = (text: string) => {
+  const highlightMentions = (text: string) => {
   const mentionRegex = /(@\w+)/g;
+  const username = useUserStore().user?.username;
 
   nextTick(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: 'smooth'
-    })
+    });
   });
+
+  if (mentionRegex.test(text)) {
+    const mentionedUser = text.match(mentionRegex)?.[0].substring(1); 
+    if (mentionedUser === username) {
+      return `<span class="user_tag">${text}</span>`;
+    }
+  }
 
   return text.replace(mentionRegex, '<span class="tag">$1</span>');
 };
@@ -59,5 +68,12 @@ const highlightMentions = (text: string) => {
   background: rgba(255, 90, 95, 0.1);
   padding: 0 2px 2px 2px;
   border-radius: 4px;
+}
+
+.user_tag {
+  background: #ff5a5f;
+  padding: 0 2px 2px 2px;
+  border-radius: 4px;
+  color: white;
 }
 </style>

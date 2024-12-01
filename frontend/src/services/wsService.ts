@@ -2,6 +2,7 @@ import { io, Socket } from 'socket.io-client';
 import { useChannelStore } from '../stores/channelStore';
 import { Channel } from '../types/channel';
 import { useMessageStore } from '../stores/messageStore';
+import { User } from '../types/user';
 
 class WsService {
   private socket: Socket;
@@ -47,16 +48,38 @@ class WsService {
       }
     });
 
+    this.socket.on('userUpdated', (channelName, user, isAdd) => {
+      const channelStore = useChannelStore();
+      const selectedChannel = channelStore.getSelectedChannel();
+      console.log(channelName, user, isAdd);
+      if (!selectedChannel || !user) return;
+    
+      if (!selectedChannel.users) {
+        selectedChannel.users = [];
+      }
+      
+      if (isAdd && this.username !== user.username) {
+        selectedChannel.users.push(user);
+        console.log(selectedChannel.users);
+      } else if (!isAdd && this.username !== user.username) {
+        selectedChannel.users = selectedChannel.users.filter(
+          (user) => user !== user
+        );
+        console.log('removed user');
+      }
+    });
+
     this.socket.on('channelDeleted', (channelName) => {
       const channelStore = useChannelStore();
-
+      const selectedChannel = channelStore.getSelectedChannel();
+      
+      if (selectedChannel && selectedChannel.name === channelName) {
+        channelStore.selectChannel(channelStore.channels[0]);
+      }
+      
       channelStore.channels = channelStore.channels.filter(
         (channel) => channel.name !== channelName
-      );
-      if (channelStore.selectedChannel?.name === channelName) {
-        channelStore.selectedChannel =
-        channelStore.channels.length > 0 ? channelStore.channels[0] : null;
-      }
+      )
     });
   }
 
@@ -73,8 +96,12 @@ class WsService {
     this.socket.emit('invitation', { channel, username })
   }
 
-  deleteChannel(channel: string) {
-    this.socket.emit('deleteChannel', channel);
+  deleteChannel(channelName: string) {
+    this.socket.emit('deleteChannel', channelName);
+  }
+
+  updateUser(channel: Channel, user: User, isAdd: boolean) {
+    this.socket.emit('updateUser', { channel, user, isAdd });
   }
 }
 
