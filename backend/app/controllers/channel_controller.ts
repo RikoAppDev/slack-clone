@@ -58,6 +58,16 @@ export default class ChannelController {
                     })
                 }
 
+                // Check if the user was banned previously
+                const bannedMember = await ChannelUser.query()
+                    .where('userId', userId)
+                    .andWhere('channel_id', channel.id)
+                    .andWhere('status', MembershipStatus.BANNED)
+
+                if (bannedMember.length !== 0) {
+                    return response.forbidden({ message: 'You are banned from this channel' })
+                }
+
                 await ChannelUser.create({
                     channelId: channel.id,
                     userId: userId,

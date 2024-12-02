@@ -6,8 +6,13 @@ import User from '#models/user'
 import Kick from '#models/kick'
 
 export default class InvitesController {
-    async invite({ request, response }: HttpContext) {
+    async invite({ request, response, auth }: HttpContext) {
         try {
+            const userId = auth.user?.id
+            if (!userId) {
+                return response.unauthorized({ message: 'User not authenticated' })
+            }
+
             const { channelName, username } = request.only(['channelName', 'username'])
 
             // Ensure both channelName and username are provided
@@ -34,6 +39,17 @@ export default class InvitesController {
                 .first()
 
             if (membership && membership.status === MembershipStatus.BANNED) {
+                const inviter = await ChannelUser.query()
+                    .where('user_id', userId)
+                    .andWhere('channel_id', channel.id)
+                    .first()
+
+                if (!inviter) {
+                    return response.forbidden({ message: 'You are not part of this channel' })
+                } else if (inviter.role !== MembershipRole.ADMIN) {
+                    return response.forbidden({ message: 'Only admin can invite banned users' })
+                }
+
                 await ChannelUser.query()
                     .where('user_id', user.id)
                     .andWhere('channel_id', channel.id)

@@ -208,11 +208,15 @@ const handleCommand = async (command: string) => {
     const username = parts[1];
 
     try {
-      await channelStore.kickUser(channelName, username);
+      const data = await channelStore.kickUser(channelName, username);
 
       $q.notify({
         type: 'positive',
-        message: `User @${username} was kicked from ${channelName} channel`,
+        message: data.banned
+          ? `User @${username} was banned from ${channelName} channel.`
+          : `User @${username} was kicked from ${channelName} channel. Kick count until ban: ${
+              3 - data.kickCount
+            }`,
         position: 'top',
       });
     } catch (error: any) {

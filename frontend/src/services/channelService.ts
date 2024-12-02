@@ -26,6 +26,8 @@ export const channelService = {
     if (!response.ok) {
       if (response.status == 409) {
         throw new Error(data.message);
+      } else if (response.status == 403) {
+        throw new Error(data.message);
       } else {
         throw new Error(
           isJoin ? 'Failed to join channel' : 'Failed to create channel'

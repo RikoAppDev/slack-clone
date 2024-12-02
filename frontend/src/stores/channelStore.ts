@@ -59,7 +59,6 @@ export const useChannelStore = defineStore('channelStore', {
         throw new Error('User not found');
       }
       wsService.updateUser(newChannel, user, true);
-
     },
 
     async invite(newChannel: string, username: string) {
@@ -91,7 +90,7 @@ export const useChannelStore = defineStore('channelStore', {
         (channel) => channel.name !== channelName
       );
       if (this.selectedChannel?.name === channelName) {
-        this.selectedChannel = 
+        this.selectedChannel =
           this.channels.length > 0 ? this.channels[0] : null;
       }
     },
@@ -111,10 +110,10 @@ export const useChannelStore = defineStore('channelStore', {
       if (!channel) {
         throw new Error('Channel not found');
       }
-      
+
       const userStore = useUserStore();
       const user = userStore.user as User;
-      
+
       if (!user) {
         throw new Error('User not found');
       }
@@ -154,8 +153,7 @@ export const useChannelStore = defineStore('channelStore', {
     },
 
     async kickUser(newChannel: string, username: string) {
-      const data = await kickService.kickUser(newChannel, username);
-      console.log(data);
+      return await kickService.kickUser(newChannel, username);
     },
 
     handleUserList() {

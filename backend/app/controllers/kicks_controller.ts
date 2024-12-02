@@ -73,11 +73,19 @@ export default class KicksController {
                     .update({ status: MembershipStatus.BANNED, updated_at: new Date() })
 
                 if (banUser) {
-                    return response.ok({ message: 'User was banned from the channel' })
+                    return response.ok({
+                        banned: true,
+                        message: 'User was banned from the channel',
+                    })
                 }
             }
 
-            return response.ok({ message: 'Kick registered' })
+            await ChannelUser.query()
+                .where('channelId', channel.id)
+                .whereHas('user', (query) => query.where('username', username))
+                .delete()
+
+            return response.ok({ kickCount: kickCount.length, message: 'Kick registered' })
         } catch (error) {
             return response.internalServerError({
                 message: 'Error while kicking member',
