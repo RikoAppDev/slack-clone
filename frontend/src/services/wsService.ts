@@ -23,7 +23,6 @@ class WsService {
         const channelStore = useChannelStore();
         channel.isInvitation = true;
         channelStore.invitations.push(channel);
-        console.log(channelStore.invitations);
       }
     });
 
@@ -54,7 +53,7 @@ class WsService {
     this.socket.on('userUpdated', (channelName, user, isAdd) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
-      console.log(channelName, user, isAdd);
+
       if (!selectedChannel || !user) return;
     
       if (!selectedChannel.users) {
@@ -63,15 +62,14 @@ class WsService {
       
       if (isAdd && this.username !== user.username) {
         selectedChannel.users.push(user);
-        console.log(selectedChannel.users);
-      } else if (!isAdd && this.username !== user.username) {
+
+      } else if (!isAdd && this.username !== user.username ) {
         const userIndex = selectedChannel.users.findIndex(
           (u) => u.username === user.username
         );
         if (userIndex !== -1) {
           selectedChannel.users.splice(userIndex, 1);
         }
-        console.log('removed user');
       }
     });
 
@@ -93,6 +91,21 @@ class WsService {
     this.socket.on('userTyping', ({ username, message }) => {
       console.log(username, message);
       // Storage for typing status
+    });
+
+    this.socket.on('userKicked', (channelName, username) => {
+      if (username === this.username) {
+        const channelStore = useChannelStore();
+        const selectedChannel = channelStore.getSelectedChannel();
+        
+        if (selectedChannel && selectedChannel.name === channelName) {
+          channelStore.selectChannel(channelStore.channels[0]);
+        }
+        
+        channelStore.channels = channelStore.channels.filter(
+          (channel) => channel.name !== channelName
+        )
+      }
     });
   }
 
@@ -118,6 +131,10 @@ class WsService {
 
   sendTypingStatus(channel: string, message: string) {
     this.socket.emit('typing', { channel, username: this.username, message });
+  }
+
+  kickUser(channelName: string, username: string) {
+    this.socket.emit('kickUser', { channelName, username });
   }
 }
 

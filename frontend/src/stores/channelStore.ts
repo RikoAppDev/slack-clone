@@ -66,7 +66,6 @@ export const useChannelStore = defineStore('channelStore', {
       await inviteService.invite(newChannel, username);
 
       const channel = this.channels.find((c) => c.name === newChannel);
-      console.log(channel)
 
       if (!channel) {
         throw new Error('Channel not found');
@@ -77,8 +76,12 @@ export const useChannelStore = defineStore('channelStore', {
 
     async revoke(channelName: string, username: string) {
       await inviteService.revoke(channelName, username);
+      
+      const channel = this.channels.find((c) => c.name === channelName);
+      const user = this.selectedChannel?.users?.find((u: User) => u.username === username);
 
-      // wsService.revoke(this.getSelectedChannel(), username); // Ak potrebuješ websocket notifikáciu
+      wsService.kickUser(channelName, username);
+      wsService.updateUser(channel as Channel, user as User, false);
     },
 
     getSelectedChannel() {
@@ -110,7 +113,6 @@ export const useChannelStore = defineStore('channelStore', {
           this.channels.length > 0 ? this.channels[0] : null;
       }
       
-      console.log(channel);
       if (!channel) {
         throw new Error('Channel not found');
       }
@@ -159,7 +161,9 @@ export const useChannelStore = defineStore('channelStore', {
     },
 
     async kickUser(newChannel: string, username: string) {
-      return await kickService.kickUser(newChannel, username);
+      const data = await kickService.kickUser(newChannel, username);
+      console.log(data);
+      return data;
     },
 
     handleUserList() {

@@ -43,7 +43,11 @@ class Ws {
 
             socket.on('typing', ({ channel, username, message }) => {
                 this.io?.to(channel).emit('userTyping', { username, message });
-              });
+            })
+            
+            socket.on('kickUser', ({ channelName, username }) => {
+                this.io?.to(channelName).emit('userKicked', channelName, username)
+            })
         })
     }
 }
