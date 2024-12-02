@@ -58,12 +58,15 @@ export const useChannelStore = defineStore('channelStore', {
       if (!user) {
         throw new Error('User not found');
       }
+      wsService.joinChannel(newChannel.name);
       wsService.updateUser(newChannel, user, true);
     },
 
     async invite(newChannel: string, username: string) {
       await inviteService.invite(newChannel, username);
+
       const channel = this.channels.find((c) => c.name === newChannel);
+      console.log(channel)
 
       if (!channel) {
         throw new Error('Channel not found');
@@ -96,8 +99,9 @@ export const useChannelStore = defineStore('channelStore', {
     },
 
     async quitChannel(channelName: string) {
+      const channel = this.channels.find((c) => c.name === channelName);
+      
       await channelService.quitChannel(channelName);
-
       this.channels = this.channels.filter(
         (channel) => channel.name !== channelName
       );
@@ -105,20 +109,13 @@ export const useChannelStore = defineStore('channelStore', {
         this.selectedChannel =
           this.channels.length > 0 ? this.channels[0] : null;
       }
-      const channel = this.channels.find((c) => c.name === channelName);
-
+      
+      console.log(channel);
       if (!channel) {
         throw new Error('Channel not found');
       }
 
-      const userStore = useUserStore();
-      const user = userStore.user as User;
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      wsService.updateUser(channel, user, false);
+      wsService.updateUser(channel, useUserStore().user as User, false);
     },
 
     async initializeSelectedChannel() {
@@ -142,6 +139,15 @@ export const useChannelStore = defineStore('channelStore', {
       this.channels.push(data.channel);
 
       this.selectChannel(this.channels[this.channels.length - 1]);
+
+      const userStore = useUserStore();
+      const user = userStore.user as User;
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      wsService.updateUser(data.channel, user, true);
     },
 
     async rejectInvitation(name: string) {

@@ -15,7 +15,8 @@ class WsService {
 
   initialize(username: string) {
     this.username = username;
-      
+
+    // Listen for incoming invite
     this.socket.on('receiveInvite', (channel, username) => {
       // Pride iba tomu na GUI, kto je pozvany check lebo to je broadcast vsetkym 
       if (username === this.username) {
@@ -26,10 +27,11 @@ class WsService {
       }
     });
 
-    this.socket.on('receiveMessage', (message, username) => {
+    // Listen for incoming messages
+    this.socket.on('receiveMessage', (message, username, dstChannel) => {
       const channelName = useChannelStore().getSelectedChannel()?.name;
       
-      if (channelName) {
+      if (channelName && channelName === dstChannel) {
         const messageStore = useMessageStore();
         
         // Initialize the messages array if it doesn't exist
@@ -48,6 +50,7 @@ class WsService {
       }
     });
 
+    // Listen for incoming user updates
     this.socket.on('userUpdated', (channelName, user, isAdd) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
@@ -62,13 +65,17 @@ class WsService {
         selectedChannel.users.push(user);
         console.log(selectedChannel.users);
       } else if (!isAdd && this.username !== user.username) {
-        selectedChannel.users = selectedChannel.users.filter(
-          (user) => user !== user
+        const userIndex = selectedChannel.users.findIndex(
+          (u) => u.username === user.username
         );
+        if (userIndex !== -1) {
+          selectedChannel.users.splice(userIndex, 1);
+        }
         console.log('removed user');
       }
     });
 
+    // Listen for removing channel
     this.socket.on('channelDeleted', (channelName) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
@@ -81,6 +88,12 @@ class WsService {
         (channel) => channel.name !== channelName
       )
     });
+
+    // Listen for typing status
+    this.socket.on('userTyping', ({ username, message }) => {
+      console.log(username, message);
+      // Storage for typing status
+    });
   }
 
   joinChannel(channel: string) {
@@ -88,8 +101,7 @@ class WsService {
   }
 
   sendMessage(channel: string, message: string) {
-    const username = this.username;
-    this.socket.emit('sendMessage', { channel, message, username });
+    this.socket.emit('sendMessage', { channel, message, username: this.username });
   }
 
   invite(channel: Channel, username: string) {
@@ -102,6 +114,10 @@ class WsService {
 
   updateUser(channel: Channel, user: User, isAdd: boolean) {
     this.socket.emit('updateUser', { channel, user, isAdd });
+  }
+
+  sendTypingStatus(channel: string, message: string) {
+    this.socket.emit('typing', { channel, username: this.username, message });
   }
 }
 

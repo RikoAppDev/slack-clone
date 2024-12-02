@@ -26,8 +26,7 @@ class Ws {
             })
 
             socket.on('sendMessage', ({ channel, message, username }) => {
-                console.log(channel)
-                this.io?.to(channel).emit('receiveMessage', message, username)
+                this.io?.to(channel).emit('receiveMessage', message, username, channel)
             })
 
             socket.on('invitation', ({ channel, username }) => {
@@ -41,6 +40,10 @@ class Ws {
             socket.on('updateUser', ({ channel, user, isAdd }) => {
                 this.io?.to(channel.name).emit('userUpdated', channel, user, isAdd )
             })
+
+            socket.on('typing', ({ channel, username, message }) => {
+                this.io?.to(channel).emit('userTyping', { username, message });
+              });
         })
     }
 }
