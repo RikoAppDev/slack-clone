@@ -20,7 +20,7 @@ export const useChannelStore = defineStore('channelStore', {
     async fetchChannels() {
       const data = await channelService.fetchChannels();
       this.channels = data.channels;
-
+      console.log(this.channels);
       this.invitations = this.channels.filter((c) => c.isInvitation == true);
       this.channels = this.channels.filter((c) => c.isInvitation == false);
 
@@ -162,7 +162,22 @@ export const useChannelStore = defineStore('channelStore', {
 
     async kickUser(newChannel: string, username: string) {
       const data = await kickService.kickUser(newChannel, username);
-      console.log(data);
+      
+      const user = this.selectedChannel?.users?.find((u: User) => u.username === username);
+      const channel = this.channels.find((c) => c.name === newChannel);
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      if (!channel) {
+        throw new Error('Channel not found');
+      }
+      
+      if (data.banned) {
+        wsService.kickUser(newChannel, username);
+        wsService.updateUser(channel, user, false);
+      }
       return data;
     },
 

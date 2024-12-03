@@ -95,6 +95,7 @@ class WsService {
 
     this.socket.on('userKicked', (channelName, username) => {
       if (username === this.username) {
+        console.log('You have been kicked from the channel');
         const channelStore = useChannelStore();
         const selectedChannel = channelStore.getSelectedChannel();
         
