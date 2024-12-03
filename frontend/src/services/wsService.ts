@@ -87,12 +87,6 @@ class WsService {
       )
     });
 
-    // Listen for typing status
-    this.socket.on('userTyping', ({ username, message }) => {
-      console.log(username, message);
-      // Storage for typing status
-    });
-
     this.socket.on('userKicked', (channelName, username) => {
       if (username === this.username) {
         console.log('You have been kicked from the channel');
@@ -106,6 +100,15 @@ class WsService {
         channelStore.channels = channelStore.channels.filter(
           (channel) => channel.name !== channelName
         )
+      }
+    });
+
+    this.socket.on('userTyping', ({ username, message }) => {
+      const channelStore = useChannelStore();
+      const selectedChannel = channelStore.getSelectedChannel();
+      
+      if (selectedChannel && username !== this.username) {
+        channelStore.addTypingUser(username, message);
       }
     });
   }
@@ -130,12 +133,12 @@ class WsService {
     this.socket.emit('updateUser', { channel, user, isAdd });
   }
 
-  sendTypingStatus(channel: string, message: string) {
-    this.socket.emit('typing', { channel, username: this.username, message });
-  }
-
   kickUser(channelName: string, username: string) {
     this.socket.emit('kickUser', { channelName, username });
+  }
+
+  type(channel: string, message: string) {
+    this.socket.emit('typing', { channel, username: this.username, message });
   }
 }
 

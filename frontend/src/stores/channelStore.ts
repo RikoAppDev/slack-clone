@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Channel } from '../types/channel';
+import { Message } from '../types/message';
 import { channelService } from '../services/channelService';
 import { inviteService } from '../services/inviteService';
 import { wsService } from '../services/wsService';
@@ -14,6 +15,7 @@ export const useChannelStore = defineStore('channelStore', {
     channels: [] as Channel[],
     selectedChannel: null as Channel | null,
     users: [] as User[],
+    typingUsers: {} as { [key: string]: Message },
     showUserList: JSON.parse(localStorage.getItem('userList') || 'true'),
   }),
   actions: {
@@ -34,6 +36,24 @@ export const useChannelStore = defineStore('channelStore', {
       });
 
       await this.initializeSelectedChannel();
+    },
+
+    removeTypingUser(username: string) {
+      delete this.typingUsers[username];
+    },
+
+    addTypingUser(username: string, message: string) {
+      const formatedMessage: Message = {
+        text: message,
+        name: username,
+        timestamp: new Date().toISOString(),
+        channelName: this.selectedChannel?.name as string,
+      };
+      this.typingUsers[username] = formatedMessage;
+
+      setTimeout(() => {
+        this.removeTypingUser(username);
+      }, 5000);
     },
 
     selectChannel(channel: Channel) {

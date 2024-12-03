@@ -25,7 +25,23 @@ watch(
   }
 );
 
+const showPreview = ref(false);
+const selectedUser = ref('');
+const previewMessage = ref('');
+
+// Add this method
+const showTypingMessage = (username: string) => {
+  selectedUser.value = username;
+  previewMessage.value = channelStore.typingUsers[username].text;
+  showPreview.value = true;
+};
+
 const onKeyDown = (event: KeyboardEvent) => {
+  const decodedMessage = decodeHTMLEntities(messageText.value);
+  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
+
+  wsService.type(currentChannel.value?.name as string, trimmedMessage);
+
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
     sendMessage();
@@ -251,6 +267,35 @@ const sendMessage = () => {
 </script>
 
 <template>
+  <div v-if="Object.keys(channelStore.typingUsers).length > 0" class="typing-indicators q-px-md">
+    <div 
+      v-for="username in Object.keys(channelStore.typingUsers)" 
+      :key="username"
+      class="typing-user"
+    >
+      <q-chip
+        clickable
+        @click="showTypingMessage(username)"
+        color="grey-3"
+        text-color="primary"
+      >
+        {{ username }} is typing...
+      </q-chip>
+    </div>
+  </div>
+
+  <q-dialog v-model="showPreview">
+    <q-card style="min-width: 300px">
+      <q-card-section>
+        <div class="text-h6">{{ selectedUser }}'s message</div>
+      </q-card-section>
+
+      <q-card-section>
+        {{ previewMessage }}
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+
   <div
     v-if="channelStore.showUserList && channelStore.getSelectedChannel()"
     class="user-list-container"
@@ -282,9 +327,9 @@ const sendMessage = () => {
   </div>
   <div class="full-width items-center bg-white panel">
     <q-editor
+      @keydown="onKeyDown"
       v-model="messageText"
       :toolbar="[['bold', 'italic', 'strike', 'underline']]"
-      @keydown="onKeyDown"
       placeholder="Type a message"
       aria-placeholder="Type a message"
       min-height="3rem"
