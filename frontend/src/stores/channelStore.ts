@@ -52,7 +52,9 @@ export const useChannelStore = defineStore('channelStore', {
       this.typingUsers[username] = formatedMessage;
 
       setTimeout(() => {
-        this.removeTypingUser(username);
+        if (this.typingUsers[username] && this.typingUsers[username].text === message) {
+          this.removeTypingUser(username);
+        }
       }, 5000);
     },
 

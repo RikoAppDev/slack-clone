@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { useUserStore } from '../stores/user';
@@ -7,6 +7,7 @@ import { Channel } from 'app/frontend/src/types/channel';
 import { wsService } from '../services/wsService';
 import { date, useQuasar } from 'quasar';
 import { MembershipRole } from '../types/enum';
+import { debounce } from 'quasar'
 
 const $q = useQuasar();
 
@@ -27,21 +28,29 @@ watch(
 
 const showPreview = ref(false);
 const selectedUser = ref('');
-const previewMessage = ref('');
 
-// Add this method
+const typingMessage = computed(() => {
+  return channelStore.typingUsers[selectedUser.value]?.text || '';
+});
+
 const showTypingMessage = (username: string) => {
   selectedUser.value = username;
-  previewMessage.value = channelStore.typingUsers[username].text;
   showPreview.value = true;
 };
 
+const debouncedWsUpdate = debounce((text: string) => {
+  if (currentChannel.value) {
+    wsService.type(currentChannel.value.name, text)
+  }
+}, 100) 
+
+watch(messageText, (newText) => {
+  const decodedMessage = decodeHTMLEntities(newText)
+  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '')
+  debouncedWsUpdate(trimmedMessage)
+})
+
 const onKeyDown = (event: KeyboardEvent) => {
-  const decodedMessage = decodeHTMLEntities(messageText.value);
-  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
-
-  wsService.type(currentChannel.value?.name as string, trimmedMessage);
-
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
     sendMessage();
@@ -291,7 +300,7 @@ const sendMessage = () => {
       </q-card-section>
 
       <q-card-section>
-        {{ previewMessage }}
+        {{ typingMessage }}
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -327,9 +336,9 @@ const sendMessage = () => {
   </div>
   <div class="full-width items-center bg-white panel">
     <q-editor
-      @keydown="onKeyDown"
       v-model="messageText"
       :toolbar="[['bold', 'italic', 'strike', 'underline']]"
+      @keydown="onKeyDown"
       placeholder="Type a message"
       aria-placeholder="Type a message"
       min-height="3rem"
