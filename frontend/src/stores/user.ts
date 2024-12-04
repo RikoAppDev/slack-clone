@@ -2,7 +2,8 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { Cookies } from 'quasar';
 import { authService } from '../services/authService';
-import { Status, User } from '../types/user';
+import { User } from '../types/user';
+import { UserStatus } from '../types/enum';
 import {
   LoginCredentialsDao,
   LoginResponseDao,
@@ -16,8 +17,8 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(
     JSON.parse(localStorage.getItem('user') || 'null')
   );
-  const status = ref<Status>(
-    (localStorage.getItem('status') as Status) || null
+  const status = ref<UserStatus>(
+    (localStorage.getItem('status') as UserStatus) || null
   );
 
   // Getters
@@ -34,7 +35,7 @@ export const useUserStore = defineStore('user', () => {
     const data: LoginResponseDao = await authService.signup(signupData);
 
     token.value = data.token;
-    status.value = Status.ONLINE;
+    status.value = UserStatus.ONLINE;
     user.value = {
       ...data.user,
       status: status.value,
@@ -55,7 +56,7 @@ export const useUserStore = defineStore('user', () => {
 
     token.value = data.token;
     //TODO: Handle status (adjust based on API response structure)
-    status.value = Status.ONLINE;
+    status.value = UserStatus.ONLINE;
     user.value = {
       ...data.user,
       status: status.value,
@@ -103,7 +104,7 @@ export const useUserStore = defineStore('user', () => {
   };
 
   // Change user status (e.g., online, dnd, invisible, offline)
-  const changeStatus = (newStatus: Status) => {
+  const changeStatus = (newStatus: UserStatus) => {
     status.value = newStatus;
 
     localStorage.setItem('status', newStatus);

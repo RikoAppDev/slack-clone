@@ -3,6 +3,15 @@ import Channel from '#models/channel'
 import User from '#models/user'
 import { DateTime } from 'luxon'
 import Message from '#models/message'
+import { randomInt } from 'node:crypto'
+
+const getCamelcaseChannel = (channelName: string) => {
+    if (randomInt(0, 1) === 0) {
+        return channelName
+    } else {
+        return channelName.charAt(0).toUpperCase() + channelName.slice(1)
+    }
+}
 
 export const ChannelFactory = factory
     .define(Channel, async ({ faker }) => {
@@ -11,7 +20,7 @@ export const ChannelFactory = factory
         const userIds = users.map((user) => user.id)
 
         return {
-            name: faker.word.noun(),
+            name: getCamelcaseChannel(faker.word.noun()),
             is_private: faker.datatype.boolean(),
             last_activity_at: DateTime.fromISO(faker.date.recent().toISOString()),
             created_by: faker.helpers.arrayElement(userIds), // Randomly assigns one of the four users

@@ -89,5 +89,27 @@ export default class ChannelUserSeeder extends BaseSeeder {
                 role: MembershipRole.ADMIN,
             },
         })
+
+        const users = await User.all()
+        const usersToAssign = users.slice(4, users.length - 1)
+
+        const channelGeneral = await Channel.findByOrFail('name', 'General')
+
+        // Attach all other users to the "General" channel
+        for (const user of usersToAssign) {
+            if (
+                user.username === 'john_doe' ||
+                user.username === 'jane_doe' ||
+                user.username === 'bob' ||
+                user.username === 'alice'
+            )
+                continue
+            await user.related('channels').attach({
+                [channelGeneral.id]: {
+                    status: MembershipStatus.ACTIVE,
+                    role: MembershipRole.MEMBER,
+                },
+            })
+        }
     }
 }

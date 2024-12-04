@@ -3,6 +3,7 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import User from '#models/user'
 import * as relations from '@adonisjs/lucid/types/relations'
 import Channel from '#models/channel'
+import { MembershipRole, MembershipStatus } from '#models/enum'
 
 export default class ChannelUser extends BaseModel {
     // Primary key for the composite primary key is handled automatically
@@ -26,11 +27,11 @@ export default class ChannelUser extends BaseModel {
 
     // Enum for role, with two possible values: 'member' or 'admin'
     @column()
-    declare role: 'member' | 'admin'
+    declare role: MembershipRole
 
     // Enum for status, with three possible values: 'active', 'banned', 'invited'
     @column()
-    declare status: 'active' | 'banned' | 'invited'
+    declare status: MembershipStatus
 
     // Timestamps with auto-create and auto-update
     @column.dateTime({ autoCreate: true })

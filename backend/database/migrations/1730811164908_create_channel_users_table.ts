@@ -22,20 +22,24 @@ export default class extends BaseSchema {
                 .onDelete('CASCADE')
 
             // Enum for role with member and admin
-            table.enu('role', ['member', 'admin'], {
-                useNative: true,
-                enumName: 'user_role', // Enum name for PostgreSQL
-                existingType: false,
-                schemaName: 'public',
-            })
+            table
+                .enu('role', ['member', 'admin'], {
+                    useNative: true,
+                    enumName: 'user_role', // Enum name for PostgreSQL
+                    existingType: false,
+                    schemaName: 'public',
+                })
+                .notNullable()
 
             // Enum for status with active, banned, invited
-            table.enu('status', ['active', 'banned', 'invited'], {
-                useNative: true,
-                enumName: 'channel_user_status', // Enum name for PostgreSQL
-                existingType: false,
-                schemaName: 'public',
-            })
+            table
+                .enu('status', ['active', 'banned', 'invited'], {
+                    useNative: true,
+                    enumName: 'channel_user_status', // Enum name for PostgreSQL
+                    existingType: false,
+                    schemaName: 'public',
+                })
+                .notNullable()
 
             // Primary key consisting of both user_id and channel_id
             table.primary(['user_id', 'channel_id'])

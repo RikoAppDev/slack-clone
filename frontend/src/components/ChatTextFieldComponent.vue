@@ -6,8 +6,8 @@ import { useUserStore } from '../stores/user';
 import { Channel } from 'app/frontend/src/types/channel';
 import { wsService } from '../services/wsService';
 import { date, useQuasar } from 'quasar';
-import { MembershipRole } from '../types/enum';
-import { debounce } from 'quasar'
+import { MembershipRole, UserStatus } from '../types/enum';
+import { debounce } from 'quasar';
 
 const $q = useQuasar();
 
@@ -40,15 +40,15 @@ const showTypingMessage = (username: string) => {
 
 const debouncedWsUpdate = debounce((text: string) => {
   if (currentChannel.value) {
-    wsService.type(currentChannel.value.name, text)
+    wsService.type(currentChannel.value.name, text);
   }
-}, 100) 
+}, 100);
 
 watch(messageText, (newText) => {
-  const decodedMessage = decodeHTMLEntities(newText)
-  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '')
-  debouncedWsUpdate(trimmedMessage)
-})
+  const decodedMessage = decodeHTMLEntities(newText);
+  const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
+  debouncedWsUpdate(trimmedMessage);
+});
 
 const onKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -273,12 +273,26 @@ const sendMessage = () => {
     messageText.value = '';
   }
 };
+
+const returnStatus = (userStatus: UserStatus) => {
+  switch (userStatus) {
+    case UserStatus.ONLINE:
+      return '🟢 Online';
+    case UserStatus.DND:
+      return '⛔ Do Not Disturb';
+    default:
+      return '😴 Offline';
+  }
+};
 </script>
 
 <template>
-  <div v-if="Object.keys(channelStore.typingUsers).length > 0" class="typing-indicators q-px-md">
-    <div 
-      v-for="username in Object.keys(channelStore.typingUsers)" 
+  <div
+    v-if="Object.keys(channelStore.typingUsers).length > 0"
+    class="typing-indicators q-px-md"
+  >
+    <div
+      v-for="username in Object.keys(channelStore.typingUsers)"
       :key="username"
       class="typing-user"
     >
@@ -327,9 +341,11 @@ const sendMessage = () => {
         :key="user.username"
         class="user-item"
       >
-        <q-item-section>
-          <q-item-label>@{{ user.username }}</q-item-label>
-          <q-item-label caption>{{ user.status }}</q-item-label>
+        <q-item-section class="user-card">
+          <q-item-label class="item-left">@{{ user.username }}</q-item-label>
+          <q-item-label class="item-left status"
+            >{{ returnStatus(user.status) }}
+          </q-item-label>
         </q-item-section>
       </q-item>
     </div>
@@ -358,6 +374,25 @@ const sendMessage = () => {
 .q-editor {
   border-color: #00a699;
   flex: 1;
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.user-card .q-item-section {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.item-left {
+  text-align: start;
+}
+
+.status {
+  font-size: 0.8rem;
 }
 
 .panel {

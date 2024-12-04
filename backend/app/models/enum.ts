@@ -8,3 +8,9 @@ export enum MembershipStatus {
     BANNED = 'banned',
     INVITED = 'invited',
 }
+
+export enum UserStatus {
+    ONLINE = 'online',
+    DND = 'dnd',
+    OFFLINE = 'offline',
+}

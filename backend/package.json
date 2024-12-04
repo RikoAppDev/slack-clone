@@ -60,7 +60,8 @@
         "luxon": "^3.5.0",
         "pg": "^8.13.0",
         "reflect-metadata": "^0.2.2",
-        "socket.io": "^4.8.1"
+        "socket.io": "^4.8.1",
+        "web-push": "^3.6.7"
     },
     "hotHook": {
         "boundaries": [

@@ -45,7 +45,7 @@ import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
-import { Status } from '../types/user';
+import { UserStatus } from '../types/enum';
 
 const $q = useQuasar();
 const router = useRouter();
@@ -57,10 +57,9 @@ const tag = '@' + userStore.getUsername;
 const group = ref(userStore.getStatus);
 
 const options = [
-  { label: 'Online', value: Status.ONLINE, color: 'green' },
-  { label: 'DND', value: Status.DND, color: 'orange' },
-  { label: 'Invisible', value: Status.INVISIBLE, color: 'grey' },
-  { label: 'Offline', value: Status.OFFLINE, color: 'red' },
+  { label: 'Online', value: UserStatus.ONLINE, color: 'green' },
+  { label: 'DND', value: UserStatus.DND, color: 'red' },
+  { label: 'Offline', value: UserStatus.OFFLINE, color: 'grey' },
 ];
 
 const handleStatusChange = () => {

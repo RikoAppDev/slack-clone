@@ -9,6 +9,7 @@ import Channel from './channel.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
 import Kick from '#models/kick'
+import { UserStatus } from '#models/enum';
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
     uids: ['email'],
@@ -34,6 +35,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
     @column()
     declare username: string
+
+    @column()
+    declare status: UserStatus
 
     @column()
     declare email: string

@@ -16,7 +16,7 @@ export default class ChannelController {
             const myChannels = await ChannelUser.query()
                 .preload('channel', (channelQuery) => {
                     channelQuery.select('name', 'is_private').preload('users', (userQuery) => {
-                        userQuery.select('id', 'firstname', 'lastname', 'username')
+                        userQuery.select('id', 'firstname', 'lastname', 'username', 'status')
                     })
                 })
                 .where('userId', userId)
