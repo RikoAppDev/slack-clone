@@ -10,6 +10,8 @@ import {
   SignupDataDao,
   // UserDao,
 } from '../types/auth'; // Service file for backend communication
+import { useMessageStore } from './messageStore';
+import { useChannelStore } from './channelStore';
 
 export const useUserStore = defineStore('user', () => {
   // State: Authentication and user details
@@ -80,8 +82,16 @@ export const useUserStore = defineStore('user', () => {
     token.value = null;
     user.value = null;
 
+    // Clear cookies and local storage and data storage
     Cookies.remove('authToken');
     localStorage.clear();
+    const messageStore = useMessageStore();
+    const channelStore = useChannelStore();
+
+    messageStore.messages = {};
+    channelStore.channels = [];
+    channelStore.invitations = [];
+    channelStore.users = [];
   };
 
   const checkAuth = async () => {

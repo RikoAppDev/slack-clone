@@ -7,15 +7,21 @@ export const useMessageStore = defineStore('messageStore', {
   state: () => ({
     messages: {} as { [key: string]: Message[] },
     pageSize: 15,
-    currentPage: {} as { [key: string]: number },
     hasMoreMessages: {} as { [key: string]: boolean },
   }),
   actions: {
-    async fetchMessagesForChannel(channelName: string, page: number) {
+    async fetchMessages(channelName: string, page: number) {
+      if (!this.messages[channelName]) {
+        this.messages[channelName] = [];
+      }
+
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
 
-      this.messages[channelName] = [...this.messages[channelName], ...data.data]
-        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      // Only append messages if not already loaded for page 1
+      if (page !== 1 || this.messages[channelName].length === 0) {
+        this.messages[channelName] = [...this.messages[channelName], ...data.data]
+          .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      }
       this.hasMoreMessages[channelName] = data.data.length === this.pageSize;
       },
 

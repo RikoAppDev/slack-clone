@@ -63,7 +63,7 @@ class WsService {
       if (isAdd && this.username !== user.username) {
         selectedChannel.users.push(user);
 
-      } else if (!isAdd && this.username !== user.username ) {
+      } else if (!isAdd && this.username !== user.username) {
         const userIndex = selectedChannel.users.findIndex(
           (u) => u.username === user.username
         );
@@ -106,8 +106,7 @@ class WsService {
     this.socket.on('userTyping', ({ username, message }) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
-      
-      if (selectedChannel && username !== this.username) {
+      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username)) {
         channelStore.addTypingUser(username, message);
       }
     });

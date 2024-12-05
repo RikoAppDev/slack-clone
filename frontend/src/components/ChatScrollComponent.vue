@@ -15,14 +15,14 @@ watch(
     if (newChannel) {
       page.value = 1;
       currentChannel.value = newChannel;
-      await messageStore.fetchMessagesForChannel(currentChannel.value.name, page.value);
+      await messageStore.fetchMessages(currentChannel.value.name, page.value);
     }
-  }
+  }, 
 );
 
 async function onLoad(index: number, done: VoidFunction) {
   if (currentChannel.value?.name && messageStore.hasMoreMessages[currentChannel.value.name]) {
-    await messageStore.fetchMessagesForChannel(currentChannel.value.name, page.value + 1);
+    await messageStore.fetchMessages(currentChannel.value.name, page.value + 1);
     page.value++;
   }
   done();
@@ -31,7 +31,12 @@ async function onLoad(index: number, done: VoidFunction) {
 
 <template>
   <div class="full-width full-height q-px-sm q-scroll">
-    <q-infinite-scroll @load="onLoad" reverse>
+    <q-infinite-scroll 
+    @load="onLoad" 
+    reverse
+    :offset="250"
+    class="full-height"
+    >
       <div v-if="currentChannel?.name && messageStore.messages[currentChannel.name]?.length">
         <div
           v-for="(item, index) in  [...messageStore.messages[currentChannel.name]]"

@@ -22,7 +22,6 @@ export const useChannelStore = defineStore('channelStore', {
     async fetchChannels() {
       const data = await channelService.fetchChannels();
       this.channels = data.channels;
-      console.log(this.channels);
       this.invitations = this.channels.filter((c) => c.isInvitation == true);
       this.channels = this.channels.filter((c) => c.isInvitation == false);
 
@@ -31,7 +30,6 @@ export const useChannelStore = defineStore('channelStore', {
         if (!messageStore.messages[channel.name]) {
           const messageStore = useMessageStore();
           messageStore.messages[channel.name] = [];
-          messageStore.currentPage[channel.name] = 1;
         }
       });
 
@@ -63,7 +61,6 @@ export const useChannelStore = defineStore('channelStore', {
         this.selectedChannel = channel;
         const messageStore = useMessageStore();
         messageStore.messages[channel.name] = [];
-        messageStore.currentPage[channel.name] = 1;
         wsService.joinChannel(channel.name);
       }
     },
@@ -146,7 +143,7 @@ export const useChannelStore = defineStore('channelStore', {
       this.selectedChannel = this.channels.length > 0 ? this.channels[0] : null;
       if (this.selectedChannel) {
         const messageStore = useMessageStore();
-        await messageStore.fetchMessagesForChannel(
+        await messageStore.fetchMessages(
           this.selectedChannel.name as string,
           1
         );

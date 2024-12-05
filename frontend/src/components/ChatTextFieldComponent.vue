@@ -16,6 +16,8 @@ const channelStore = useChannelStore();
 const userStore = useUserStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
 const messageText = ref('');
+const showPreview = ref(false);
+const selectedUser = ref('');
 const commandRegex =
   /^\/(join\s+\w+(?:\s+private)?|invite\s+\w+|revoke\s+\w+|kick\s+\w+|quit|cancel|list)$/;
 
@@ -26,9 +28,6 @@ watch(
   }
 );
 
-const showPreview = ref(false);
-const selectedUser = ref('');
-
 const typingMessage = computed(() => {
   return channelStore.typingUsers[selectedUser.value]?.text || '';
 });
@@ -37,6 +36,16 @@ const showTypingMessage = (username: string) => {
   selectedUser.value = username;
   showPreview.value = true;
 };
+
+watch(
+  () => channelStore.typingUsers[selectedUser.value],
+  (newValue) => {
+    if (!newValue) {
+      showPreview.value = false;
+      selectedUser.value = '';
+    }
+  }
+);
 
 const debouncedWsUpdate = debounce((text: string) => {
   if (currentChannel.value) {
