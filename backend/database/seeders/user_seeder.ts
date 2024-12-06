@@ -45,6 +45,6 @@ export default class UserSeeder extends BaseSeeder {
             },
         ])
 
-        await UserFactory.createMany(10)
+        await UserFactory.createMany(20)
     }
 }

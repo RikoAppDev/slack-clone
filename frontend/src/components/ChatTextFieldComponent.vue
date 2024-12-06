@@ -333,7 +333,7 @@ const returnStatus = (userStatus: UserStatus) => {
     class="user-list-container"
   >
     <div class="user-list-header">
-      <q-item-label class="text-h6"
+      <q-item-label class="users-channel"
         >Users in {{ currentChannel?.name }}
       </q-item-label>
       <q-btn
@@ -385,6 +385,11 @@ const returnStatus = (userStatus: UserStatus) => {
   flex: 1;
 }
 
+.users-channel {
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
 .user-card {
   display: flex;
   flex-direction: column;
@@ -418,11 +423,16 @@ const returnStatus = (userStatus: UserStatus) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .close-btn {
   margin: 0;
   padding: 0;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
 }
 
 .user-row {
@@ -430,7 +440,9 @@ const returnStatus = (userStatus: UserStatus) => {
   flex-wrap: nowrap;
   overflow-x: auto;
   gap: 20px;
-  padding-bottom: 15px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  scrollbar-width: none;
 }
 
 .user-item {

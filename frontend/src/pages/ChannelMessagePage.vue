@@ -14,7 +14,7 @@ const channelStore = useChannelStore();
       style="flex-grow: 1; overflow-y: auto"
       v-if="channelStore.getSelectedChannel()"
     >
-      <div class="full-width q-pa-md" style="flex-grow: 1; overflow-y: auto">
+      <div class="full-width q-pt-md" style="flex-grow: 1; overflow-y: auto">
         <ChatScrollComponent />
       </div>
     </div>
@@ -31,7 +31,7 @@ const channelStore = useChannelStore();
     </div>
 
     <!-- Chat Input at the Bottom -->
-    <div class="chat-input sticky q-px-sm q-pb-sm full-width bg-white">
+    <div class="chat-input sticky q-px-sm q-pb-sm bg-white q-pa-md">
       <ChatTextFieldComponent />
     </div>
   </q-page>
@@ -47,6 +47,13 @@ const channelStore = useChannelStore();
   position: sticky;
   bottom: 0;
   z-index: 1;
+  width: calc(100vw - 8px);
+}
+
+@media (min-width: 1024px) {
+  .chat-input {
+    width: calc(100vw - 248px);
+  }
 }
 
 .no-channel {

@@ -25,13 +25,13 @@
     "
   >
     <template v-if="role == MembershipRole.ADMIN">
-      <p class="text-body2 ellipsis channel-name">
+      <p class="text-body2 ellipsis channel-name text-left">
         {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
       </p>
       <p class="admin">👑</p>
     </template>
     <template v-else>
-      <p class="text-body2 ellipsis">
+      <p class="text-body2 ellipsis text-left">
         {{ private ? `🔒: ${name}` : `🔓: ${name}` }}
       </p>
     </template>
@@ -118,7 +118,11 @@ const rejectInvitation = async () => {
 };
 </script>
 
-<style>
+<style scoped>
+::v-deep(.q-btn__content) {
+  width: inherit;
+}
+
 .wrapper {
   border-radius: 50px;
   transition: border-radius 150ms ease-in-out;

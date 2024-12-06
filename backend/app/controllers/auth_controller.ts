@@ -19,7 +19,6 @@ export default class AuthController {
 
             const token = await User.accessTokens.create(newUser)
 
-            console.log(newUser.status)
             return response.created({
                 user: {
                     firstname: newUser.firstname,

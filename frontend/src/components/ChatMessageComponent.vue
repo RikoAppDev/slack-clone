@@ -2,6 +2,10 @@
 import { nextTick } from 'vue';
 import { useUserStore } from '../stores/user';
 
+const userStore = useUserStore();
+
+const username = userStore.user?.username;
+
 const props = defineProps<{
   text: string;
   name: string;
@@ -17,50 +21,77 @@ const formatTimestamp = (timestamp: string) =>
     hour12: false,
   });
 
-  const highlightMentions = (text: string) => {
+const highlightMentions = (text: string) => {
   const mentionRegex = /(@\w+)/g;
-  const username = useUserStore().user?.username;
 
   nextTick(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   });
 
-  if (mentionRegex.test(text)) {
-    const mentionedUser = text.match(mentionRegex)?.[0].substring(1); 
-    if (mentionedUser === username) {
-      return `<span class="user_tag">${text}</span>`;
-    }
+  return text.replace(mentionRegex, '<span class="tag">$1</span>');
+};
+
+const isTaggedCurrentUser = (text: string) => {
+  const mentionRegex = /(@\w+)/g;
+  const mentions = text.match(mentionRegex);
+
+  if (mentions) {
+    return mentions.some((mention) => mention.substring(1) === username);
   }
 
-  return text.replace(mentionRegex, '<span class="tag">$1</span>');
+  return false;
 };
 </script>
 
 <template>
-  <div class="flex justify-center">
-    <q-chat-message
-      :name="props.name"
-      :stamp="formatTimestamp(props.timestamp)"
-      bg-color="white"
-      text-color="black"
-    >
-      <div v-html="highlightMentions(props.text)"></div>
-    </q-chat-message>
+  <div
+    :class="
+      isTaggedCurrentUser(props.text)
+        ? 'message-wrapper user-tag'
+        : 'message-wrapper'
+    "
+  >
+    <div class="message">
+      <p class="q-ma-none message-name">{{ props.name }}</p>
+      <p class="message-text" v-html="highlightMentions(props.text)"></p>
+      <p class="q-ma-none text-caption">
+        {{ formatTimestamp(props.timestamp) }}
+      </p>
+    </div>
   </div>
 </template>
 
 <style>
-.q-message-text {
+.message-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0 2rem 0 2rem;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-text {
   padding: 0;
+  margin-bottom: 4px;
+  margin-top: 2px;
   line-height: 1.3rem;
 }
 
-.q-message-name {
+.message-name {
   font-size: 1rem;
   color: #ff5a5f;
+}
+
+.text-caption {
+  margin-bottom: 4px;
+  color: gray;
 }
 
 .tag {
@@ -70,10 +101,9 @@ const formatTimestamp = (timestamp: string) =>
   border-radius: 4px;
 }
 
-.user_tag {
-  background: #ff5a5f;
-  padding: 0 2px 2px 2px;
-  border-radius: 4px;
-  color: white;
+.user-tag {
+  background: rgba(0, 166, 153, 0.05);
+  border-left: 4px solid #00A699;
+  padding-left: calc(2rem - 4px);
 }
 </style>

@@ -17,7 +17,7 @@ watch(
       currentChannel.value = newChannel;
       await messageStore.fetchMessages(currentChannel.value.name, page.value);
     }
-  }, 
+  },
 );
 
 async function onLoad(index: number, done: VoidFunction) {
@@ -30,9 +30,9 @@ async function onLoad(index: number, done: VoidFunction) {
 </script>
 
 <template>
-  <div class="full-width full-height q-px-sm q-scroll">
-    <q-infinite-scroll 
-    @load="onLoad" 
+  <div class="full-width full-height q-scroll">
+    <q-infinite-scroll
+    @load="onLoad"
     reverse
     :offset="250"
     class="full-height"
