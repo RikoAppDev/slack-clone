@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 export const useAppPreferencesStore = defineStore('appPreferences', () => {
   const leftDrawerOpen = ref<boolean>(
-    JSON.parse(localStorage.getItem('leftDrawerOpen') || 'false')
+    JSON.parse(localStorage.getItem('leftDrawerOpen') || 'true')
   );
 
   const toggleLeftDrawer = (): void => {

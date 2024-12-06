@@ -25,9 +25,7 @@ export default class Channel extends BaseModel {
         channel.id = randomUUID()
     }
 
-    @hasMany(() => ChannelUser, {
-        foreignKey: 'channel_id',
-    })
+    @hasMany(() => ChannelUser)
     declare channelUsers: relations.HasMany<typeof ChannelUser>
 
     @hasMany(() => Message, {

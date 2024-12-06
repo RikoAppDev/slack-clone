@@ -9,7 +9,8 @@ import Channel from './channel.ts'
 import * as relations from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
 import Kick from '#models/kick'
-import { UserStatus } from '#models/enum';
+import { UserStatus } from '#models/enum'
+import ChannelUser from '#models/channel_user'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
     uids: ['email'],
@@ -60,6 +61,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
         foreignKey: 'mentioned_user_id',
     })
     declare mentions: relations.HasMany<typeof Message>
+
+    @hasMany(() => ChannelUser)
+    declare channelMemberships: relations.HasMany<typeof ChannelUser>
 
     @manyToMany(() => Channel, {
         pivotTable: 'channel_users',

@@ -14,22 +14,40 @@ export default class ChannelController {
             }
 
             const myChannels = await ChannelUser.query()
-                .preload('channel', (channelQuery) => {
-                    channelQuery.select('name', 'is_private').preload('users', (userQuery) => {
-                        userQuery.select('id', 'firstname', 'lastname', 'username', 'status')
-                    })
-                })
                 .where('userId', userId)
-                .whereIn('status', ['active', 'invited'])
+                .andWhereIn('status', [MembershipStatus.ACTIVE, MembershipStatus.INVITED])
+                .preload('channel', (channelQuery) => {
+                    channelQuery
+                        .select('name', 'is_private')
+                        .preload('channelUsers', (channelUserQuery) => {
+                            channelUserQuery
+                                .where('status', 'active') // len aktívni členovia
+                                .preload('user', (userQuery) => {
+                                    userQuery.select(
+                                        'id',
+                                        'firstname',
+                                        'lastname',
+                                        'username',
+                                        'status'
+                                    )
+                                })
+                        })
+                })
 
-            const channels = myChannels.map((cu) => ({
-                name: cu.channel.name,
-                isPrivate: cu.channel.is_private,
-                users: cu.status === 'invited' ? [] : cu.channel.users,
-                isInvitation: cu.status === 'invited',
-                role: cu.role,
-            }))
-
+            const channels = myChannels.map((channelUser) => {
+                const channel = channelUser.channel
+                return {
+                    id: channel.id,
+                    name: channel.name,
+                    isPrivate: channel.is_private,
+                    users:
+                        channelUser.status === 'invited'
+                            ? []
+                            : channel.channelUsers.map((cu) => cu.user),
+                    isInvitation: channelUser.status === 'invited',
+                    role: channelUser.role,
+                }
+            })
             return response.ok({ channels })
         } catch (error) {
             return response.internalServerError({
