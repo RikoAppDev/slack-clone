@@ -2,8 +2,10 @@
 import ChatScrollComponent from 'components/ChatScrollComponent.vue';
 import ChatTextFieldComponent from 'components/ChatTextFieldComponent.vue';
 import { useChannelStore } from '../stores/channelStore';
+import { useAppPreferencesStore } from '../stores/appPreferences';
 
 const channelStore = useChannelStore();
+const appPreferencesStore = useAppPreferencesStore();
 </script>
 
 <template>
@@ -31,7 +33,13 @@ const channelStore = useChannelStore();
     </div>
 
     <!-- Chat Input at the Bottom -->
-    <div class="chat-input sticky q-px-sm q-pb-sm bg-white q-pa-md">
+    <div
+      :class="
+        appPreferencesStore.leftDrawerOpen
+          ? 'chat-input sticky q-px-sm q-pb-sm bg-white q-pa-md'
+          : 'chat-input closed-drawer sticky q-px-sm q-pb-sm bg-white q-pa-md'
+      "
+    >
       <ChatTextFieldComponent />
     </div>
   </q-page>
@@ -53,6 +61,10 @@ const channelStore = useChannelStore();
 @media (min-width: 1024px) {
   .chat-input {
     width: calc(100vw - 248px);
+  }
+
+  .closed-drawer {
+    width: calc(100vw - 8px);
   }
 }
 

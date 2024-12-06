@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
+import { useAppPreferencesStore } from '../stores/appPreferences';
 import { useChannelStore } from '../stores/channelStore';
 import ChannelButtonComponent from 'components/ChannelButtonComponent.vue';
 import CreateNewChannelButtonComponent from 'components/CreateNewChannelButtonComponent.vue';
@@ -10,12 +11,7 @@ import { authService } from '../services/authService';
 import { wsService } from '../services/wsService';
 
 const $q = useQuasar();
-
-const leftDrawerOpen = ref<boolean>(false);
-const toggleLeftDrawer = (): void => {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-};
-
+const appPreferencesStore = useAppPreferencesStore();
 const channelStore = useChannelStore();
 
 onMounted(async () => {
@@ -44,7 +40,7 @@ onMounted(async () => {
           size="18px"
           icon="menu"
           aria-label="Menu"
-          @click="toggleLeftDrawer"
+          @click="appPreferencesStore.toggleLeftDrawer"
         />
         <q-toolbar-title>Riso&Riko co.</q-toolbar-title>
         <ProfileButtonComponent />
@@ -53,8 +49,7 @@ onMounted(async () => {
 
     <!-- Drawer for Sidebar -->
     <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
+      v-model="appPreferencesStore.leftDrawerOpen"
       class="drawer"
       :width="240"
     >
