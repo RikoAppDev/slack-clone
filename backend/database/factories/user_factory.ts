@@ -12,11 +12,14 @@ const returnRandomStatus = () => {
 
 export const UserFactory = factory
     .define(User, async ({ faker }) => {
+        const status = returnRandomStatus()
+
         return {
             firstname: faker.person.firstName(),
             lastname: faker.person.lastName(),
             username: faker.internet.userName(),
-            status: returnRandomStatus(),
+            status: status,
+            preferredStatus: status,
             email: faker.internet.email(),
             password: 'password:123',
             created_at: DateTime.fromISO(faker.date.past().toISOString()),

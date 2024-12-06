@@ -27,6 +27,7 @@ export default class StatusesController {
             }
 
             user.status = status
+            user.preferredStatus = status
             await user.save()
 
             return response.ok({ message: 'Status updated successfully', status })
