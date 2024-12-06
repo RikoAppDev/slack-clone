@@ -49,6 +49,16 @@ class WsService {
       }
     });
 
+    this.socket.on('statusUpdated', (user: User) => {      
+      const channelStore = useChannelStore();
+      channelStore.channels.forEach(channel => {
+        const userInChannel = channel.users?.find(u => u.username === user.username);
+        if (userInChannel) {
+        userInChannel.status = user.status;
+        }
+      });
+    });
+
     // Listen for incoming user updates
     this.socket.on('userUpdated', (channelName, user, isAdd) => {
       const channelStore = useChannelStore();
@@ -60,7 +70,7 @@ class WsService {
         selectedChannel.users = [];
       }
       
-      if (isAdd && this.username !== user.username) {
+      if (isAdd && this.username !== user.username && !selectedChannel.users.some(u => u.username === user.username)) {
         selectedChannel.users.push(user);
 
       } else if (!isAdd && this.username !== user.username) {
@@ -130,6 +140,10 @@ class WsService {
 
   updateUser(channel: Channel, user: User, isAdd: boolean) {
     this.socket.emit('updateUser', { channel, user, isAdd });
+  }
+
+  updateStatus(user: User) {
+    this.socket.emit('updateStatus', { user });
   }
 
   kickUser(channelName: string, username: string) {

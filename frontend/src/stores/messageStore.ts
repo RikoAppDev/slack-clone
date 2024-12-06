@@ -17,7 +17,7 @@ export const useMessageStore = defineStore('messageStore', {
 
       const data = await messService.fetchMessagesForChannel(channelName, page, this.pageSize);
 
-      // Only append messages if not already loaded for page 1
+      // Fix for messages being duplicated
       if (page !== 1 || this.messages[channelName].length === 0) {
         this.messages[channelName] = [...this.messages[channelName], ...data.data]
           .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());

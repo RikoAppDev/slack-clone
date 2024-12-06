@@ -41,6 +41,10 @@ class Ws {
                 this.io?.to(channel.name).emit('userUpdated', channel, user, isAdd )
             })
 
+            socket.on('updateStatus', ({ user }) => {
+                this.io?.emit('statusUpdated', user )
+            })
+
             socket.on('typing', ({ channel, username, message }) => {
                 this.io?.to(channel).emit('userTyping', { username, message });
             })

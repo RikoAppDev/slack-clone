@@ -11,8 +11,7 @@ import {
   SignupDataDao,
   // UserDao,
 } from '../types/auth'; // Service file for backend communication
-import { useMessageStore } from './messageStore';
-import { useChannelStore } from './channelStore';
+import { wsService } from '../services/wsService';
 
 export const useUserStore = defineStore('user', () => {
   // State: Authentication and user details
@@ -76,13 +75,6 @@ export const useUserStore = defineStore('user', () => {
     // Clear cookies and local storage and data storage
     Cookies.remove('authToken');
     localStorage.clear();
-    const messageStore = useMessageStore();
-    const channelStore = useChannelStore();
-
-    messageStore.messages = {};
-    channelStore.channels = [];
-    channelStore.invitations = [];
-    channelStore.users = [];
   };
 
   const checkAuth = async () => {
@@ -110,6 +102,10 @@ export const useUserStore = defineStore('user', () => {
 
       user.value!.status = data.status;
       localStorage.setItem('user', JSON.stringify(user.value));
+
+      // Emit status change event
+      wsService.updateStatus(user.value!);
+
     } catch (error) {
       console.error('Failed to update status:', error);
     }
