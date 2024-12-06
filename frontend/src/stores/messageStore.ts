@@ -2,14 +2,37 @@ import { useChannelStore } from '../stores/channelStore';
 import { defineStore } from 'pinia';
 import { Message } from '../types/message';
 import { messService } from '../services/messService';
+import { UserStatus } from '../types/enum';
 
 export const useMessageStore = defineStore('messageStore', {
   state: () => ({
     messages: {} as { [key: string]: Message[] },
     pageSize: 15,
     hasMoreMessages: {} as { [key: string]: boolean },
+    missedMessages: {} as { [key: string]: Message[] },
   }),
   actions: {
+    async handleStatusChange(oldStatus: UserStatus, newStatus: UserStatus) {
+      if (newStatus === UserStatus.OFFLINE) {
+        localStorage.setItem('lastActiveChannel', useChannelStore().getSelectedChannel()?.name || '');
+      }
+      
+      if (oldStatus === UserStatus.OFFLINE && newStatus !== UserStatus.OFFLINE) {
+        const lastChannel = localStorage.getItem('lastActiveChannel');
+        if (lastChannel) {
+          if (this.missedMessages[lastChannel]?.length > 0) {
+            this.messages[lastChannel] = [
+              ...this.messages[lastChannel] || [],
+              ...this.missedMessages[lastChannel]
+            ].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+            
+            this.missedMessages[lastChannel] = [];
+          }
+          localStorage.removeItem('lastActiveChannel');
+        }
+      }
+    },
+
     async fetchMessages(channelName: string, page: number) {
       if (!this.messages[channelName]) {
         this.messages[channelName] = [];

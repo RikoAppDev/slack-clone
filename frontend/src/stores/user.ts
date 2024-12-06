@@ -4,6 +4,7 @@ import { Cookies } from 'quasar';
 import { authService } from '../services/authService';
 import { statusService } from '../services/statusService';
 import { User } from '../types/user';
+import { useMessageStore } from './messageStore';
 import { UserStatus } from '../types/enum';
 import {
   LoginCredentialsDao,
@@ -98,14 +99,19 @@ export const useUserStore = defineStore('user', () => {
 
   const changeStatus = async (newStatus: UserStatus) => {
     try {
+      const oldStatus = user.value?.status;
       const data = await statusService.updateStatus(newStatus);
-
+  
       user.value!.status = data.status;
       localStorage.setItem('user', JSON.stringify(user.value));
-
+  
+      // Handle message reception based on status change
+      const messageStore = useMessageStore();
+      await messageStore.handleStatusChange(oldStatus!, newStatus);
+  
       // Emit status change event
       wsService.updateStatus(user.value!);
-
+  
     } catch (error) {
       console.error('Failed to update status:', error);
     }

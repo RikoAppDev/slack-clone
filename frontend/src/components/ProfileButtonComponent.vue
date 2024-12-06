@@ -45,6 +45,8 @@ import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
+import { useMessageStore } from '../stores/messageStore';
+import { useChannelStore } from '../stores/channelStore';
 import { UserStatus } from '../types/enum';
 
 const $q = useQuasar();
@@ -62,8 +64,28 @@ const options = [
   { label: 'Offline', value: UserStatus.OFFLINE, color: 'grey' },
 ];
 
-const handleStatusChange = () => {
-  userStore.changeStatus(status.value || UserStatus.ONLINE);
+const handleStatusChange = async () => {
+  try {
+    await userStore.changeStatus(status.value || UserStatus.ONLINE);
+    
+    const messageStore = useMessageStore();
+    const currentChannel = useChannelStore().getSelectedChannel()?.name;
+    
+    if (currentChannel && messageStore.missedMessages[currentChannel]?.length > 0) {
+      $q.notify({
+        type: 'info',
+        message: `You have ${messageStore.missedMessages[currentChannel].length} new messages`,
+        position: 'top'
+      });
+    }
+  } catch (error) {
+    console.error('Failed to update status:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to update status',
+      position: 'top'
+    });
+  }
 };
 
 const handleLogout = async () => {

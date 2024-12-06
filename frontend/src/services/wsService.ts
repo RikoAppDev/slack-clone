@@ -3,7 +3,8 @@ import { useChannelStore } from '../stores/channelStore';
 import { Channel } from '../types/channel';
 import { useMessageStore } from '../stores/messageStore';
 import { User } from '../types/user';
-
+import { useUserStore } from '../stores/user';
+import { UserStatus } from '../types/enum';
 class WsService {
   private socket: Socket;
   username: string;
@@ -26,26 +27,31 @@ class WsService {
       }
     });
 
-    // Listen for incoming messages
     this.socket.on('receiveMessage', (message, username, dstChannel) => {
-      const channelName = useChannelStore().getSelectedChannel()?.name;
-      
-      if (channelName && channelName === dstChannel) {
-        const messageStore = useMessageStore();
-        
-        // Initialize the messages array if it doesn't exist
-        if (!messageStore.messages[channelName]) {
-          messageStore.messages[channelName] = [];
-        }
+      const userStore = useUserStore();
+      const messageStore = useMessageStore();
 
-        const newMessage = {
-          text: message,
-          name: username,
-          timestamp: new Date().toISOString(),
-          channelName,
-        }
+      const newMessage = {
+        text: message,
+        name: username,
+        timestamp: new Date().toISOString(),
+        channelName: dstChannel,
+      };
 
-        messageStore.messages[channelName].push(newMessage);
+      if (userStore.user?.status !== UserStatus.OFFLINE) {
+        const channelName = useChannelStore().getSelectedChannel()?.name;
+        if (channelName && channelName === dstChannel) {
+          if (!messageStore.messages[channelName]) {
+            messageStore.messages[channelName] = [];
+          }
+          messageStore.messages[channelName].push(newMessage);
+        }
+      } else {
+        // Store missed messages while offline
+        if (!messageStore.missedMessages[dstChannel]) {
+          messageStore.missedMessages[dstChannel] = [];
+        }
+        messageStore.missedMessages[dstChannel].push(newMessage);
       }
     });
 
@@ -116,7 +122,9 @@ class WsService {
     this.socket.on('userTyping', ({ username, message }) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
-      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username)) {
+      const user = useUserStore().user;
+
+      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username) && user?.status !== UserStatus.OFFLINE) {
         channelStore.addTypingUser(username, message);
       }
     });
