@@ -41,7 +41,7 @@ export default class AuthController {
             // Verify user credentials
             const user = await User.verifyCredentials(email, password)
 
-            user.status = UserStatus.ONLINE
+            user.status = user.preferredStatus
             user.save()
 
             const token = await User.accessTokens.create(user)
@@ -66,8 +66,14 @@ export default class AuthController {
 
         await User.accessTokens.delete(user, user.currentAccessToken.identifier)
 
-        user.status = UserStatus.OFFLINE
-        user.save()
+        if (user.status !== 'offline') {
+            user.preferredStatus = user.status
+            user.status = UserStatus.OFFLINE
+            user.save()
+        } else {
+            user.status = UserStatus.OFFLINE
+            user.save()
+        }
 
         return response.ok({ message: 'Logout successful' })
     }

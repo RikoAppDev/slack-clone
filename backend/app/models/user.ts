@@ -41,6 +41,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     declare status: UserStatus
 
     @column()
+    declare preferredStatus: UserStatus
+
+    @column()
     declare email: string
 
     @column({ serializeAs: null })

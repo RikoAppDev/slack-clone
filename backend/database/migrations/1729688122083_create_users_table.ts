@@ -18,6 +18,15 @@ export default class extends BaseSchema {
                 })
                 .notNullable()
                 .defaultTo('online')
+            table
+                .enu('preferred_status', ['online', 'offline', 'dnd'], {
+                    useNative: true,
+                    enumName: 'user_status',
+                    existingType: true,
+                    schemaName: 'public',
+                })
+                .notNullable()
+                .defaultTo('online')
             table.string('email', 254).notNullable().unique()
             table.string('password').notNullable()
             table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())

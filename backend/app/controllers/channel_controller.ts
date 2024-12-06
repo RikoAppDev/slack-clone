@@ -37,7 +37,6 @@ export default class ChannelController {
             const channels = myChannels.map((channelUser) => {
                 const channel = channelUser.channel
                 return {
-                    id: channel.id,
                     name: channel.name,
                     isPrivate: channel.is_private,
                     users:
