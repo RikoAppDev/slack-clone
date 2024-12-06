@@ -6,6 +6,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const ChannelController = () => import('#controllers/channel_controller')
 const InvitesController = () => import('#controllers/invites_controller')
 const KicksController = () => import('#controllers/kicks_controller')
+const StatusesController = () => import('#controllers/statuses_controller')
 
 // Message Routes
 router
@@ -42,6 +43,15 @@ router
     .prefix('/channels')
     .use(middleware.auth())
     .as('channels')
+
+// Status Routes
+router
+    .group(() => {
+        router.get('status', [StatusesController, 'get']).as('status.get')
+        router.put('status', [StatusesController, 'update']).as('status.update')
+    })
+    .use(middleware.auth())
+    .as('status')
 
 // Authentication Routes
 router

@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
 import { loginAuthValidator, registerAuthValidator } from '#validators/auth'
+import { UserStatus } from '#models/enum'
 
 export default class AuthController {
     // Register a new user
@@ -18,11 +19,13 @@ export default class AuthController {
 
             const token = await User.accessTokens.create(newUser)
 
+            console.log(newUser.status)
             return response.created({
                 user: {
                     firstname: newUser.firstname,
                     lastname: newUser.lastname,
                     username: newUser.username,
+                    status: UserStatus.ONLINE,
                 },
                 token: token.value!.release(),
             })
@@ -46,6 +49,7 @@ export default class AuthController {
                     firstname: user.firstname,
                     lastname: user.lastname,
                     username: user.username,
+                    status: user.status,
                 },
                 token: token.value!.release(),
             })
@@ -70,6 +74,7 @@ export default class AuthController {
                 firstname: auth.user?.firstname,
                 lastname: auth.user?.lastname,
                 username: auth.user?.username,
+                status: auth.user?.status,
             },
         }
     }

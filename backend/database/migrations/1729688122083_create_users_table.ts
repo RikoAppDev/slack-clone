@@ -17,7 +17,7 @@ export default class extends BaseSchema {
                     schemaName: 'public',
                 })
                 .notNullable()
-                .defaultTo('offline')
+                .defaultTo('online')
             table.string('email', 254).notNullable().unique()
             table.string('password').notNullable()
             table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())

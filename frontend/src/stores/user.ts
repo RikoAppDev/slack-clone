@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { Cookies } from 'quasar';
 import { authService } from '../services/authService';
+import { statusService } from '../services/statusService';
 import { User } from '../types/user';
 import { UserStatus } from '../types/enum';
 import {
@@ -19,9 +20,6 @@ export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(
     JSON.parse(localStorage.getItem('user') || 'null')
   );
-  const status = ref<UserStatus>(
-    (localStorage.getItem('status') as UserStatus) || null
-  );
 
   // Getters
   const isAuthenticated = computed(() => !!token.value);
@@ -29,7 +27,7 @@ export const useUserStore = defineStore('user', () => {
     user.value ? `${user.value.firstname} ${user.value.lastname}` : ''
   );
   const getUsername = computed(() => user.value?.username);
-  const getStatus = computed(() => status.value);
+  const getStatus = computed(() => user.value?.status);
 
   // Actions
   // Signup action: Handles user signup and token storage in cookies
@@ -37,10 +35,8 @@ export const useUserStore = defineStore('user', () => {
     const data: LoginResponseDao = await authService.signup(signupData);
 
     token.value = data.token;
-    status.value = UserStatus.ONLINE;
     user.value = {
       ...data.user,
-      status: status.value,
     };
 
     Cookies.set('authToken', data.token, {
@@ -49,7 +45,6 @@ export const useUserStore = defineStore('user', () => {
     });
 
     localStorage.setItem('user', JSON.stringify(data.user));
-    localStorage.setItem('status', status.value);
   };
 
   // Login action: Handles user login and token storage in cookies
@@ -57,11 +52,8 @@ export const useUserStore = defineStore('user', () => {
     const data: LoginResponseDao = await authService.login(credentials);
 
     token.value = data.token;
-    //TODO: Handle status (adjust based on API response structure)
-    status.value = UserStatus.ONLINE;
     user.value = {
       ...data.user,
-      status: status.value,
     };
 
     Cookies.set('authToken', data.token, {
@@ -70,7 +62,6 @@ export const useUserStore = defineStore('user', () => {
     });
 
     localStorage.setItem('user', JSON.stringify(data.user));
-    localStorage.setItem('status', status.value);
   };
 
   // Logout action: Clears user data and removes token
@@ -113,20 +104,21 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  // Change user status (e.g., online, dnd, invisible, offline)
-  const changeStatus = (newStatus: UserStatus) => {
-    status.value = newStatus;
+  const changeStatus = async (newStatus: UserStatus) => {
+    try {
+      const data = await statusService.updateStatus(newStatus);
 
-    localStorage.setItem('status', newStatus);
-    // Optionally, send the status update to the backend if needed
-    // authService.updateStatus(newStatus);
+      user.value!.status = data.status;
+      localStorage.setItem('user', JSON.stringify(user.value));
+    } catch (error) {
+      console.error('Failed to update status:', error);
+    }
   };
 
   return {
     // State and Getters
     token,
     user,
-    status,
     isAuthenticated,
     getFullName,
     getUsername,

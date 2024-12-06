@@ -13,7 +13,7 @@
           keep-color
           size="sm"
           :options="options"
-          v-model="group"
+          v-model="status"
           @update:model-value="handleStatusChange"
         />
       </div>
@@ -54,7 +54,7 @@ const userStore = useUserStore();
 const name = userStore.getFullName;
 const tag = '@' + userStore.getUsername;
 
-const group = ref(userStore.getStatus);
+const status = ref(userStore.getStatus);
 
 const options = [
   { label: 'Online', value: UserStatus.ONLINE, color: 'green' },
@@ -63,7 +63,7 @@ const options = [
 ];
 
 const handleStatusChange = () => {
-  userStore.changeStatus(group.value);
+  userStore.changeStatus(status.value || UserStatus.ONLINE);
 };
 
 const handleLogout = async () => {
