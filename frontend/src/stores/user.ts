@@ -45,6 +45,7 @@ export const useUserStore = defineStore('user', () => {
     });
 
     localStorage.setItem('user', JSON.stringify(data.user));
+    wsService.updateStatus(user.value!);
   };
 
   // Login action: Handles user login and token storage in cookies
@@ -62,12 +63,15 @@ export const useUserStore = defineStore('user', () => {
     });
 
     localStorage.setItem('user', JSON.stringify(data.user));
+    wsService.updateStatus(user.value!);
   };
 
   // Logout action: Clears user data and removes token
   const logout = async (request: boolean) => {
     if (request) {
       await authService.logout();
+      user.value!.status = UserStatus.OFFLINE;
+      wsService.updateStatus(user.value!);
     }
 
     token.value = null;

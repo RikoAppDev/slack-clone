@@ -264,6 +264,15 @@ const handleCommand = async (command: string) => {
 };
 
 const sendMessage = () => {
+  if (userStore.user!.status === UserStatus.OFFLINE) {
+    $q.notify({
+      type: 'negative', 
+      message: 'Cannot send messages while offline',
+      position: 'top'
+    });
+    return;
+  }
+
   const decodedMessage = decodeHTMLEntities(messageText.value);
   const trimmedMessage = decodedMessage.trim().replace(/<br\s*\/?>$/gi, '');
   if (trimmedMessage !== '') {

@@ -124,7 +124,7 @@ class WsService {
       const selectedChannel = channelStore.getSelectedChannel();
       const user = useUserStore().user;
 
-      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username) && user?.status !== UserStatus.OFFLINE) {
+      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username) && user!.status !== UserStatus.OFFLINE) {
         channelStore.addTypingUser(username, message);
       }
     });
@@ -159,7 +159,10 @@ class WsService {
   }
 
   type(channel: string, message: string) {
-    this.socket.emit('typing', { channel, username: this.username, message });
+    const user = useUserStore().user;
+    if (user!.status !== UserStatus.OFFLINE) {
+      this.socket.emit('typing', { channel, username: this.username, message });
+    }
   }
 }
 
