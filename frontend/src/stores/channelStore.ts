@@ -78,7 +78,7 @@ export const useChannelStore = defineStore('channelStore', {
         throw new Error('User not found');
       }
       wsService.joinChannel(newChannel.name);
-      wsService.updateUser(newChannel, user, true);
+      wsService.updateStatus(user);
     },
 
     async invite(newChannel: string, username: string) {
