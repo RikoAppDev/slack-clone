@@ -15,6 +15,7 @@ export default class ChannelUserSeeder extends BaseSeeder {
         const channel2 = await Channel.findByOrFail('name', 'Development')
         const channel3 = await Channel.findByOrFail('name', 'Design')
         const channel4 = await Channel.findByOrFail('name', 'Marketing')
+        const channel5 = await Channel.findByOrFail('name', 'Random')
 
         // Attach users to channels by UUID
         await user1.related('channels').attach({
@@ -33,6 +34,10 @@ export default class ChannelUserSeeder extends BaseSeeder {
             [channel4.id]: {
                 status: MembershipStatus.ACTIVE,
                 role: MembershipRole.MEMBER,
+            },
+            [channel5.id]: {
+                status: MembershipStatus.ACTIVE,
+                role: MembershipRole.ADMIN,
             },
         })
         await user2.related('channels').attach({

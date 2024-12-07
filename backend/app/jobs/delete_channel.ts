@@ -1,6 +1,7 @@
 import { BaseJob } from '../types/job.ts'
 import Channel from '#models/channel'
 import { DateTime } from 'luxon'
+import Ws from '../services/ws.ts'
 
 export default class DeleteInactiveChannelsJob extends BaseJob {
   async run() {
@@ -14,6 +15,8 @@ export default class DeleteInactiveChannelsJob extends BaseJob {
       // Delete each inactive channel
       for (const channel of inactiveChannels) {
         await channel.delete()
+        const channelName = channel.name
+        Ws.io?.to(channelName).emit('channelDeleted', channelName)
         console.log(`[Scheduler] - Deleted inactive channel: ${channel.name}`)
       }
 

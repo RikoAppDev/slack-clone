@@ -17,8 +17,12 @@ export default class ChannelSeeder extends BaseSeeder {
             { name: 'Design', created_by: alice.id },
             { name: 'Marketing', created_by: bob.id },
             { name: 'Random', created_by: john.id, last_activity_at: DateTime.fromJSDate(
-                new Date(Date.now() - 31 * 24 * 60 * 60 * 1000)
-            ),
+                new Date(Date.now() - 31 * 24 * 60 * 60 * 1000)),
+            is_private: false, 
+            created_at: DateTime.fromJSDate(
+                new Date(Date.now() - 33 * 24 * 60 * 60 * 1000)), 
+            updated_at: DateTime.fromJSDate(
+                new Date(Date.now() - 32 * 24 * 60 * 60 * 1000)),
             },
         ])
 
