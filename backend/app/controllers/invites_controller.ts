@@ -157,10 +157,11 @@ export default class InvitesController {
             const memberRecord = await ChannelUser.query()
                 .where('userId', userId)
                 .andWhere('channelId', channel.id)
-                .andWhereIn('status', [MembershipStatus.ACTIVE, MembershipStatus.INVITED])
+                .andWhere('status', MembershipStatus.ACTIVE)
                 .preload('channel', (channelQuery) => {
                     channelQuery
                         .select('name', 'is_private')
+                        .where('name', channelName)
                         .preload('channelUsers', (channelUserQuery) => {
                             channelUserQuery
                                 .where('status', MembershipStatus.ACTIVE) // len aktívni členovia

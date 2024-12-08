@@ -64,10 +64,12 @@ export default class ChannelController {
 
         const { name, isPrivate, join } = request.all()
 
+        const joinChannel = join === 'true'
+
         const channel = await Channel.findBy('name', name)
 
         try {
-            if (channel && join) {
+            if (channel && joinChannel) {
                 if (channel.is_private) {
                     return response.conflict({
                         message:
@@ -85,6 +87,20 @@ export default class ChannelController {
                     return response.forbidden({ message: 'You are banned from this channel' })
                 }
 
+                // Check if the user was invited previously
+                const invitedMember = await ChannelUser.query()
+                    .where('userId', userId)
+                    .andWhere('channelId', channel.id)
+                    .andWhere('status', MembershipStatus.INVITED)
+                    .first()
+
+                if (invitedMember) {
+                    return response.conflict({
+                        message:
+                            'You has been invited to this channel already, check your invitations',
+                    })
+                }
+
                 await ChannelUser.create({
                     channelId: channel.id,
                     userId: userId,
@@ -94,23 +110,37 @@ export default class ChannelController {
 
                 const memberRecord = await ChannelUser.query()
                     .where('userId', userId)
-                    .andWhere('channel_id', channel.id)
-                    .andWhere('status', MembershipStatus.ACTIVE)
+                    .andWhere('channelId', channel.id)
+                    .andWhereIn('status', [MembershipStatus.ACTIVE, MembershipStatus.INVITED])
                     .preload('channel', (channelQuery) => {
                         channelQuery
                             .select('name', 'is_private')
                             .where('name', name)
-                            .preload('users', (userQuery) => {
-                                userQuery.select('id', 'firstname', 'lastname', 'username')
+                            .preload('channelUsers', (channelUserQuery) => {
+                                channelUserQuery
+                                    .where('status', MembershipStatus.ACTIVE) // len aktívni členovia
+                                    .preload('user', (userQuery) => {
+                                        userQuery.select(
+                                            'id',
+                                            'firstname',
+                                            'lastname',
+                                            'username',
+                                            'status'
+                                        )
+                                    })
                             })
                     })
                     .first()
+
+                if (!memberRecord) {
+                    return response.internalServerError({ message: 'Error while joining channel' })
+                }
 
                 return response.created({
                     channel: {
                         name: channel.name,
                         isPrivate: channel.is_private,
-                        users: memberRecord?.channel.users,
+                        users: memberRecord.channel.channelUsers.map((cu) => cu.user),
                         isInvitation: false,
                         role: MembershipRole.MEMBER,
                     },
