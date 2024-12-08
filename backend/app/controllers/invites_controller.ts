@@ -163,7 +163,7 @@ export default class InvitesController {
                         .select('name', 'is_private')
                         .where('name', channelName)
                         .preload('users', (userQuery) => {
-                            userQuery.select('id', 'firstname', 'lastname', 'username')
+                            userQuery.select('id', 'firstname', 'lastname', 'username', 'status')
                         })
                 })
                 .first()
