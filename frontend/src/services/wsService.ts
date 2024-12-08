@@ -41,15 +41,16 @@ class WsService {
         channelName: dstChannel,
       };
 
-      NotificationService.handleNewMessage({
-        sender: sender,
-        content: message,
-        addressedToUser: isTaggedCurrentUser(message, this.username),
-        channel: dstChannel,
-      });
-
       if (userStore.user?.status !== UserStatus.OFFLINE) {
         const channelName = useChannelStore().getSelectedChannel()?.name;
+        
+        NotificationService.handleNewMessage({
+          sender: sender,
+          content: message,
+          addressedToUser: isTaggedCurrentUser(message, this.username),
+          channel: dstChannel,
+        });
+
         if (channelName && channelName === dstChannel) {
           if (!messageStore.messages[channelName]) {
             messageStore.messages[channelName] = [];
