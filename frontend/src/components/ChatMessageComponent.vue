@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick } from 'vue';
 import { useUserStore } from '../stores/user';
+import { isTaggedCurrentUser } from '../utils/mentionFinder';
 
 const userStore = useUserStore();
 
@@ -33,23 +34,12 @@ const highlightMentions = (text: string) => {
 
   return text.replace(mentionRegex, '<span class="tag">$1</span>');
 };
-
-const isTaggedCurrentUser = (text: string) => {
-  const mentionRegex = /(@\w+)/g;
-  const mentions = text.match(mentionRegex);
-
-  if (mentions) {
-    return mentions.some((mention) => mention.substring(1) === username);
-  }
-
-  return false;
-};
 </script>
 
 <template>
   <div
     :class="
-      isTaggedCurrentUser(props.text)
+      isTaggedCurrentUser(props.text, username || '')
         ? 'message-wrapper user-tag'
         : 'message-wrapper'
     "
@@ -103,7 +93,7 @@ const isTaggedCurrentUser = (text: string) => {
 
 .user-tag {
   background: rgba(0, 166, 153, 0.05);
-  border-left: 4px solid #00A699;
+  border-left: 4px solid #00a699;
   padding-left: calc(2rem - 4px);
 }
 </style>

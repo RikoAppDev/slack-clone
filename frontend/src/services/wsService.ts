@@ -5,6 +5,9 @@ import { useMessageStore } from '../stores/messageStore';
 import { User } from '../types/user';
 import { useUserStore } from '../stores/user';
 import { UserStatus } from '../types/enum';
+import NotificationService from '../services/NotificationService';
+import { isTaggedCurrentUser } from '../utils/mentionFinder';
+
 class WsService {
   private socket: Socket;
   username: string;
@@ -19,7 +22,7 @@ class WsService {
 
     // Listen for incoming invite
     this.socket.on('receiveInvite', (channel, username) => {
-      // Pride iba tomu na GUI, kto je pozvany check lebo to je broadcast vsetkym 
+      // Pride iba tomu na GUI, kto je pozvany check lebo to je broadcast vsetkym
       if (username === this.username) {
         const channelStore = useChannelStore();
         channel.isInvitation = true;
@@ -27,13 +30,13 @@ class WsService {
       }
     });
 
-    this.socket.on('receiveMessage', (message, username, dstChannel) => {
+    this.socket.on('receiveMessage', (message, sender, dstChannel) => {
       const userStore = useUserStore();
       const messageStore = useMessageStore();
 
       const newMessage = {
         text: message,
-        name: username,
+        name: sender,
         timestamp: new Date().toISOString(),
         channelName: dstChannel,
       };
@@ -45,6 +48,13 @@ class WsService {
             messageStore.messages[channelName] = [];
           }
           messageStore.messages[channelName].push(newMessage);
+
+          NotificationService.handleNewMessage({
+            sender: sender,
+            content: message,
+            addressedToUser: isTaggedCurrentUser(message, this.username),
+            channel: dstChannel,
+          });
         }
       } else {
         // Store missed messages while offline
@@ -55,12 +65,14 @@ class WsService {
       }
     });
 
-    this.socket.on('statusUpdated', (user: User) => {      
+    this.socket.on('statusUpdated', (user: User) => {
       const channelStore = useChannelStore();
-      channelStore.channels.forEach(channel => {
-        const userInChannel = channel.users?.find(u => u.username === user.username);
+      channelStore.channels.forEach((channel) => {
+        const userInChannel = channel.users?.find(
+          (u) => u.username === user.username
+        );
         if (userInChannel) {
-        userInChannel.status = user.status;
+          userInChannel.status = user.status;
         }
       });
     });
@@ -71,14 +83,17 @@ class WsService {
       const selectedChannel = channelStore.getSelectedChannel();
 
       if (!selectedChannel || !user) return;
-    
+
       if (!selectedChannel.users) {
         selectedChannel.users = [];
       }
-      
-      if (isAdd && this.username !== user.username && !selectedChannel.users.some(u => u.username === user.username)) {
-        selectedChannel.users.push(user);
 
+      if (
+        isAdd &&
+        this.username !== user.username &&
+        !selectedChannel.users.some((u) => u.username === user.username)
+      ) {
+        selectedChannel.users.push(user);
       } else if (!isAdd && this.username !== user.username) {
         const userIndex = selectedChannel.users.findIndex(
           (u) => u.username === user.username
@@ -93,14 +108,14 @@ class WsService {
     this.socket.on('channelDeleted', (channelName) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
-      
+
       if (selectedChannel && selectedChannel.name === channelName) {
         channelStore.selectChannel(channelStore.channels[0]);
       }
-      
+
       channelStore.channels = channelStore.channels.filter(
         (channel) => channel.name !== channelName
-      )
+      );
     });
 
     this.socket.on('userKicked', (channelName, username) => {
@@ -108,14 +123,14 @@ class WsService {
         console.log('You have been kicked from the channel');
         const channelStore = useChannelStore();
         const selectedChannel = channelStore.getSelectedChannel();
-        
+
         if (selectedChannel && selectedChannel.name === channelName) {
           channelStore.selectChannel(channelStore.channels[0]);
         }
-        
+
         channelStore.channels = channelStore.channels.filter(
           (channel) => channel.name !== channelName
-        )
+        );
       }
     });
 
@@ -124,7 +139,12 @@ class WsService {
       const selectedChannel = channelStore.getSelectedChannel();
       const user = useUserStore().user;
 
-      if (selectedChannel && username !== this.username && selectedChannel.users?.some(user => user.username === username) && user!.status !== UserStatus.OFFLINE) {
+      if (
+        selectedChannel &&
+        username !== this.username &&
+        selectedChannel.users?.some((user) => user.username === username) &&
+        user!.status !== UserStatus.OFFLINE
+      ) {
         channelStore.addTypingUser(username, message);
       }
     });
@@ -135,11 +155,15 @@ class WsService {
   }
 
   sendMessage(channel: string, message: string) {
-    this.socket.emit('sendMessage', { channel, message, username: this.username });
+    this.socket.emit('sendMessage', {
+      channel,
+      message,
+      username: this.username,
+    });
   }
 
   invite(channel: Channel, username: string) {
-    this.socket.emit('invitation', { channel, username })
+    this.socket.emit('invitation', { channel, username });
   }
 
   deleteChannel(channelName: string) {

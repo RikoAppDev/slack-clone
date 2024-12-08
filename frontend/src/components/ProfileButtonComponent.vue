@@ -1,10 +1,9 @@
 <template>
-  <!-- Visibility settings -->
   <q-btn-dropdown
     unelevated
     color="primary"
     :label="name"
-    content-class="q-mt-lg"
+    content-class="q-mt-lg column flex-center"
     dropdown-icon="settings"
   >
     <div class="row no-wrap q-pa-md">
@@ -37,6 +36,24 @@
         />
       </div>
     </div>
+
+    <div class="q-mb-md column">
+      <q-toggle
+        :disable="status === UserStatus.DND || status === UserStatus.OFFLINE"
+        :title="
+          status === UserStatus.OFFLINE
+            ? 'No notifications will be received while offline'
+            : status === UserStatus.DND
+            ? 'No notifications will be received while in DND mode'
+            : notifyOnlyMentions
+            ? 'Change to notify all messages'
+            : 'Change to notify only mentions'
+        "
+        v-model="notifyOnlyMentions"
+        label="Notify only mentions"
+        @update:model-value="toggleNotificationSettings"
+      />
+    </div>
   </q-btn-dropdown>
 </template>
 
@@ -47,16 +64,21 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
+import { useAppPreferencesStore } from '../stores/appPreferences';
 import { UserStatus } from '../types/enum';
 
 const $q = useQuasar();
 const router = useRouter();
 const userStore = useUserStore();
+const appPreferencesStore = useAppPreferencesStore();
 
 const name = userStore.getFullName;
 const tag = '@' + userStore.getUsername;
 
 const status = ref(userStore.getStatus);
+const notifyOnlyMentions = ref(
+  appPreferencesStore.getUserNotificationSettings().notifyOnlyMentions
+);
 
 const options = [
   { label: 'Online', value: UserStatus.ONLINE, color: 'green' },
@@ -67,15 +89,18 @@ const options = [
 const handleStatusChange = async () => {
   try {
     await userStore.changeStatus(status.value || UserStatus.ONLINE);
-    
+
     const messageStore = useMessageStore();
     const currentChannel = useChannelStore().getSelectedChannel()?.name;
-    
-    if (currentChannel && messageStore.missedMessages[currentChannel]?.length > 0) {
+
+    if (
+      currentChannel &&
+      messageStore.missedMessages[currentChannel]?.length > 0
+    ) {
       $q.notify({
         type: 'info',
         message: `You have ${messageStore.missedMessages[currentChannel].length} new messages`,
-        position: 'top'
+        position: 'top',
       });
     }
   } catch (error) {
@@ -83,9 +108,15 @@ const handleStatusChange = async () => {
     $q.notify({
       type: 'negative',
       message: 'Failed to update status',
-      position: 'top'
+      position: 'top',
     });
   }
+};
+
+const toggleNotificationSettings = (): void => {
+  appPreferencesStore.setUserNotificationSettings({
+    notifyOnlyMentions: notifyOnlyMentions.value,
+  });
 };
 
 const handleLogout = async () => {

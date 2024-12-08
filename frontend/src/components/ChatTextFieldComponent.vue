@@ -3,6 +3,7 @@ import { ref, watch, computed } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
 import { useUserStore } from '../stores/user';
+import { useAppPreferencesStore } from '../stores/appPreferences';
 import { Channel } from 'app/frontend/src/types/channel';
 import { wsService } from '../services/wsService';
 import { date, useQuasar } from 'quasar';
@@ -13,6 +14,7 @@ const $q = useQuasar();
 
 const messageStore = useMessageStore();
 const channelStore = useChannelStore();
+const appPreferences = useAppPreferencesStore();
 const userStore = useUserStore();
 const currentChannel = ref(channelStore.getSelectedChannel());
 const messageText = ref('');
@@ -266,9 +268,9 @@ const handleCommand = async (command: string) => {
 const sendMessage = () => {
   if (userStore.user!.status === UserStatus.OFFLINE) {
     $q.notify({
-      type: 'negative', 
+      type: 'negative',
       message: 'Cannot send messages while offline',
-      position: 'top'
+      position: 'top',
     });
     return;
   }
@@ -376,6 +378,7 @@ const returnStatus = (userStatus: UserStatus) => {
       placeholder="Type a message"
       aria-placeholder="Type a message"
       min-height="3rem"
+      :class="appPreferences.leftDrawerOpen ? 'editor' : 'editor closed-drawer'"
     />
     <q-btn
       round
@@ -391,7 +394,7 @@ const returnStatus = (userStatus: UserStatus) => {
 <style scoped>
 .q-editor {
   border-color: #00a699;
-  flex: 1;
+  width: calc(100vw - 52px - 32px - 8px);
 }
 
 .users-channel {
@@ -419,8 +422,24 @@ const returnStatus = (userStatus: UserStatus) => {
 }
 
 .panel {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  width: calc(100vw - 52px) !important;
   gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .q-editor {
+    width: calc(100vw - 52px - 32px - 248px);
+  }
+
+  .closed-drawer {
+    width: calc(100vw - 52px - 32px - 8px);
+  }
+
+  .panel {
+    width: calc(100vw - 52px - 248px) !important;
+  }
 }
 
 .user-list-container {

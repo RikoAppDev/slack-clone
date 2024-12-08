@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're Offline</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body {
+      font-family: Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .offline-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .wifi-icon {
+      font-size: 100px;
+      color: #616161;
+    }
+
+    .margin-top {
+      margin-top: 16px;
+    }
+
+    .text-left {
+      text-align: left;
+    }
+
+    ul li {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 21px;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+
+    .desc {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .retry-button {
+      background-color: #FF5A5F;
+      color: white;
+      border: none;
+      padding: 4px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.715em;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 24px;
+      text-transform: uppercase;
+      box-shadow: none;
+      transition: all 0.3s ease;
+    }
+
+    .retry-button:hover {
+      background-color: rgba(255, 90, 95, 0.8);
+    }
+  </style>
+</head>
+<body>
+<div class="offline-container">
+  <div class="wrapper">
+    <span class="material-icons wifi-icon">wifi_off</span>
+    <h4 class="margin-top title">You're Offline</h4>
+    <p class="desc">
+      Please check your internet connection to access all features of our application.
+      Our app requires an internet connection to:
+    </p>
+    <ul class="text-left margin-top">
+      <li>Sync your data in real-time</li>
+      <li>Access the latest updates</li>
+      <li>Interact with other users</li>
+    </ul>
+    <button
+      class="retry-button"
+      onclick="window.location.reload()">
+      Retry Connection
+    </button>
+  </div>
+</div>
+</body>
+</html>
