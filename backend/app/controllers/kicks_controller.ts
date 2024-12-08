@@ -34,6 +34,11 @@ export default class KicksController {
                 return response.badRequest({ message: 'You cannot kick yourself' })
             }
 
+            // Check if the target user is an admin
+            if (targetUser.role === MembershipRole.ADMIN) {
+                return response.forbidden({ message: 'Admin cannot be kicked' })
+            }
+
             // Check if the current user is a member
             const kicker = await ChannelUser.query()
                 .where('channelId', channel.id)
