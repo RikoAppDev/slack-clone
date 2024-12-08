@@ -1,12 +1,7 @@
 /// <reference lib="webworker" />
 
 import { clientsClaim } from 'workbox-core';
-import {
-  precacheAndRoute,
-  cleanupOutdatedCaches,
-  // createHandlerBoundToURL,
-} from 'workbox-precaching';
-// import { registerRoute, NavigationRoute } from 'workbox-routing';
+import { cleanupOutdatedCaches } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope &
   typeof globalThis & { skipWaiting: () => void };
@@ -14,43 +9,83 @@ declare const self: ServiceWorkerGlobalScope &
 self.skipWaiting();
 clientsClaim();
 
-// Use with precache injection
-precacheAndRoute(self.__WB_MANIFEST);
-
+// Precache static assets
 cleanupOutdatedCaches();
 
-// Non-SSR fallback to index.html
-// Production SSR fallback to offline.html (except for dev)
-// if (process.env.MODE !== 'ssr' || process.env.PROD) {
-//   registerRoute(
-//     new NavigationRoute(
-//       createHandlerBoundToURL(process.env.PWA_FALLBACK_HTML),
-//       { denylist: [/sw\.js$/, /workbox-(.)*\.js$/] }
-//     )
-//   );
-// }
+// Custom offline HTML path
+const OFFLINE_HTML = 'index.html';
+const CACHE_NAME = 'offline-cache';
 
-// Serve index.html for navigation requests when offline
+// Cache the offline page on install
+self.addEventListener('install', (event: ExtendableEvent) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.add(OFFLINE_HTML);
+    })
+  );
+});
+
 self.addEventListener('fetch', (event: FetchEvent) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(async () => {
-        const cachedResponse = await caches.match('/index.html');
-        return (
-          cachedResponse ||
-          new Response('Offline page not available', { status: 404 })
-        );
-      })
+      (async () => {
+        try {
+          // Try network first
+          return await fetch(event.request);
+        } catch (error) {
+          // If network fails, serve offline page
+          const cache = await caches.open(CACHE_NAME);
+          const cachedResponse = await cache.match(OFFLINE_HTML);
+          return (
+            cachedResponse ||
+            new Response('Offline page not available', {
+              status: 404,
+              headers: { 'Content-Type': 'text/html' },
+            })
+          );
+        }
+      })()
     );
-  } else {
-    event.respondWith(
-      fetch(event.request).catch(async () => {
+  }
+
+  // Handle other requests (assets, API calls, etc.)
+  event.respondWith(
+    (async () => {
+      try {
+        const response = await fetch(event.request);
+        // Only cache if it's a GET request and has a supported scheme
+        if (
+          event.request.method === 'GET' &&
+          (event.request.url.startsWith('http') ||
+            event.request.url.startsWith('https'))
+        ) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, response.clone());
+        }
+        return response;
+      } catch (error) {
         const cachedResponse = await caches.match(event.request);
         return (
           cachedResponse ||
-          new Response('Resource not available offline', { status: 404 })
+          new Response('Resource not available offline', {
+            status: 404,
+            headers: { 'Content-Type': 'text/plain' },
+          })
         );
-      })
-    );
-  }
+      }
+    })()
+  );
+});
+
+// Clean up old caches
+self.addEventListener('activate', (event: ExtendableEvent) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    })
+  );
 });
