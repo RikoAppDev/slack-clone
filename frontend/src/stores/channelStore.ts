@@ -14,7 +14,6 @@ export const useChannelStore = defineStore('channelStore', {
     invitations: [] as Channel[],
     channels: [] as Channel[],
     selectedChannel: null as Channel | null,
-    users: [] as User[],
     typingUsers: {} as { [key: string]: Message },
     showUserList: JSON.parse(localStorage.getItem('userList') || 'true'),
   }),
@@ -59,6 +58,7 @@ export const useChannelStore = defineStore('channelStore', {
 
     selectChannel(channel: Channel) {
       if (this.selectedChannel?.name !== channel.name) {
+        console.log('CHANNEL', channel)
         this.selectedChannel = channel;
         const messageStore = useMessageStore();
         messageStore.messages[channel.name] = [];
@@ -161,7 +161,6 @@ export const useChannelStore = defineStore('channelStore', {
         (channel) => channel.name !== data.channel.name
       );
       this.channels.push(data.channel);
-
       this.selectChannel(this.channels[this.channels.length - 1]);
 
       const userStore = useUserStore();
@@ -171,6 +170,7 @@ export const useChannelStore = defineStore('channelStore', {
         throw new Error('User not found');
       }
 
+      wsService.joinChannel(data.channel.name);
       wsService.updateUser(data.channel, user, true);
     },
 
@@ -195,7 +195,7 @@ export const useChannelStore = defineStore('channelStore', {
       if (!channel) {
         throw new Error('Channel not found');
       }
-      
+
       if (data.banned) {
         wsService.kickUser(newChannel, username);
         wsService.updateUser(channel, user, false);

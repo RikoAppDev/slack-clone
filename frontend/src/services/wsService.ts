@@ -79,32 +79,25 @@ class WsService {
     });
 
     // Listen for incoming user updates
-    this.socket.on('userUpdated', (channelName, user, isAdd) => {
+    this.socket.on('userUpdated', (channel, user, isAdd) => { 
       const channelStore = useChannelStore();
-      const selectedChannel = channelStore.getSelectedChannel();
-      const me = useUserStore().user;
-
-      if (!selectedChannel || !user) return;
-
-      if (!selectedChannel.users) {
-        selectedChannel.users = [];
-      }
 
       if (
         isAdd &&
-        this.username !== user.username &&
-        !selectedChannel.users.some((u) => u.username === user.username)
-      ) {
-        selectedChannel.users.push(user);
+        this.username !== user.username){
+        channelStore.channels.forEach((c) => {
+          if (c.name === channel.name) {
+            c.users = channel.users;
+          }
+        });
+
       } else if (!isAdd && this.username !== user.username) {
-        const userIndex = selectedChannel.users.findIndex(
-          (u) => u.username === user.username
-        );
-        if (userIndex !== -1) {
-          selectedChannel.users.splice(userIndex, 1);
-        }
+        channelStore.channels.forEach((c) => {
+          if (c.name === channel.name) {
+            c.users = c.users?.filter((u) => u.username !== user.username);
+          }
+        });
       }
-      wsService.updateStatus(me!);
     });
 
     // Listen for removing channel
@@ -123,7 +116,6 @@ class WsService {
 
     this.socket.on('userKicked', (channelName, username) => {
       if (username === this.username) {
-        console.log('You have been kicked from the channel');
         const channelStore = useChannelStore();
         const selectedChannel = channelStore.getSelectedChannel();
 
