@@ -156,14 +156,23 @@ export default class InvitesController {
 
             const memberRecord = await ChannelUser.query()
                 .where('userId', userId)
-                .andWhere('channel_id', channel.id)
-                .andWhere('status', MembershipStatus.ACTIVE)
+                .andWhere('channelId', channel.id)
+                .andWhereIn('status', [MembershipStatus.ACTIVE, MembershipStatus.INVITED])
                 .preload('channel', (channelQuery) => {
                     channelQuery
                         .select('name', 'is_private')
-                        .where('name', channelName)
-                        .preload('users', (userQuery) => {
-                            userQuery.select('id', 'firstname', 'lastname', 'username', 'status')
+                        .preload('channelUsers', (channelUserQuery) => {
+                            channelUserQuery
+                                .where('status', MembershipStatus.ACTIVE) // len aktívni členovia
+                                .preload('user', (userQuery) => {
+                                    userQuery.select(
+                                        'id',
+                                        'firstname',
+                                        'lastname',
+                                        'username',
+                                        'status'
+                                    )
+                                })
                         })
                 })
                 .first()
@@ -176,8 +185,8 @@ export default class InvitesController {
                 channel: {
                     name: channel.name,
                     isPrivate: channel.is_private,
-                    users: memberRecord.channel.users,
-                    isInvitation: MembershipStatus.ACTIVE,
+                    users: memberRecord.channel.channelUsers.map((cu) => cu.user),
+                    isInvitation: false,
                     role: MembershipRole.MEMBER,
                 },
             })

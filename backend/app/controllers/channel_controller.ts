@@ -21,7 +21,7 @@ export default class ChannelController {
                         .select('name', 'is_private')
                         .preload('channelUsers', (channelUserQuery) => {
                             channelUserQuery
-                                .where('status', 'active') // len aktívni členovia
+                                .where('status', MembershipStatus.ACTIVE) // len aktívni členovia
                                 .preload('user', (userQuery) => {
                                     userQuery.select(
                                         'id',
