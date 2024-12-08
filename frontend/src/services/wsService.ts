@@ -41,6 +41,13 @@ class WsService {
         channelName: dstChannel,
       };
 
+      NotificationService.handleNewMessage({
+        sender: sender,
+        content: message,
+        addressedToUser: isTaggedCurrentUser(message, this.username),
+        channel: dstChannel,
+      });
+
       if (userStore.user?.status !== UserStatus.OFFLINE) {
         const channelName = useChannelStore().getSelectedChannel()?.name;
         if (channelName && channelName === dstChannel) {
@@ -48,13 +55,6 @@ class WsService {
             messageStore.messages[channelName] = [];
           }
           messageStore.messages[channelName].push(newMessage);
-
-          NotificationService.handleNewMessage({
-            sender: sender,
-            content: message,
-            addressedToUser: isTaggedCurrentUser(message, this.username),
-            channel: dstChannel,
-          });
         }
       } else {
         // Store missed messages while offline
@@ -134,7 +134,7 @@ class WsService {
       }
     });
 
-    this.socket.on('userTyping', ({ username, message }) => {
+    this.socket.on('userTyping', ({ channel, username, message }) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
       const user = useUserStore().user;
@@ -143,7 +143,8 @@ class WsService {
         selectedChannel &&
         username !== this.username &&
         selectedChannel.users?.some((user) => user.username === username) &&
-        user!.status !== UserStatus.OFFLINE
+        user!.status !== UserStatus.OFFLINE &&
+        channel === selectedChannel.name
       ) {
         channelStore.addTypingUser(username, message);
       }
