@@ -2,17 +2,20 @@
 import { ref, watch } from 'vue';
 import { useMessageStore } from '../stores/messageStore';
 import { useChannelStore } from '../stores/channelStore';
+import { useUserStore } from '../stores/user';
+import { UserStatus } from '../types/enum';
 import ChatMessageComponent from 'components/ChatMessageComponent.vue';
 
 const messageStore = useMessageStore();
 const channelStore = useChannelStore();
 const currentChannel = ref(channelStore.selectedChannel);
+const user = useUserStore().user!;
 const page = ref(1);
 
 watch(
   () => channelStore.selectedChannel,
   async (newChannel) => {
-    if (newChannel) {
+    if (newChannel && user.status !== UserStatus.OFFLINE) {
       page.value = 1;
       currentChannel.value = newChannel;
       await messageStore.fetchMessages(currentChannel.value.name, page.value);
@@ -21,7 +24,7 @@ watch(
 );
 
 async function onLoad(index: number, done: VoidFunction) {
-  if (currentChannel.value?.name && messageStore.hasMoreMessages[currentChannel.value.name]) {
+  if (currentChannel.value?.name && messageStore.hasMoreMessages[currentChannel.value.name] && user.status !== UserStatus.OFFLINE) {
     await messageStore.fetchMessages(currentChannel.value.name, page.value + 1);
     page.value++;
   }

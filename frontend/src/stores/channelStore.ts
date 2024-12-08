@@ -30,6 +30,7 @@ export const useChannelStore = defineStore('channelStore', {
         if (!messageStore.messages[channel.name]) {
           const messageStore = useMessageStore();
           messageStore.messages[channel.name] = [];
+          wsService.joinChannel(channel.name);
         }
       });
 
