@@ -1,4 +1,13 @@
-import { scheduler } from '@adonisjs/core/scheduler'
-import ChannelCleanupScheduler from '#schedulers/channel_cleanup'
+import SchedulerService from '#services/scheduler_service'
+import DeleteInactiveChannelsJob from '../app/jobs/delete_channel.ts'
 
-scheduler.add([ChannelCleanupScheduler])
+const scheduler = new SchedulerService()
+
+// Run every minute to check for inactive channels
+scheduler.addJob({
+  key: 'delete-inactive-channels',
+  cronExpression: '* * * * *',
+  job: new DeleteInactiveChannelsJob(),
+})
+
+scheduler.scheduleAllJobs()
