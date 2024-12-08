@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 
 import { clientsClaim } from 'workbox-core';
-import { cleanupOutdatedCaches } from 'workbox-precaching';
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope &
   typeof globalThis & { skipWaiting: () => void };
@@ -10,6 +10,7 @@ self.skipWaiting();
 clientsClaim();
 
 // Precache static assets
+precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();
 
 // Custom offline HTML path
