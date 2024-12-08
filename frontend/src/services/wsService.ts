@@ -82,6 +82,7 @@ class WsService {
     this.socket.on('userUpdated', (channelName, user, isAdd) => {
       const channelStore = useChannelStore();
       const selectedChannel = channelStore.getSelectedChannel();
+      const me = useUserStore().user;
 
       if (!selectedChannel || !user) return;
 
@@ -103,6 +104,7 @@ class WsService {
           selectedChannel.users.splice(userIndex, 1);
         }
       }
+      wsService.updateStatus(me!);
     });
 
     // Listen for removing channel

@@ -77,7 +77,9 @@ export const useChannelStore = defineStore('channelStore', {
       if (!user) {
         throw new Error('User not found');
       }
+
       wsService.joinChannel(newChannel.name);
+      wsService.updateUser(data.channel, user, true);
       wsService.updateStatus(user);
     },
 
